@@ -2,7 +2,7 @@
 import pytest
 from click.testing import CliRunner
 
-from cnf_lsp_extra import __main__
+from cfn_lsp_extra import __main__
 
 
 @pytest.fixture

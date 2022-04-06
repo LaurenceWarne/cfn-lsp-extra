@@ -1,1 +1,1 @@
-"""Test suite for the cnf_lsp_extra package."""
+"""Test suite for the cfn_lsp_extra package."""
