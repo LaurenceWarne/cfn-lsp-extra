@@ -1,16 +1,14 @@
 """
 Utilities for parsing document strings.
 """
-
+from collections import defaultdict
 from typing import Optional, Union
 
 import yaml
 from yaml.nodes import MappingNode, ScalarNode, SequenceNode
 from yaml.loader import SafeLoader
-from yaml.composer import Composer
 from yaml.resolver import BaseResolver
-from yaml.constructor import Constructor
-from collections import defaultdict
+from cfnlint.decode.cfn_yaml import multi_constructor
 
 from .properties import AWSProperty
 
@@ -45,7 +43,12 @@ class SafePositionLoader(SafeLoader):
         return mapping
 
 
-def flatten_mapping(yaml_dict: dict[str, Union[str, dict]]):
+SafePositionLoader.add_multi_constructor("!", multi_constructor)
+
+
+def flatten_mapping(
+    yaml_dict: dict[str, Union[str, dict]]
+) -> dict[AWSProperty, list[list[int]]]:
     position_dict = defaultdict(list)
     if "Properties" in yaml_dict:
         type_ = yaml_dict["Type"]

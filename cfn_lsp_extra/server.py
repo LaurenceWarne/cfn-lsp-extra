@@ -4,6 +4,7 @@ https://pygls.readthedocs.io/en/latest/
 https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 """
 
+import sys
 from typing import Optional
 
 import click
@@ -27,7 +28,8 @@ from pygls.lsp.types import (
     DidCloseTextDocumentParams,
     HoverParams,
     Hover,
-    MarkedString,
+    MarkupContent,
+    MarkupKind,
     DidOpenTextDocumentParams,
     MessageType,
     Position,
@@ -59,15 +61,15 @@ async def did_open(ls, params: DidOpenTextDocumentParams):
 @server.feature(HOVER)
 def did_hover(ls, params: HoverParams) -> Optional[Hover]:
     """Text document did hover notification."""
-    line_at, char = params.position.line - 1, params.position.character - 1
+    line_at, char = params.position.line, params.position.character - 1
     uri = params.text_document.uri
     document = server.workspace.get_document(uri)
     # Parse document
     data = yaml.load(document.source, Loader=SafePositionLoader)
     props = flatten_mapping(data)
-    for aws_prop, positions in props:
+    for aws_prop, positions in props.items():
         for line, column in positions:
-            column_max = column + len(aws_prop._property)
+            column_max = column + len(aws_prop.property_)
             within_col = column <= char <= column_max
             if line == line_at and within_col:
                 return Hover(
@@ -75,7 +77,9 @@ def did_hover(ls, params: HoverParams) -> Optional[Hover]:
                         start=Position(line=line, character=column),
                         end=Position(line=line, character=column_max),
                     ),
-                    contents=MarkedString(str(aws_prop)),
+                    contents=MarkupContent(
+                        kind=MarkupKind.Markdown, value=str(aws_prop)
+                    ),
                 )
 
 
