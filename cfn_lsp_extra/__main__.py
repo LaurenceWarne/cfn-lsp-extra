@@ -1,5 +1,4 @@
 """Command-line interface."""
-import click
 
 from .server import main
 

@@ -1,10 +1,13 @@
 import pytest
 import yaml
 
-from cfn_lsp_extra.parsing import SafePositionLoader, flatten_mapping
+from cfn_lsp_extra.parsing import SafePositionLoader
+from cfn_lsp_extra.parsing import flatten_mapping
 from cfn_lsp_extra.properties import AWSProperty
 
+
 content = """AWSTemplateFormatVersion: "2010-09-09"
+# Pointless comment
 Description: My template
 Parameters:
   DefaultVpcId:
@@ -29,4 +32,13 @@ Resources:
 def test_safe_line_loader():
     data = yaml.load(content, Loader=SafePositionLoader)
     positions = flatten_mapping(data)
-    assert [10, 6] in positions[AWSProperty("AWS::EC2::Subnet", "CidrBlock")]
+    assert [[11, 6], [18, 6]] == sorted(
+        positions[AWSProperty("AWS::EC2::Subnet", "CidrBlock")]
+    )
+    assert [[12, 6]] == sorted(
+        positions[AWSProperty("AWS::EC2::Subnet", "MapPublicIpOnLaunch")]
+    )
+    assert [[13, 6], [19, 6]] == sorted(
+        positions[AWSProperty("AWS::EC2::Subnet", "VpcId")]
+    )
+    assert len(positions) == 3
