@@ -11,4 +11,4 @@ async def test_github_parse():
         resource = await gh_parser.parse(session, url)
         print(resource.name)
         print(resource.property_descriptions["CidrBlock"])
-    assert False
+    # assert False

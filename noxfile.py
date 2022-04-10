@@ -8,7 +8,7 @@ nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = ("tests",)
 
 
-@session(python=["3.9"])
+@session(python=python_versions)
 def tests(session):
     session.install("pytest", ".")
     session.install("pytest-asyncio", ".")
