@@ -1,6 +1,6 @@
 # Cfn Lsp Extra
 
-[![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra)][python version]
+<!-- [![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra)][python version] -->
 
 An experimental cloudformation lsp server.
 

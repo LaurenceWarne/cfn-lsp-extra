@@ -1,10 +1,10 @@
 name: Labeler
 
-on:
-  push:
-    branches:
-      - main
-      - master
+# on:
+#   push:
+#     branches:
+#       - main
+#       - master
 
 jobs:
   labeler:
