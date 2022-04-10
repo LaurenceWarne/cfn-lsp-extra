@@ -2,6 +2,8 @@
 Utilities for parsing document strings.
 """
 from collections import defaultdict
+from typing import Dict
+from typing import List
 from typing import Union
 
 from cfnlint.decode.cfn_yaml import multi_constructor
@@ -27,11 +29,11 @@ class SafePositionLoader(SafeLoader):
 
         for key_node, value_node in node_pair_lst:
             line_value_node = ScalarNode(
-                tag=BaseResolver.DEFAULT_SCALAR_TAG,
-                value=key_node.start_mark.line)
+                tag=BaseResolver.DEFAULT_SCALAR_TAG, value=key_node.start_mark.line
+            )
             column_value_node = ScalarNode(
-                tag=BaseResolver.DEFAULT_SCALAR_TAG,
-                value=key_node.start_mark.column)
+                tag=BaseResolver.DEFAULT_SCALAR_TAG, value=key_node.start_mark.column
+            )
             meta_key_node = ScalarNode(
                 tag=BaseResolver.DEFAULT_SCALAR_TAG,
                 value=self.POSITION_PREFIX + key_node.value,
@@ -43,29 +45,23 @@ class SafePositionLoader(SafeLoader):
             node_pair_lst_for_appending.append((meta_key_node, meta_value_node))
 
         node.value = node_pair_lst + node_pair_lst_for_appending
-        mapping = super(
-            SafePositionLoader,
-            self).construct_mapping(
-            node,
-            deep=deep)
+        mapping = super(SafePositionLoader, self).construct_mapping(node, deep=deep)
         return mapping
 
 
 SafePositionLoader.add_multi_constructor("!", multi_constructor)
 
 
-Yaml = dict[str, Union[str, "Yaml"]]
+Yaml = Dict[str, Union[str, "Yaml"]]
 
 
-def flatten_mapping(yaml_dict: Yaml) -> dict[AWSProperty, list[list[int]]]:
+def flatten_mapping(yaml_dict: Yaml) -> Dict[AWSProperty, List[List[int]]]:
     position_dict = defaultdict(list)
     if "Properties" in yaml_dict:
         type_ = yaml_dict["Type"]
         for key, value in yaml_dict["Properties"].items():
             if key.startswith(SafePositionLoader.POSITION_PREFIX):
-                k = AWSProperty(
-                    type_, key.lstrip(
-                        SafePositionLoader.POSITION_PREFIX))
+                k = AWSProperty(type_, key.lstrip(SafePositionLoader.POSITION_PREFIX))
                 position_dict[k].append(value)
     else:
         for key, value in yaml_dict.items():

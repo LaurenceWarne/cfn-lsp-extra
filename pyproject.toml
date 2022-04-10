@@ -44,6 +44,8 @@ typeguard = ">=2.13.3"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
 python-lsp-server = ">=1.4.1"
+nox = ">=2022.1"
+nox-poetry = ">=0.9"
 
 [tool.poetry.scripts]
 cfn-lsp-extra = "cfn_lsp_extra.__main__:main"

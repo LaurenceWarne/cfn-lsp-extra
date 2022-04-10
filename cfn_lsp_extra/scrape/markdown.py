@@ -11,6 +11,8 @@ import re
 from dataclasses import dataclass
 from itertools import dropwhile
 from itertools import takewhile
+from typing import Dict
+from typing import List
 
 import aiohttp
 from aiohttp import ClientSession
@@ -20,7 +22,7 @@ from aiohttp import StreamReader
 @dataclass
 class AWSResource:
     name: str
-    property_descriptions: dict[str, str]
+    property_descriptions: Dict[str, str]
 
 
 class GithubCfnMarkdownParser:
@@ -61,7 +63,7 @@ class GithubCfnMarkdownParser:
         return AWSResource("".join(name), result)
 
 
-async def parse_urls(urls: list[str]) -> list[AWSResource]:
+async def parse_urls(urls: List[str]) -> List[AWSResource]:
     parser = GithubCfnMarkdownParser()
     async with aiohttp.ClientSession() as session:
         resources = await asyncio.gather(*[parser.parse(session, url) for url in urls])

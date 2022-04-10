@@ -5,6 +5,8 @@ https://microsoft.github.io/language-server-protocol/specifications/specificatio
 """
 
 import asyncio
+from typing import Dict
+from typing import List
 from typing import Optional
 
 import click
@@ -30,7 +32,7 @@ from .scrape.markdown import parse_urls
 class CfnLanguageServer(LanguageServer):
     def __init__(
         self,
-        aws_resources: list[AWSResource],
+        aws_resources: List[AWSResource],
         loop=None,
         protocol_cls=LanguageServerProtocol,
         max_workers: int = 2,
