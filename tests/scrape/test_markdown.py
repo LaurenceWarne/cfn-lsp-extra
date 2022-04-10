@@ -5,9 +5,10 @@ from cfn_lsp_extra.scrape.markdown import GithubCfnMarkdownParser
 
 
 async def test_github_parse():
-    url = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-ec2-instance.md"
+    url = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-ec2-subnet.md"
     gh_parser = GithubCfnMarkdownParser()
     async with aiohttp.ClientSession() as session:
-        result = await gh_parser.parse(session, url)
-        print(list(result.values())[0])
+        resource = await gh_parser.parse(session, url)
+        print(resource.name)
+        print(resource.property_descriptions["CidrBlock"])
     assert False
