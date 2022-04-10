@@ -5,6 +5,7 @@ https://microsoft.github.io/language-server-protocol/specifications/specificatio
 """
 
 import asyncio
+from importlib.resources import files
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -42,14 +43,10 @@ class CfnLanguageServer(LanguageServer):
 
 
 def server() -> CfnLanguageServer:
-    descriptions = asyncio.run(
-        parse_urls(
-            [
-                "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-ec2-instance.md",
-                "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-ec2-subnet.md",
-            ]
-        )
+    urls = (
+        files("cfn_lsp_extra.resources").joinpath("doc_urls").read_text().splitlines()
     )
+    descriptions = asyncio.run(parse_urls(urls))
     server = CfnLanguageServer(descriptions)
 
     @server.feature(TEXT_DOCUMENT_DID_OPEN)

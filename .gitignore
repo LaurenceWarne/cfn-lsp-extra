@@ -9,3 +9,4 @@
 /src/*.egg-info/
 __pycache__/
 /.dir-locals.el
+/bin/parse_links.py
