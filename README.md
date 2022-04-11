@@ -2,15 +2,12 @@
 
 <!-- [![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra)][python version] -->
 
-An experimental cloudformation lsp server.
-
+An experimental cloudformation lsp server built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) aiming to provide hovering, completion, etc.
 
 ## Usage
 
 ```bash
-git clone https://github.com/LaurenceWarne/cfn-lsp-extra
-cd cfn-lsp-extra
-pipx install .
+pipx install git+https://github.com/LaurenceWarne/cfn-lsp-extra
 ```
 
 ### Emacs
@@ -36,7 +33,7 @@ pipx install .
 
 ### [vscode-cfn-lint](https://github.com/aws-cloudformation/cfn-lint-visual-studio-code)
 
-### [https://github.com/aws-cloudformation/cfn-lint](cfn-lint)
+### [cfn-lint](https://github.com/aws-cloudformation/cfn-lint)
 
 Note this is used by `cfn-lsp-extra` under the hood.
 
