@@ -83,10 +83,7 @@ show_error_context = true
 asyncio_mode = "auto"
 
 [tool.flakeheaven]
-select = ["B","B9","C","D","DAR","E","F","N","RST","S","W"]
-ignore = ["E501","RST201","RST203","RST301","W503"]
 max-line-length = 88
-max-complexity = 10
 per-file-ignores = "tests/*"
 
 [tool.flakeheaven.plugins]
@@ -96,7 +93,7 @@ pyflakes = ["+*", "-F401"]
 "flake8-*" = ["+*"]
 # explicitly disable plugin
 flake8-docstrings = ["-*"]
-pycodestyle = ["+*"]
+pycodestyle = ["+*", "-W503"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

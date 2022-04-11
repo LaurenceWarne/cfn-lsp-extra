@@ -3,7 +3,7 @@ Utilities for parsing Github markdown files, specifically files from
 https://github.com/awsdocs/aws-cloudformation-user-guide.
 
 Example: https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-ec2-instance.md
-"""
+"""  # noqa
 
 
 import asyncio
