@@ -3,7 +3,7 @@ import yaml
 
 from cfn_lsp_extra.parsing import SafePositionLoader
 from cfn_lsp_extra.parsing import flatten_mapping
-from cfn_lsp_extra.properties import AWSProperty
+from cfn_lsp_extra.aws_data import AWSProperty
 
 
 content = """AWSTemplateFormatVersion: "2010-09-09"

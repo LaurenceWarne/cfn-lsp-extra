@@ -21,7 +21,7 @@ cfn-lint = "^0.54"
 pygls = "^0.11"
 PyYAML = "^6.0"
 aiohttp = {extras = ["speedups"], version = "^3.8"}
-#.aiologger = "0.6"
+platformdirs = "2.5^"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

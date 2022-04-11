@@ -13,7 +13,7 @@ from yaml.nodes import ScalarNode
 from yaml.nodes import SequenceNode
 from yaml.resolver import BaseResolver
 
-from .properties import AWSProperty
+from .aws_data import AWSProperty
 
 
 class SafePositionLoader(SafeLoader):

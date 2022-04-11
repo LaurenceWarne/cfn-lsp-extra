@@ -18,7 +18,8 @@ import aiohttp
 from aiohttp import ClientSession
 from aiohttp import StreamReader
 
-from ..properties import AWSResource
+from ..aws_data import AWSContext
+from ..aws_data import AWSResource
 
 
 class GithubCfnMarkdownParser:
@@ -58,8 +59,8 @@ class GithubCfnMarkdownParser:
         return AWSResource("".join(name), result)
 
 
-async def parse_urls(urls: List[str]) -> List[AWSResource]:
+async def parse_urls(urls: List[str]) -> AWSContext:
     parser = GithubCfnMarkdownParser()
     async with aiohttp.ClientSession() as session:
         resources = await asyncio.gather(*[parser.parse(session, url) for url in urls])
-        return {res.name: res for res in resources}
+        return AWSContext({res.name: res for res in resources})

@@ -27,6 +27,7 @@ from pygls.server import LanguageServerProtocol
 
 from .parsing import SafePositionLoader
 from .parsing import flatten_mapping
+from .scrape.markdown import AWSContext
 from .scrape.markdown import AWSResource
 from .scrape.markdown import parse_urls
 
@@ -34,25 +35,26 @@ from .scrape.markdown import parse_urls
 class CfnLanguageServer(LanguageServer):
     def __init__(
         self,
-        aws_resources: List[AWSResource],
+        aws_context: AWSContext,
         loop=None,
         protocol_cls=LanguageServerProtocol,
         max_workers: int = 2,
     ):
         super().__init__(loop, protocol_cls, max_workers)
-        self.aws_resources = aws_resources
+        self.aws_context = aws_context
 
 
 def server() -> CfnLanguageServer:
-    # logger.info("Parsing documentation from cloudformation docs...")
+    logger = logging.getLogger(__name__)
+    logger.info("Parsing documentation from cloudformation docs...")
     urls = (
         # Not using importlib.resources.files is considered legacy but is
         # necessary for python < 3.9
         read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
     )
-    descriptions = asyncio.run(parse_urls(urls))
-    # logger.info("Done parsing documentation")
-    server = CfnLanguageServer(descriptions)
+    context = asyncio.run(parse_urls(urls))
+    logger.info("Done parsing documentation")
+    server = CfnLanguageServer(context)
 
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
     async def did_open(ls: CfnLanguageServer, params: DidOpenTextDocumentParams):
@@ -74,9 +76,9 @@ def server() -> CfnLanguageServer:
         props = flatten_mapping(data)
         for aws_prop, positions in props.items():
             if not (
-                aws_prop.resource in ls.aws_resources
+                aws_prop.resource in ls.aws_context.resources
                 and aws_prop.property_
-                in ls.aws_resources[aws_prop.resource].property_descriptions
+                in ls.aws_context.resources[aws_prop.resource].property_descriptions
             ):
                 continue
             for line, column in positions:
@@ -90,9 +92,7 @@ def server() -> CfnLanguageServer:
                         ),
                         contents=MarkupContent(
                             kind=MarkupKind.Markdown,
-                            value=ls.aws_resources[aws_prop.resource][
-                                aws_prop.property_
-                            ],
+                            value=ls.aws_context[aws_prop],
                         ),
                     )
 
@@ -101,8 +101,9 @@ def server() -> CfnLanguageServer:
 
 @click.command()
 @click.version_option()
-def main() -> None:
-    logging.basicConfig(level=logging.DEBUG)
+@click.option("--verbose", "-v", is_flag=True, help="Print more output.")
+def main(verbose) -> None:
+    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
     server().start_io()
 
 
