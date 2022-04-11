@@ -5,7 +5,8 @@ https://microsoft.github.io/language-server-protocol/specifications/specificatio
 """
 
 import asyncio
-from importlib.resources import files
+import logging
+from importlib.resources import read_text
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -43,10 +44,14 @@ class CfnLanguageServer(LanguageServer):
 
 
 def server() -> CfnLanguageServer:
+    # logger.info("Parsing documentation from cloudformation docs...")
     urls = (
-        files("cfn_lsp_extra.resources").joinpath("doc_urls").read_text().splitlines()
+        # Not using importlib.resources.files is considered legacy but is
+        # necessary for python < 3.9
+        read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
     )
     descriptions = asyncio.run(parse_urls(urls))
+    # logger.info("Done parsing documentation")
     server = CfnLanguageServer(descriptions)
 
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
@@ -58,21 +63,26 @@ def server() -> CfnLanguageServer:
     @server.feature(HOVER)
     def did_hover(ls: CfnLanguageServer, params: HoverParams) -> Optional[Hover]:
         """Text document did hover notification."""
-        line_at, char_at = params.position.line, params.position.character - 1
+        line_at, char_at = params.position.line, params.position.character
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         # Parse document
-        data = yaml.load(document.source, Loader=SafePositionLoader)
+        try:
+            data = yaml.load(document.source, Loader=SafePositionLoader)
+        except yaml.scanner.ScannerError:  # Invalid yaml
+            return
         props = flatten_mapping(data)
         for aws_prop, positions in props.items():
+            if not (
+                aws_prop.resource in ls.aws_resources
+                and aws_prop.property_
+                in ls.aws_resources[aws_prop.resource].property_descriptions
+            ):
+                continue
             for line, column in positions:
                 column_max = column + len(aws_prop.property_)
                 within_col = column <= char_at <= column_max
-                if (
-                    line == line_at
-                    and within_col
-                    and aws_prop.resource in ls.aws_resources
-                ):
+                if line == line_at and within_col:
                     return Hover(
                         range=Range(
                             start=Position(line=line, character=column),
@@ -80,9 +90,9 @@ def server() -> CfnLanguageServer:
                         ),
                         contents=MarkupContent(
                             kind=MarkupKind.Markdown,
-                            value=ls.aws_resources[
-                                aws_prop.resource
-                            ].property_descriptions[aws_prop.property_],
+                            value=ls.aws_resources[aws_prop.resource][
+                                aws_prop.property_
+                            ],
                         ),
                     )
 
@@ -92,6 +102,7 @@ def server() -> CfnLanguageServer:
 @click.command()
 @click.version_option()
 def main() -> None:
+    logging.basicConfig(level=logging.DEBUG)
     server().start_io()
 
 

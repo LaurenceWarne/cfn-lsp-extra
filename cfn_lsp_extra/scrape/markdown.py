@@ -18,11 +18,7 @@ import aiohttp
 from aiohttp import ClientSession
 from aiohttp import StreamReader
 
-
-@dataclass
-class AWSResource:
-    name: str
-    property_descriptions: Dict[str, str]
+from ..properties import AWSResource
 
 
 class GithubCfnMarkdownParser:

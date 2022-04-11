@@ -4,6 +4,7 @@
 
 An experimental cloudformation lsp server.
 
+
 ## Usage
 
 ```bash
@@ -30,3 +31,12 @@ pipx install .
                     :activation-fn (lsp-activate-on "cloudformation")
                     :server-id 'cfn-lsp-extra)))
 ```
+
+## Alternatives
+
+### [vscode-cfn-lint](https://github.com/aws-cloudformation/cfn-lint-visual-studio-code)
+
+### [https://github.com/aws-cloudformation/cfn-lint](cfn-lint)
+
+Note this is used by `cfn-lsp-extra` under the hood.
+
