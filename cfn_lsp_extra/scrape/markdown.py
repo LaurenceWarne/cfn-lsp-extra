@@ -30,7 +30,6 @@ class GithubCfnMarkdownParser:
 
     async def parse(self, session: ClientSession, url: str) -> AWSResource:
         async with session.get(url) as response:
-            status = response.status
             assert response.status == 200
             return await self.parse_response(response.content)
 

@@ -21,7 +21,7 @@ cfn-lint = "^0.54"
 pygls = "^0.11"
 PyYAML = "^6.0"
 aiohttp = {extras = ["speedups"], version = "^3.8"}
-#aiologger = "0.6"
+#.aiologger = "0.6"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
@@ -81,6 +81,22 @@ show_error_context = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.flakeheaven]
+select = ["B","B9","C","D","DAR","E","F","N","RST","S","W"]
+ignore = ["E501","RST201","RST203","RST301","W503"]
+max-line-length = 88
+max-complexity = 10
+per-file-ignores = "tests/*"
+
+[tool.flakeheaven.plugins]
+# include everything in pyflakes except F401
+pyflakes = ["+*", "-F401"]
+# enable everything that starts from `flake8-`
+"flake8-*" = ["+*"]
+# explicitly disable plugin
+flake8-docstrings = ["-*"]
+pycodestyle = ["+*"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

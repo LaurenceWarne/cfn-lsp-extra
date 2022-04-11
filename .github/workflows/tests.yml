@@ -30,3 +30,7 @@ jobs:
 
       - name: Run tests on ${{ matrix.os }}
         run: nox --non-interactive --error-on-missing-interpreter --session "tests-${{ matrix.python-version }}" -- --full-trace
+
+      - name: Run linting on ${{ matrix.os }}
+        run: nox --non-interactive --error-on-missing-interpreter --session "lint-${{ matrix.python-version }}" -- --full-trace
+      
