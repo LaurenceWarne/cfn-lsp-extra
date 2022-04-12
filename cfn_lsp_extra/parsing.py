@@ -2,6 +2,7 @@
 Utilities for parsing document strings.
 """
 from collections import defaultdict
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Union
@@ -23,7 +24,7 @@ class SafePositionLoader(SafeLoader):
 
     POSITION_PREFIX = "__position__"
 
-    def construct_mapping(self, node: MappingNode, deep=False):
+    def construct_mapping(self, node: MappingNode, deep: bool = False) -> Any:
         node_pair_lst = node.value
         node_pair_lst_for_appending = []
 
@@ -45,14 +46,20 @@ class SafePositionLoader(SafeLoader):
             node_pair_lst_for_appending.append((meta_key_node, meta_value_node))
 
         node.value = node_pair_lst + node_pair_lst_for_appending
-        mapping = super(SafePositionLoader, self).construct_mapping(node, deep=deep)
+        # noqa: No type hint for construct_mapping https://github.com/python/typeshed/blob/master/stubs/PyYAML/yaml/constructor.pyi
+        mapping = super(  # type: ignore[no-untyped-call]
+            SafePositionLoader, self
+        ).construct_mapping(node, deep=deep)
         return mapping
 
 
-SafePositionLoader.add_multi_constructor("!", multi_constructor)
+SafePositionLoader.add_multi_constructor(  # type: ignore[no-untyped-call]
+    "!", multi_constructor
+)
 
-
-Yaml = Dict[str, Union[str, "Yaml"]]
+# https://github.com/python/mypy/issues/731
+# Yaml = Dict[str, Union[str, "Yaml"]]
+Yaml = Any
 
 
 def flatten_mapping(yaml_dict: Yaml) -> Dict[AWSProperty, List[List[int]]]:

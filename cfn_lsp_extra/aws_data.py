@@ -12,7 +12,7 @@ class AWSProperty(BaseModel, frozen=True):
     resource: str
     property_: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.resource}/{self.property_}"
 
 

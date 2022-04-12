@@ -13,6 +13,7 @@ from itertools import dropwhile
 from itertools import takewhile
 from typing import Dict
 from typing import List
+from typing import Pattern
 
 import aiohttp
 from aiohttp import ClientSession
@@ -25,7 +26,7 @@ from ..aws_data import AWSResource
 class GithubCfnMarkdownParser:
     """Class for parsing cfn github content."""
 
-    HEADER_REGEX = re.compile("^`([a-zA-Z0-9]+)`.*<a*.a>")
+    HEADER_REGEX: Pattern[str] = re.compile("^`([a-zA-Z0-9]+)`.*<a*.a>")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "## Return values"
 
@@ -40,16 +41,16 @@ class GithubCfnMarkdownParser:
             lambda c: c != "<",
             dropwhile(lambda c: not c.isalpha(), first_line.decode("utf-8")),
         )
-        async for line in content:
-            if line.decode("utf-8").startswith(self.PROPERTY_LINE_PREFIX):
+        async for line_b in content:
+            if line_b.decode("utf-8").startswith(self.PROPERTY_LINE_PREFIX):
                 break
         result, prop, desc = {}, None, ""
-        async for line in content:
-            line = line.decode("utf-8")
+        async for line_b in content:
+            line = line_b.decode("utf-8")
             match = re.match(self.HEADER_REGEX, line)
             if match:
                 if prop:
-                    result[prop] = desc
+                    result[prop] = desc  # type: ignore[unreachable]
                 prop, desc = match.group(1), f"`{match.group(1)}`\n"
             elif line.startswith(self.PROPERTY_END_PREFIX):
                 break
