@@ -61,7 +61,10 @@ def flatten_mapping(yaml_dict: Yaml) -> Dict[AWSProperty, List[List[int]]]:
         type_ = yaml_dict["Type"]
         for key, value in yaml_dict["Properties"].items():
             if key.startswith(SafePositionLoader.POSITION_PREFIX):
-                k = AWSProperty(type_, key.lstrip(SafePositionLoader.POSITION_PREFIX))
+                k = AWSProperty(
+                    resource=type_,
+                    property_=key.lstrip(SafePositionLoader.POSITION_PREFIX),
+                )
                 position_dict[k].append(value)
     else:
         for value in yaml_dict.values():

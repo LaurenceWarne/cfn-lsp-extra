@@ -56,11 +56,11 @@ class GithubCfnMarkdownParser:
             else:
                 desc += line
         result[prop] = desc
-        return AWSResource("".join(name), result)
+        return AWSResource(name="".join(name), property_descriptions=result)
 
 
 async def parse_urls(urls: List[str]) -> AWSContext:
     parser = GithubCfnMarkdownParser()
     async with aiohttp.ClientSession() as session:
         resources = await asyncio.gather(*[parser.parse(session, url) for url in urls])
-        return AWSContext({res.name: res for res in resources})
+        return AWSContext(resources={res.name: res for res in resources})

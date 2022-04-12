@@ -25,6 +25,8 @@ from pygls.lsp.types import Range
 from pygls.server import LanguageServer
 from pygls.server import LanguageServerProtocol
 
+from .context import cache
+from .context import download_context
 from .parsing import SafePositionLoader
 from .parsing import flatten_mapping
 from .scrape.markdown import AWSContext
@@ -44,17 +46,8 @@ class CfnLanguageServer(LanguageServer):
         self.aws_context = aws_context
 
 
-def server() -> CfnLanguageServer:
-    logger = logging.getLogger(__name__)
-    logger.info("Parsing documentation from cloudformation docs...")
-    urls = (
-        # Not using importlib.resources.files is considered legacy but is
-        # necessary for python < 3.9
-        read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
-    )
-    context = asyncio.run(parse_urls(urls))
-    logger.info("Done parsing documentation")
-    server = CfnLanguageServer(context)
+def server(aws_context: AWSContext) -> CfnLanguageServer:
+    server = CfnLanguageServer(aws_context)
 
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
     async def did_open(ls: CfnLanguageServer, params: DidOpenTextDocumentParams):
@@ -101,11 +94,22 @@ def server() -> CfnLanguageServer:
 
 @click.command()
 @click.version_option()
-@click.option("--verbose", "-v", is_flag=True, help="Print more output.")
-def main(verbose) -> None:
+@click.option("-v", "--verbose", is_flag=True, help="Print more output.")
+@click.option("--no-cache", is_flag=True, help="Don't use cached documentation.")
+@click.option(
+    "--generate-cache",
+    is_flag=True,
+    help="Generate the documentation cache and exit.",
+)
+def main(verbose: bool, no_cache: bool, generate_cache: bool) -> None:
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
-    server().start_io()
+    if generate_cache:
+        cache(void_cache=True)
+        return
+    no_cache = True
+    aws_context = download_context() if no_cache else cache()
+    server(aws_context).start_io()
 
 
 if __name__ == "__main__":
-    main()
+    main(auto_envvar_prefix="CFN_LSP_EXTRA")

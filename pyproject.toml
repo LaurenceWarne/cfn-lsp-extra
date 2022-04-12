@@ -22,6 +22,7 @@ pygls = "^0.11"
 PyYAML = "^6.0"
 aiohttp = {extras = ["speedups"], version = "^3.8"}
 platformdirs = "2.5^"
+pydantic = "1.8^"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
@@ -92,7 +93,7 @@ pyflakes = ["+*", "-F401"]
 # enable everything that starts from `flake8-`
 "flake8-*" = ["+*"]
 # explicitly disable plugin
-flake8-docstrings = ["-*"]
+#flake8-docstrings = ["-*"]
 pycodestyle = ["+*", "-W503"]
 
 [build-system]

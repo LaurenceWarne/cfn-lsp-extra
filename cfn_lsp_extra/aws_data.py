@@ -2,12 +2,13 @@
 Classes for dealing with aws properties
 """
 
-from dataclasses import dataclass
 from typing import Dict
 
+from pydantic import BaseModel
 
-@dataclass(frozen=True)
-class AWSProperty:
+
+class AWSProperty(BaseModel, frozen=True):
+
     resource: str
     property_: str
 
@@ -15,9 +16,11 @@ class AWSProperty:
         return f"{self.resource}/{self.property_}"
 
 
-@dataclass
-class AWSResource:
-    """Information on an AWS Cloudformation resource and its supported properties."""
+class AWSResource(BaseModel):
+    """Information on an AWS Cloudformation resource and its supported properties.
+
+    It's a thin wrapper around a dictionary mapping properties of a given aws
+    resource e.g. 'InstanceType' to descriptions."""
 
     name: str
     property_descriptions: Dict[str, str]
@@ -26,8 +29,7 @@ class AWSResource:
         return self.property_descriptions[property_]
 
 
-@dataclass
-class AWSContext:
+class AWSContext(BaseModel):
     """A handle on AWS resource data for the lsp server."""
 
     resources: Dict[str, AWSResource]
