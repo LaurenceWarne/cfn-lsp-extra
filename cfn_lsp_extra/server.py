@@ -13,6 +13,7 @@ from typing import Optional
 
 import click
 import yaml
+from pygls.lsp.methods import COMPLETION
 from pygls.lsp.methods import HOVER
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_OPEN
 from pygls.lsp.types import DidOpenTextDocumentParams
@@ -22,6 +23,10 @@ from pygls.lsp.types import MarkupContent
 from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
+from pygls.lsp.types.language_features.completion import CompletionItem
+from pygls.lsp.types.language_features.completion import CompletionList
+from pygls.lsp.types.language_features.completion import CompletionOptions
+from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
 from .aws_data import AWSContext
@@ -41,6 +46,42 @@ def server(aws_context: AWSContext) -> LanguageServer:
         """Text document did open notification."""
         ls.show_message("Text Document Did Open")
         params.text_document.text
+
+    @server.feature(COMPLETION, CompletionOptions(trigger_characters=[" "]))
+    def completions(
+        ls: LanguageServer,
+        params: Optional[CompletionParams] = None,
+    ) -> Optional[CompletionList]:
+        """Returns completion items."""
+        line_at, char_at = params.position.line, params.position.character
+        uri = params.text_document.uri
+        document = server.workspace.get_document(uri)
+        try:
+            data = yaml.load(document.source, Loader=SafePositionLoader)
+        except yaml.scanner.ScannerError:
+            new_source_lst = document.source.splitlines()
+            new_source_lst[line_at] = new_source_lst[line_at].rstrip() + ":"
+            new_source = "\n".join(new_source_lst)
+            data = yaml.load(new_source, Loader=SafePositionLoader)
+        props = flatten_mapping(data)
+        for aws_prop, positions in props.items():
+            if aws_prop.resource in aws_context.resources:
+                for line, column in positions:
+                    column_max = column + len(aws_prop.property_)
+                    within_col = column <= char_at <= column_max
+                    if line == line_at:  # and within_col:
+                        return CompletionList(
+                            is_incomplete=aws_prop.property_
+                            in aws_context.resources[
+                                aws_prop.resource
+                            ].property_descriptions,
+                            items=[
+                                CompletionItem(label=s)
+                                for s in aws_context.resources[
+                                    aws_prop.resource
+                                ].property_descriptions.keys()
+                            ],
+                        )
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
