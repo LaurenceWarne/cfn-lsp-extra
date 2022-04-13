@@ -11,15 +11,13 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-import cfnlint.config
-import cfnlint.core
-import cfnlint.decode
-import cfnlint.runner
 import click
 import yaml
 from pygls.lsp.methods import COMPLETION
 from pygls.lsp.methods import HOVER
+from pygls.lsp.methods import TEXT_DOCUMENT_DID_CHANGE
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_OPEN
+from pygls.lsp.types import DidChangeTextDocumentParams
 from pygls.lsp.types import DidOpenTextDocumentParams
 from pygls.lsp.types import Hover
 from pygls.lsp.types import HoverParams
@@ -27,7 +25,6 @@ from pygls.lsp.types import MarkupContent
 from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
-from pygls.lsp.types.basic_structures import Diagnostic
 from pygls.lsp.types.language_features.completion import CompletionItem
 from pygls.lsp.types.language_features.completion import CompletionList
 from pygls.lsp.types.language_features.completion import CompletionOptions
@@ -36,6 +33,7 @@ from pygls.server import LanguageServer
 
 from .aws_data import AWSContext
 from .aws_data import AWSResource
+from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .context import cache
 from .context import download_context
 from .parsing import SafePositionLoader
@@ -46,41 +44,25 @@ from .scrape.markdown import parse_urls
 def server(aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer()
 
-    # @server.thread()
+    @server.thread()
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
-        logger = logging.getLogger(__name__)
         ls.show_message("Text Document Did Open")
         text_doc = ls.workspace.get_document(params.text_document.uri)
-        filename = text_doc.path
-        conf, _, _ = cfnlint.core.get_args_filenames([])
-        template, rules, errors = cfnlint.core.get_template_rules(filename, conf)
-        ls.show_message(f"file: {filename}")
-        ls.show_message(f"errors: {errors}")
+        file_path = text_doc.path
+        ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
 
-        if not errors:
-            runner = cfnlint.runner.Runner(
-                rules, filename, template, regions=None, mandatory_rules=None
-            )
-            errors = runner.transform()
-        diagnostics = [
-            Diagnostic(
-                range=Range(
-                    start=Position(line=m.linenumber - 1, character=m.columnnumber - 1),
-                    end=Position(
-                        line=m.linenumberend - 1, character=m.columnnumberend - 1
-                    ),
-                ),
-                message=m.message,
-                source="cfn-lsp-extra",
-            )
-            for m in errors
-        ]
-
-        if diagnostics:
-            ls.publish_diagnostics(text_doc.uri, diagnostics)
-        ls.show_message(f"LINTING ERRORS: {diagnostics}")
+    @server.thread()
+    @server.feature(TEXT_DOCUMENT_DID_CHANGE)
+    def did_change(ls: LanguageServer, params: DidChangeTextDocumentParams) -> None:
+        """Text document did change notification."""
+        text_doc = ls.workspace.get_document(params.text_document.uri)
+        file_path = text_doc.path
+        diags = diagnostics(text_doc.source, file_path)
+        # Publishing diagnostics removes old ones
+        ls.publish_diagnostics(text_doc.uri, diags)
+        ls.show_message("Finished processing Text Document Did Change")
 
     @server.feature(COMPLETION)
     def completions(
@@ -116,6 +98,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
                                 ].property_descriptions.keys()
                             ],
                         )
+        return None
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
