@@ -5,6 +5,7 @@ LSP features leveraging cfnlint.
 """
 
 import logging
+from typing import Dict
 from typing import List
 from typing import no_type_check
 
@@ -12,13 +13,13 @@ import cfnlint.config
 import cfnlint.core
 import cfnlint.decode
 import cfnlint.runner
-from cfnlint.helpers import REGIONS
 from cfnlint.rules import ParseError
 from cfnlint.rules import RulesCollection
 from cfnlint.rules import TransformError
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 from pygls.lsp.types.basic_structures import Diagnostic
+from pygls.lsp.types.basic_structures import DiagnosticSeverity
 
 
 logger = logging.getLogger(__name__)
@@ -31,9 +32,15 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
 
     if not errors:
         runner = cfnlint.runner.Runner(
-            rules, file_path, template, regions=REGIONS, mandatory_rules=None
+            rules, file_path, template, regions=conf.regions, mandatory_rules=None
         )
-        errors = runner.run()
+        errors: List[cfnlint.rules.Match] = runner.run()
+
+    severity_mapping: Dict[str, DiagnosticSeverity] = {
+        "INFORMATIONAL": DiagnosticSeverity.Information,
+        "ERROR": DiagnosticSeverity.Error,
+        "WARNING": DiagnosticSeverity.Warning,
+    }
     return [
         Diagnostic(
             range=Range(
@@ -42,6 +49,7 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
             ),
             message=m.message,
             source="cfn-lsp-extra",
+            severity=severity_mapping.get(m.rule.severity, DiagnosticSeverity.Error),
         )
         for m in errors
     ]
