@@ -11,6 +11,10 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import cfnlint.config
+import cfnlint.core
+import cfnlint.decode
+import cfnlint.runner
 import click
 import yaml
 from pygls.lsp.methods import COMPLETION
@@ -23,6 +27,7 @@ from pygls.lsp.types import MarkupContent
 from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
+from pygls.lsp.types.basic_structures import Diagnostic
 from pygls.lsp.types.language_features.completion import CompletionItem
 from pygls.lsp.types.language_features.completion import CompletionList
 from pygls.lsp.types.language_features.completion import CompletionOptions
@@ -41,35 +46,64 @@ from .scrape.markdown import parse_urls
 def server(aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer()
 
+    # @server.thread()
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
-    async def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
+    def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
+        logger = logging.getLogger(__name__)
         ls.show_message("Text Document Did Open")
-        params.text_document.text
+        text_doc = ls.workspace.get_document(params.text_document.uri)
+        filename = text_doc.path
+        conf, _, _ = cfnlint.core.get_args_filenames([])
+        template, rules, errors = cfnlint.core.get_template_rules(filename, conf)
+        ls.show_message(f"file: {filename}")
+        ls.show_message(f"errors: {errors}")
 
-    @server.feature(COMPLETION, CompletionOptions(trigger_characters=[" "]))
+        if not errors:
+            runner = cfnlint.runner.Runner(
+                rules, filename, template, regions=None, mandatory_rules=None
+            )
+            errors = runner.transform()
+        diagnostics = [
+            Diagnostic(
+                range=Range(
+                    start=Position(line=m.linenumber - 1, character=m.columnnumber - 1),
+                    end=Position(
+                        line=m.linenumberend - 1, character=m.columnnumberend - 1
+                    ),
+                ),
+                message=m.message,
+                source="cfn-lsp-extra",
+            )
+            for m in errors
+        ]
+
+        if diagnostics:
+            ls.publish_diagnostics(text_doc.uri, diagnostics)
+        ls.show_message(f"LINTING ERRORS: {diagnostics}")
+
+    @server.feature(COMPLETION)
     def completions(
-        ls: LanguageServer,
-        params: Optional[CompletionParams] = None,
+        ls: LanguageServer, params: CompletionParams
     ) -> Optional[CompletionList]:
         """Returns completion items."""
-        line_at, char_at = params.position.line, params.position.character
+        line_at = params.position.line
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
             data = yaml.load(document.source, Loader=SafePositionLoader)
         except yaml.scanner.ScannerError:
+            # Try adding a ':' and see if that makes the yaml valid
             new_source_lst = document.source.splitlines()
             new_source_lst[line_at] = new_source_lst[line_at].rstrip() + ":"
             new_source = "\n".join(new_source_lst)
             data = yaml.load(new_source, Loader=SafePositionLoader)
+
         props = flatten_mapping(data)
         for aws_prop, positions in props.items():
             if aws_prop.resource in aws_context.resources:
-                for line, column in positions:
-                    column_max = column + len(aws_prop.property_)
-                    within_col = column <= char_at <= column_max
-                    if line == line_at:  # and within_col:
+                for line, _ in positions:
+                    if line == line_at:
                         return CompletionList(
                             is_incomplete=aws_prop.property_
                             in aws_context.resources[
