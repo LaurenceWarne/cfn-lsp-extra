@@ -12,6 +12,7 @@ nox.options.sessions = ("tests", "lint", "mypy")
 def tests(session):
     session.install("pytest", ".")
     session.install("pytest-asyncio", ".")
+    session.install("pytest-mock", ".")
     session.run("pytest")
 
 

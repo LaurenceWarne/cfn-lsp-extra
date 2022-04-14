@@ -4,7 +4,6 @@
 LSP features leveraging cfnlint.
 """
 
-import logging
 from typing import Dict
 from typing import List
 from typing import no_type_check
@@ -20,9 +19,6 @@ from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 from pygls.lsp.types.basic_structures import Diagnostic
 from pygls.lsp.types.basic_structures import DiagnosticSeverity
-
-
-logger = logging.getLogger(__name__)
 
 
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:

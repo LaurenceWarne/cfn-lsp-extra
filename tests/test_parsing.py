@@ -6,7 +6,9 @@ from cfn_lsp_extra.parsing import SafePositionLoader
 from cfn_lsp_extra.parsing import flatten_mapping
 
 
-content = """AWSTemplateFormatVersion: "2010-09-09"
+@pytest.fixture
+def yaml_string():
+    return """AWSTemplateFormatVersion: "2010-09-09"
 # Pointless comment
 Description: My template
 Parameters:
@@ -29,8 +31,8 @@ Resources:
         Ref: DefaultVpcId"""
 
 
-def test_safe_line_loader():
-    data = yaml.load(content, Loader=SafePositionLoader)
+def test_safe_line_loader(yaml_string):
+    data = yaml.load(yaml_string, Loader=SafePositionLoader)
     positions = flatten_mapping(data)
     assert [[11, 6], [18, 6]] == sorted(
         positions[AWSProperty(resource="AWS::EC2::Subnet", property_="CidrBlock")]
