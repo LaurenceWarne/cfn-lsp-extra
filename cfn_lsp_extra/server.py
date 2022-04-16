@@ -36,8 +36,8 @@ from .aws_data import AWSResource
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .context import cache
 from .context import download_context
-from .parsing import SafePositionLoader
-from .parsing import flatten_mapping
+from .parsing.yaml_parsing import SafePositionLoader
+from .parsing.yaml_parsing import flatten_mapping
 from .scrape.markdown import parse_urls
 
 
@@ -69,35 +69,33 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ls: LanguageServer, params: CompletionParams
     ) -> Optional[CompletionList]:
         """Returns completion items."""
-        line_at = params.position.line
+        line_at, char_at = params.position.line, params.position.character
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
             data = yaml.load(document.source, Loader=SafePositionLoader)
-        except yaml.scanner.ScannerError:
+        except (yaml.scanner.ScannerError, yaml.parser.ParserError):
             # Try adding a ':' and see if that makes the yaml valid
             new_source_lst = document.source.splitlines()
             new_source_lst[line_at] = new_source_lst[line_at].rstrip() + ":"
             new_source = "\n".join(new_source_lst)
             data = yaml.load(new_source, Loader=SafePositionLoader)
 
-        props = flatten_mapping(data)
-        for aws_prop, positions in props.items():
-            if aws_prop.resource in aws_context.resources:
-                for line, _ in positions:
-                    if line == line_at:
-                        return CompletionList(
-                            is_incomplete=aws_prop.property_
-                            in aws_context.resources[
-                                aws_prop.resource
-                            ].property_descriptions,
-                            items=[
-                                CompletionItem(label=s)
-                                for s in aws_context.resources[
-                                    aws_prop.resource
-                                ].property_descriptions.keys()
-                            ],
-                        )
+        position_lookup = flatten_mapping(data)
+        aws_prop_span = position_lookup.at(line_at, char_at)
+        if aws_prop_span and aws_prop_span.value.resource in aws_context.resources:
+            return CompletionList(
+                is_incomplete=aws_prop_span.value.property_
+                in aws_context.resources[
+                    aws_prop_span.value.resource
+                ].property_descriptions,
+                items=[
+                    CompletionItem(label=s)
+                    for s in aws_context.resources[
+                        aws_prop_span.value.resource
+                    ].property_descriptions.keys()
+                ],
+            )
         return None
 
     @server.feature(HOVER)
@@ -109,30 +107,28 @@ def server(aws_context: AWSContext) -> LanguageServer:
         # Parse document
         try:
             data = yaml.load(document.source, Loader=SafePositionLoader)
-        except yaml.scanner.ScannerError:  # Invalid yaml
+        except (yaml.scanner.ScannerError, yaml.parser.ParserError):
             return None
-        props = flatten_mapping(data)
-        for aws_prop, positions in props.items():
-            if not (
-                aws_prop.resource in aws_context.resources
-                and aws_prop.property_
-                in aws_context.resources[aws_prop.resource].property_descriptions
-            ):
-                continue
-            for line, column in positions:
-                column_max = column + len(aws_prop.property_)
-                within_col = column <= char_at <= column_max
-                if line == line_at and within_col:
-                    return Hover(
-                        range=Range(
-                            start=Position(line=line, character=column),
-                            end=Position(line=line, character=column_max),
-                        ),
-                        contents=MarkupContent(
-                            kind=MarkupKind.Markdown,
-                            value=aws_context[aws_prop],
-                        ),
-                    )
+        position_lookup = flatten_mapping(data)
+        aws_prop_span = position_lookup.at(line_at, char_at)
+        if (
+            aws_prop_span
+            and aws_prop_span.value.resource in aws_context.resources
+            and aws_prop_span.value.property_
+            in aws_context.resources[aws_prop_span.value.resource].property_descriptions
+        ):
+            return Hover(
+                range=Range(
+                    start=Position(line=line_at, character=aws_prop_span.char),
+                    end=Position(
+                        line=line_at, character=aws_prop_span.char + aws_prop_span.span
+                    ),
+                ),
+                contents=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=aws_context[aws_prop_span.value],
+                ),
+            )
         return None
 
     return server

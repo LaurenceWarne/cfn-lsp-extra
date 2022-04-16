@@ -1,0 +1,67 @@
+"""
+
+"""
+
+from collections import UserDict
+from collections import defaultdict
+from typing import Any
+from typing import Dict
+from typing import Generic
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import TypeVar
+
+from cfnlint.decode.cfn_yaml import multi_constructor
+from pydantic import BaseModel
+from pydantic.types import NonNegativeInt
+
+
+E = TypeVar("E")
+
+
+class Spanning(Generic[E], BaseModel, frozen=True):
+    """Enrichment of some object with a location span in a document.
+
+    Attributes
+    ----------
+    value : E
+        The value this span wraps
+    line : NonNegativeInt
+        Line position marking the start of the span.
+    char : NonNegativeInt
+        Character position marking the start of the span.
+    span : NonNegativeInt
+        The length of the span"""
+
+    value: E
+    line: NonNegativeInt
+    char: NonNegativeInt
+    span: NonNegativeInt
+
+
+T = TypeVar("T")
+PositionList = List[Tuple[int, int, int]]
+
+
+class PositionLookup(UserDict[T, PositionList]):
+    """A thin wrapper around List[Tuple[int, int, int]]."""
+
+    def __missing__(self, key: T) -> PositionList:
+        self.data[key] = []
+        return self.data[key]
+
+    def at(self, line: int, char: int) -> Optional[Spanning[T]]:
+        for item, positions in self.data.items():
+            for item_line, char_min, item_span in positions:
+                char_max = char_min + item_span
+                within_col = char_min <= char <= char_max
+                if line == item_line and within_col:
+                    return Spanning(
+                        value=item, line=item_line, char=char_min, span=item_span
+                    )
+        return None
+
+    def extend_with_appends(self, other: "PositionLookup[T]") -> None:
+        for key, value in other.items():
+            self[key].extend(value)
