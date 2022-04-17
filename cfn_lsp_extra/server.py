@@ -31,13 +31,14 @@ from pygls.lsp.types.language_features.completion import CompletionOptions
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
+from cfn_lsp_extra.parsing.extractors import ResourcePropertyExtractor
+
 from .aws_data import AWSContext
 from .aws_data import AWSResource
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .context import cache
 from .context import download_context
 from .parsing.yaml_parsing import SafePositionLoader
-from .parsing.yaml_parsing import flatten_mapping
 from .scrape.markdown import parse_urls
 
 
@@ -81,7 +82,8 @@ def server(aws_context: AWSContext) -> LanguageServer:
             new_source = "\n".join(new_source_lst)
             data = yaml.load(new_source, Loader=SafePositionLoader)
 
-        position_lookup = flatten_mapping(data)
+        extractor = ResourcePropertyExtractor()
+        position_lookup = extractor.extract(data)
         aws_prop_span = position_lookup.at(line_at, char_at)
         if aws_prop_span and aws_prop_span.value.resource in aws_context.resources:
             return CompletionList(
@@ -109,7 +111,8 @@ def server(aws_context: AWSContext) -> LanguageServer:
             data = yaml.load(document.source, Loader=SafePositionLoader)
         except (yaml.scanner.ScannerError, yaml.parser.ParserError):
             return None
-        position_lookup = flatten_mapping(data)
+        extractor = ResourcePropertyExtractor()
+        position_lookup = extractor.extract(data)
         aws_prop_span = position_lookup.at(line_at, char_at)
         if (
             aws_prop_span

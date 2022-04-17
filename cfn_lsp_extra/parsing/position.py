@@ -13,14 +13,14 @@ from typing import Tuple
 from typing import TypeVar
 
 from cfnlint.decode.cfn_yaml import multi_constructor
-from pydantic import BaseModel
+from pydantic.generics import GenericModel
 from pydantic.types import NonNegativeInt
 
 
 E = TypeVar("E")
 
 
-class Spanning(Generic[E], BaseModel, frozen=True):
+class Spanning(GenericModel, Generic[E]):
     """Enrichment of some object with a location span in a document.
 
     Attributes
@@ -45,7 +45,7 @@ PositionList = List[Tuple[int, int, int]]
 
 
 class PositionLookup(UserDict[T, PositionList]):
-    """A thin wrapper around List[Tuple[int, int, int]]."""
+    """A thin wrapper around Dict[T, List[Tuple[int, int, int]]]."""
 
     def __missing__(self, key: T) -> PositionList:
         self.data[key] = []
@@ -57,7 +57,7 @@ class PositionLookup(UserDict[T, PositionList]):
                 char_max = char_min + item_span
                 within_col = char_min <= char <= char_max
                 if line == item_line and within_col:
-                    return Spanning(
+                    return Spanning[T](
                         value=item, line=item_line, char=char_min, span=item_span
                     )
         return None

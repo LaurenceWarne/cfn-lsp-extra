@@ -18,7 +18,7 @@ from pydantic import BaseModel
 try:
     from yaml.cyaml import CSafeLoader as SafeLoader
 except ImportError:
-    from yaml.loader import SafeLoader
+    from yaml.loader import SafeLoader  # type: ignore[misc]
 
 from pydantic.types import NonNegativeInt
 from yaml.nodes import MappingNode
@@ -40,7 +40,7 @@ class SafePositionLoader(SafeLoader):
     POSITION_PREFIX = "__position__"
     VALUES_POSITION_PREFIX = "__value_positions__"
 
-    def _positional_key_value(self, node: Node):
+    def _positional_key_value(self, node: Node) -> Tuple[str, List[int]]:
         return self.POSITION_PREFIX + node.value, [
             node.start_mark.line,
             node.start_mark.column,
@@ -54,10 +54,15 @@ class SafePositionLoader(SafeLoader):
         for key_node, value_node in node.value:
             position_key, position_value = self._positional_key_value(key_node)
             mapping[position_key] = position_value
+
+            # Stick positional info on leaf nodes into their own mapping so they
+            # aren't confused with others
             if isinstance(value_node, ScalarNode):
                 if self.VALUES_POSITION_PREFIX not in mapping:
                     mapping[self.VALUES_POSITION_PREFIX] = []
-                    position_key, position_value = self._positional_key_value(key_node)
+                    position_key, position_value = self._positional_key_value(
+                        value_node
+                    )
                 mapping[self.VALUES_POSITION_PREFIX].append(
                     {position_key: position_value}
                 )
@@ -71,21 +76,3 @@ SafePositionLoader.add_multi_constructor(  # type: ignore[no-untyped-call]
 # https://github.com/python/mypy/issues/731
 # Yaml = Dict[str, Union[str, "Yaml"]]
 Yaml = Any
-
-
-def flatten_mapping(yaml_dict: Yaml) -> PositionLookup[Any]:
-    position_lookup = PositionLookup()
-    if "Properties" in yaml_dict:
-        type_ = yaml_dict["Type"]
-        for key, value in yaml_dict["Properties"].items():
-            if key.startswith(SafePositionLoader.POSITION_PREFIX):
-                k = AWSProperty(
-                    resource=type_,
-                    property_=key.lstrip(SafePositionLoader.POSITION_PREFIX),
-                )
-                position_lookup[k].append((*value, len(k.property_)))
-    else:
-        for value in yaml_dict.values():
-            if isinstance(value, dict):
-                position_lookup.extend_with_appends(flatten_mapping(value))
-    return position_lookup
