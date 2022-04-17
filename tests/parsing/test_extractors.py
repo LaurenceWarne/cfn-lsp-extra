@@ -7,6 +7,7 @@ import pytest
 
 from cfn_lsp_extra.aws_data import AWSProperty
 from cfn_lsp_extra.parsing.extractors import Extractor
+from cfn_lsp_extra.parsing.extractors import ResourceExtractor
 from cfn_lsp_extra.parsing.extractors import ResourcePropertyExtractor
 from cfn_lsp_extra.parsing.position import Spanning
 
@@ -106,3 +107,9 @@ def test_resource_property_extractor(document_mapping):
         positions[AWSProperty(resource="AWS::EC2::Subnet", property_="VpcId")]
     )
     assert len(positions) == 3
+
+
+def test_resource_extractor(document_mapping):
+    extractor = ResourceExtractor()
+    positions = extractor.extract(document_mapping)
+    assert [(9, 10, 16), (16, 10, 16)] == sorted(positions["AWS::EC2::Subnet"])

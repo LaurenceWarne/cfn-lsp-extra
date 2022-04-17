@@ -14,6 +14,7 @@ from itertools import takewhile
 from typing import Dict
 from typing import List
 from typing import Pattern
+from typing import Tuple
 
 import aiohttp
 from aiohttp import ClientSession
@@ -36,11 +37,7 @@ class GithubCfnMarkdownParser:
             return await self.parse_response(response.content)
 
     async def parse_response(self, content: StreamReader) -> AWSResource:
-        first_line = await content.readline()
-        name = takewhile(
-            lambda c: c != "<",
-            dropwhile(lambda c: not c.isalpha(), first_line.decode("utf-8")),
-        )
+        name, description = await self.parse_heading(content)
         async for line_b in content:
             if line_b.decode("utf-8").startswith(self.PROPERTY_LINE_PREFIX):
                 break
@@ -57,7 +54,26 @@ class GithubCfnMarkdownParser:
             else:
                 desc += line
         result[prop] = desc
-        return AWSResource(name="".join(name), property_descriptions=result)
+        return AWSResource(
+            name=name, description=description, property_descriptions=result
+        )
+
+    async def parse_heading(self, content: StreamReader) -> Tuple[str, str]:
+        first_line = await content.readline()
+        name = "".join(
+            takewhile(
+                lambda c: c != "<",
+                dropwhile(lambda c: not c.isalpha(), first_line.decode("utf-8")),
+            )
+        )
+        description = f"# {name}\n"
+        async for line_b in content:
+            line = line_b.decode("utf-8")
+            if line.startswith("#"):
+                break
+            else:
+                description += line
+        return name, description
 
 
 async def parse_urls(urls: List[str]) -> AWSContext:

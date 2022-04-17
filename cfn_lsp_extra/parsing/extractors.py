@@ -11,13 +11,14 @@ from typing import Optional
 from typing import TypeVar
 
 from ..aws_data import AWSProperty
+from ..aws_data import AWSResourceName
 from .position import PositionLookup
 from .position import Spanning
 from .yaml_parsing import SafePositionLoader
 from .yaml_parsing import Yaml
 
 
-E = TypeVar("E")
+E = TypeVar("E", covariant=True)
 
 
 class Extractor(ABC, Generic[E]):
@@ -66,9 +67,6 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
         return props
 
 
-AWSResourceName = str
-
-
 class ResourceExtractor(Extractor[AWSResourceName]):
     """Extractor for resources names.
 
@@ -78,9 +76,30 @@ class ResourceExtractor(Extractor[AWSResourceName]):
         Extract a resource name from node."""
 
     def extract_node(self, node: Yaml) -> List[Spanning[AWSResourceName]]:
-        props = []
         if "Properties" in node and "Type" in node:
             type_ = node["Type"]
-            span = Spanning[AWSResourceName](item=type_, line=..., char=..., span=...)
-            props.append(span)
-        return props
+            value_positions = node[SafePositionLoader.VALUES_POSITION_PREFIX]
+            for dct in value_positions:
+                key = SafePositionLoader.POSITION_PREFIX + type_
+                if key in dct:
+                    line, char = dct[key]
+                    return [
+                        Spanning[AWSResourceName](
+                            value=type_, line=line, char=char, span=len(type_)
+                        )
+                    ]
+        return []
+
+
+T = TypeVar("T", covariant=True)
+
+
+class CompositeExtractor(Extractor[T]):
+    def __init__(self, *extractors: Extractor[T]):
+        self._extractors = extractors
+
+    def extract_node(self, node: Yaml) -> List[Spanning[T]]:
+        ls = []
+        for extractor in self._extractors:
+            ls.extend(extractor.extract_node(node))
+        return ls

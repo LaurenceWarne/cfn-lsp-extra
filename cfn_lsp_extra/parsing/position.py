@@ -44,15 +44,15 @@ T = TypeVar("T")
 PositionList = List[Tuple[int, int, int]]
 
 
-class PositionLookup(UserDict[T, PositionList]):
+class PositionLookup(Dict[T, PositionList]):
     """A thin wrapper around Dict[T, List[Tuple[int, int, int]]]."""
 
     def __missing__(self, key: T) -> PositionList:
-        self.data[key] = []
-        return self.data[key]
+        self[key] = []
+        return self[key]
 
     def at(self, line: int, char: int) -> Optional[Spanning[T]]:
-        for item, positions in self.data.items():
+        for item, positions in self.items():
             for item_line, char_min, item_span in positions:
                 char_max = char_min + item_span
                 within_col = char_min <= char <= char_max

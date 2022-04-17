@@ -12,11 +12,9 @@ def aws_context():
         "resources": {
             "AWS::EC2::CapacityReservation": {
                 "name": "AWS::EC2::CapacityReservation",
+                "description": """Creates a new Capacity Reservation with the specified attributes. For more information, see Capacity Reservations in the Amazon EC2 User Guide.""",
                 "property_descriptions": {
-                    "AvailabilityZone": (
-                        "`AvailabilityZone`\nThe Availability Zone in which to create"
-                        " the Capacity Reservation\\ "
-                    )
+                    "AvailabilityZone": """`AvailabilityZone`\nThe Availability Zone in which to create the Capacity Reservation\\ """
                 },
             }
         }

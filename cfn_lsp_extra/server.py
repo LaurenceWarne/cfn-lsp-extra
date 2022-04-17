@@ -7,9 +7,11 @@ https://microsoft.github.io/language-server-protocol/specifications/specificatio
 import asyncio
 import logging
 from importlib.resources import read_text
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import click
 import yaml
@@ -31,10 +33,14 @@ from pygls.lsp.types.language_features.completion import CompletionOptions
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
+from cfn_lsp_extra.parsing.extractors import CompositeExtractor
+from cfn_lsp_extra.parsing.extractors import ResourceExtractor
 from cfn_lsp_extra.parsing.extractors import ResourcePropertyExtractor
 
 from .aws_data import AWSContext
+from .aws_data import AWSProperty
 from .aws_data import AWSResource
+from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .context import cache
 from .context import download_context
@@ -44,6 +50,9 @@ from .scrape.markdown import parse_urls
 
 def server(aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer()
+    extractor = CompositeExtractor[Union[AWSResourceName, AWSProperty]](
+        ResourcePropertyExtractor(), ResourceExtractor()
+    )
 
     @server.thread()
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
@@ -82,19 +91,20 @@ def server(aws_context: AWSContext) -> LanguageServer:
             new_source = "\n".join(new_source_lst)
             data = yaml.load(new_source, Loader=SafePositionLoader)
 
-        extractor = ResourcePropertyExtractor()
         position_lookup = extractor.extract(data)
-        aws_prop_span = position_lookup.at(line_at, char_at)
-        if aws_prop_span and aws_prop_span.value.resource in aws_context.resources:
+        span = position_lookup.at(line_at, char_at)
+        if (
+            span
+            and isinstance(span.value, AWSProperty)
+            and span.value.resource in aws_context.resources
+        ):
             return CompletionList(
-                is_incomplete=aws_prop_span.value.property_
-                in aws_context.resources[
-                    aws_prop_span.value.resource
-                ].property_descriptions,
+                is_incomplete=span.value.property_
+                in aws_context.resources[span.value.resource].property_descriptions,
                 items=[
                     CompletionItem(label=s)
                     for s in aws_context.resources[
-                        aws_prop_span.value.resource
+                        span.value.resource
                     ].property_descriptions.keys()
                 ],
             )
@@ -106,33 +116,28 @@ def server(aws_context: AWSContext) -> LanguageServer:
         line_at, char_at = params.position.line, params.position.character
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
-        # Parse document
         try:
             data = yaml.load(document.source, Loader=SafePositionLoader)
         except (yaml.scanner.ScannerError, yaml.parser.ParserError):
             return None
-        extractor = ResourcePropertyExtractor()
         position_lookup = extractor.extract(data)
-        aws_prop_span = position_lookup.at(line_at, char_at)
-        if (
-            aws_prop_span
-            and aws_prop_span.value.resource in aws_context.resources
-            and aws_prop_span.value.property_
-            in aws_context.resources[aws_prop_span.value.resource].property_descriptions
-        ):
+        span = position_lookup.at(line_at, char_at)
+        if not span:
+            return None
+
+        # See if we can get a description from the obj wrapped by the span
+        try:
+            description = aws_context.description(span.value)
+        except ValueError:  # no description for value, e.g. incomplete
+            return None
+        else:
             return Hover(
                 range=Range(
-                    start=Position(line=line_at, character=aws_prop_span.char),
-                    end=Position(
-                        line=line_at, character=aws_prop_span.char + aws_prop_span.span
-                    ),
+                    start=Position(line=line_at, character=span.char),
+                    end=Position(line=line_at, character=span.char + span.span),
                 ),
-                contents=MarkupContent(
-                    kind=MarkupKind.Markdown,
-                    value=aws_context[aws_prop_span.value],
-                ),
+                contents=MarkupContent(kind=MarkupKind.Markdown, value=description),
             )
-        return None
 
     return server
 
