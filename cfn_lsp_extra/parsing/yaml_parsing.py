@@ -1,5 +1,5 @@
 """
-Utilities for parsing document strings.
+Utilities for parsing yaml document strings.
 """
 from collections import defaultdict
 from typing import Any

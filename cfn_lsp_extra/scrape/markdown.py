@@ -3,6 +3,29 @@ Utilities for parsing Github markdown files, specifically files from
 https://github.com/awsdocs/aws-cloudformation-user-guide.
 
 Example: https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-ec2-instance.md
+
+Markdown files for a resource are expected to be in the format:
+
+# resource_name
+
+resource_description
+
+# ...
+.
+.
+.
+
+# Properties
+
+`property1`
+
+property1 description
+
+`property2`
+.
+.
+.
+# ... 
 """  # noqa
 
 
