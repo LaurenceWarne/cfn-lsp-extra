@@ -33,9 +33,9 @@ from pygls.lsp.types.language_features.completion import CompletionOptions
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
-from cfn_lsp_extra.parsing.extractors import CompositeExtractor
-from cfn_lsp_extra.parsing.extractors import ResourceExtractor
-from cfn_lsp_extra.parsing.extractors import ResourcePropertyExtractor
+from cfn_lsp_extra.decode.extractors import CompositeExtractor
+from cfn_lsp_extra.decode.extractors import ResourceExtractor
+from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
 
 from .aws_data import AWSContext
 from .aws_data import AWSProperty
@@ -44,7 +44,7 @@ from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .context import cache
 from .context import download_context
-from .parsing.yaml_parsing import SafePositionLoader
+from .decode import decode
 from .scrape.markdown import parse_urls
 
 
@@ -83,15 +83,14 @@ def server(aws_context: AWSContext) -> LanguageServer:
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
-            data = yaml.load(document.source, Loader=SafePositionLoader)
+            position_lookup = decode(document.source, document.filename, extractor)
         except (yaml.scanner.ScannerError, yaml.parser.ParserError):
             # Try adding a ':' and see if that makes the yaml valid
             new_source_lst = document.source.splitlines()
             new_source_lst[line_at] = new_source_lst[line_at].rstrip() + ":"
             new_source = "\n".join(new_source_lst)
-            data = yaml.load(new_source, Loader=SafePositionLoader)
+            position_lookup = decode(new_source, document.filename, extractor)
 
-        position_lookup = extractor.extract(data)
         span = position_lookup.at(line_at, char_at)
         if (
             span
@@ -117,10 +116,9 @@ def server(aws_context: AWSContext) -> LanguageServer:
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
-            data = yaml.load(document.source, Loader=SafePositionLoader)
+            position_lookup = decode(document.source, document.filename, extractor)
         except (yaml.scanner.ScannerError, yaml.parser.ParserError):
             return None
-        position_lookup = extractor.extract(data)
         span = position_lookup.at(line_at, char_at)
         if not span:
             return None

@@ -14,8 +14,9 @@ from ..aws_data import AWSProperty
 from ..aws_data import AWSResourceName
 from .position import PositionLookup
 from .position import Spanning
-from .yaml_parsing import SafePositionLoader
-from .yaml_parsing import Yaml
+from .yaml_decoding import POSITION_PREFIX
+from .yaml_decoding import VALUES_POSITION_PREFIX
+from .yaml_decoding import Yaml
 
 
 E = TypeVar("E", covariant=True)
@@ -55,8 +56,8 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
         if "Properties" in node and "Type" in node:
             type_ = node["Type"]
             for key, value in node["Properties"].items():
-                if key.startswith(SafePositionLoader.POSITION_PREFIX):
-                    prop = key.lstrip(SafePositionLoader.POSITION_PREFIX)
+                if key.startswith(POSITION_PREFIX):
+                    prop = key.lstrip(POSITION_PREFIX)
                     aws_prop = AWSProperty(resource=type_, property_=prop)
                     line, char = value
                     props.append(
@@ -76,11 +77,11 @@ class ResourceExtractor(Extractor[AWSResourceName]):
         Extract a resource name from node."""
 
     def extract_node(self, node: Yaml) -> List[Spanning[AWSResourceName]]:
-        if "Properties" in node and "Type" in node:
+        if "Properties" in node and "Type" in node and VALUES_POSITION_PREFIX in node:
             type_ = node["Type"]
-            value_positions = node[SafePositionLoader.VALUES_POSITION_PREFIX]
+            value_positions = node[VALUES_POSITION_PREFIX]
             for dct in value_positions:
-                key = SafePositionLoader.POSITION_PREFIX + type_
+                key = POSITION_PREFIX + type_
                 if key in dct:
                     line, char = dct[key]
                     return [

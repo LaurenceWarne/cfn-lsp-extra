@@ -6,10 +6,10 @@ from types import SimpleNamespace
 import pytest
 
 from cfn_lsp_extra.aws_data import AWSProperty
-from cfn_lsp_extra.parsing.extractors import Extractor
-from cfn_lsp_extra.parsing.extractors import ResourceExtractor
-from cfn_lsp_extra.parsing.extractors import ResourcePropertyExtractor
-from cfn_lsp_extra.parsing.position import Spanning
+from cfn_lsp_extra.decode.extractors import Extractor
+from cfn_lsp_extra.decode.extractors import ResourceExtractor
+from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
+from cfn_lsp_extra.decode.position import Spanning
 
 
 @pytest.fixture

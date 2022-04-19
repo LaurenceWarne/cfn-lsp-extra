@@ -28,8 +28,10 @@ from yaml.nodes import SequenceNode
 from yaml.resolver import BaseResolver
 
 from ..aws_data import AWSProperty
-from .position import PositionLookup
-from .position import Spanning
+
+
+POSITION_PREFIX = "__position__"
+VALUES_POSITION_PREFIX = "__value_positions__"
 
 
 class SafePositionLoader(SafeLoader):
@@ -37,11 +39,8 @@ class SafePositionLoader(SafeLoader):
 
     It takes inspiration from https://stackoverflow.com/questions/13319067/parsing-yaml-return-with-line-number#13319530."""  # noqa
 
-    POSITION_PREFIX = "__position__"
-    VALUES_POSITION_PREFIX = "__value_positions__"
-
     def _positional_key_value(self, node: Node) -> Tuple[str, List[int]]:
-        return self.POSITION_PREFIX + node.value, [
+        return POSITION_PREFIX + node.value, [
             node.start_mark.line,
             node.start_mark.column,
         ]
@@ -58,14 +57,12 @@ class SafePositionLoader(SafeLoader):
             # Stick positional info on leaf nodes into their own mapping so they
             # aren't confused with others
             if isinstance(value_node, ScalarNode):
-                if self.VALUES_POSITION_PREFIX not in mapping:
-                    mapping[self.VALUES_POSITION_PREFIX] = []
+                if VALUES_POSITION_PREFIX not in mapping:
+                    mapping[VALUES_POSITION_PREFIX] = []
                     position_key, position_value = self._positional_key_value(
                         value_node
                     )
-                mapping[self.VALUES_POSITION_PREFIX].append(
-                    {position_key: position_value}
-                )
+                mapping[VALUES_POSITION_PREFIX].append({position_key: position_value})
         return mapping
 
 

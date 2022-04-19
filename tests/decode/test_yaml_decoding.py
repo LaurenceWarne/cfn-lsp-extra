@@ -2,7 +2,7 @@ import pytest
 import yaml
 
 from cfn_lsp_extra.aws_data import AWSProperty
-from cfn_lsp_extra.parsing.yaml_parsing import SafePositionLoader
+from cfn_lsp_extra.decode.yaml_decoding import SafePositionLoader
 
 
 @pytest.fixture

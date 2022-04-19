@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from cfn_lsp_extra.parsing.json_parsing import CfnJSONDecoder
+from cfn_lsp_extra.decode.json_decoding import CfnJSONDecoder
 
 
 @pytest.fixture
@@ -80,5 +80,6 @@ def json_string():
 
 def test_parsing(json_string):
     content = json.loads(json_string, cls=CfnJSONDecoder)
-    print(content)
-    assert False
+    assert content["__position__AWSTemplateFormatVersion"] == [1, 6]
+    assert content["__position__Resources"] == [2, 6]
+    assert content["Resources"]["__position__taskdefinition"] == [3, 10]

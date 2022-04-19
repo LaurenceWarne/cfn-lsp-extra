@@ -1,1 +1,0 @@
-"""Cfn Lsp Extra."""
