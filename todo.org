@@ -1,0 +1,10 @@
+#+TITLE: Todo
+
+* Features
+** TODO hovers for resources in json
+** TODO integration tests
+** TODO completion after first character on new line
+** TODO parse sub properties
+
+* Bugs
+** TODO AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load

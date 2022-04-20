@@ -3,11 +3,8 @@
 """
 from abc import ABC
 from abc import abstractmethod
-from collections import defaultdict
-from typing import Any
 from typing import Generic
 from typing import List
-from typing import Optional
 from typing import TypeVar
 
 from ..aws_data import AWSProperty

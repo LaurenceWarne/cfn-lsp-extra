@@ -1,12 +1,9 @@
 """Command-line interface."""
 
 import logging
-from typing import NoReturn
-from typing import Union
 
 import click
 from click import Context
-from click.decorators import pass_context
 
 from .context import cache
 from .context import download_context
@@ -18,7 +15,7 @@ from .server import server
 @click.option("-v", "--verbose", is_flag=True, help="Print more output.")
 @click.option("--no-cache", is_flag=True, help="Don't use cached documentation.")
 @click.pass_context
-def main(ctx: Context, verbose: bool, no_cache: bool) -> Union[None, NoReturn]:
+def main(ctx: Context, verbose: bool, no_cache: bool) -> None:
     """Start a cfn-lsp-extra server."""
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
     # This fn is called regardless, so we have to check if a subcommand should be run

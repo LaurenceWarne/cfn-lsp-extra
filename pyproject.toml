@@ -93,8 +93,8 @@ max-line-length = 88
 per-file-ignores = "tests/*"
 
 [tool.flakeheaven.plugins]
-# include everything in pyflakes except F401
-pyflakes = ["+*", "-F401"]
+# include everything in pyflakes
+pyflakes = ["+*"]
 # enable everything that starts from `flake8-`
 "flake8-*" = ["+*"]
 # explicitly disable plugin

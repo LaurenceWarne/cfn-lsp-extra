@@ -1,9 +1,7 @@
 import json
-from typing import Sequence
 from typing import TypeVar
 
 import yaml
-from pygls.workspace import Document
 
 from .extractors import Extractor
 from .json_decoding import CfnJSONDecoder  # type: ignore[attr-defined]

@@ -29,12 +29,9 @@ property1 description
 """  # noqa
 
 
-import asyncio
 import re
-from dataclasses import dataclass
 from itertools import dropwhile
 from itertools import takewhile
-from typing import Dict
 from typing import List
 from typing import Pattern
 from typing import Tuple

@@ -2,9 +2,6 @@
 
 """
 
-from collections import UserDict
-from collections import defaultdict
-from typing import Any
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -12,7 +9,6 @@ from typing import Optional
 from typing import Tuple
 from typing import TypeVar
 
-from cfnlint.decode.cfn_yaml import multi_constructor
 from pydantic.generics import GenericModel
 from pydantic.types import NonNegativeInt
 

@@ -1,18 +1,11 @@
 """
 Utilities for parsing yaml document strings.
 """
-from collections import defaultdict
 from typing import Any
-from typing import Dict
-from typing import Generic
 from typing import List
-from typing import Optional
 from typing import Tuple
-from typing import TypeVar
-from typing import Union
 
 from cfnlint.decode.cfn_yaml import multi_constructor
-from pydantic import BaseModel
 
 
 try:
@@ -20,14 +13,9 @@ try:
 except ImportError:
     from yaml.loader import SafeLoader  # type: ignore[misc]
 
-from pydantic.types import NonNegativeInt
 from yaml.nodes import MappingNode
 from yaml.nodes import Node
 from yaml.nodes import ScalarNode
-from yaml.nodes import SequenceNode
-from yaml.resolver import BaseResolver
-
-from ..aws_data import AWSProperty
 
 
 POSITION_PREFIX = "__position__"

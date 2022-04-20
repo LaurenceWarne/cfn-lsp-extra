@@ -4,17 +4,9 @@ https://pygls.readthedocs.io/en/latest/
 https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 """
 
-import asyncio
-import logging
-from importlib.resources import read_text
-from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Union
 
-import click
-import yaml
 from pygls.lsp.methods import COMPLETION
 from pygls.lsp.methods import HOVER
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_CHANGE
@@ -29,7 +21,6 @@ from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 from pygls.lsp.types.language_features.completion import CompletionItem
 from pygls.lsp.types.language_features.completion import CompletionList
-from pygls.lsp.types.language_features.completion import CompletionOptions
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
@@ -40,7 +31,6 @@ from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
 
 from .aws_data import AWSContext
 from .aws_data import AWSProperty
-from .aws_data import AWSResource
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .decode import decode
