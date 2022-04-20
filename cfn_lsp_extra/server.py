@@ -139,27 +139,3 @@ def server(aws_context: AWSContext) -> LanguageServer:
             )
 
     return server
-
-
-@click.command()
-@click.version_option()
-@click.option("-v", "--verbose", is_flag=True, help="Print more output.")
-@click.option("--no-cache", is_flag=True, help="Don't use cached documentation.")
-@click.option(
-    "--generate-cache",
-    is_flag=True,
-    help="Generate the documentation cache and exit.",
-)
-def main(verbose: bool, no_cache: bool, generate_cache: bool) -> None:
-    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
-    if generate_cache:
-        cache(void_cache=True)
-        return None
-    no_cache = True
-    aws_context = download_context() if no_cache else cache()
-    server(aws_context).start_io()  # type: ignore[no-untyped-call]
-    return None
-
-
-if __name__ == "__main__":
-    main(auto_envvar_prefix="CFN_LSP_EXTRA")
