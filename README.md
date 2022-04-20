@@ -12,8 +12,10 @@ pipx install git+https://github.com/LaurenceWarne/cfn-lsp-extra
 
 ### Emacs
 
+You need to install an lsp client like [lsp-mode](https://github.com/emacs-lsp/lsp-mode) and register `cfn-lsp-extra`.  [yaml-mode](https://github.com/yoshiki/yaml-mode) is also highly recommended.
+
 ```elisp
-;; After lsp-mode has been loaded
+;; After lsp-mode and yaml-mode have been loaded
 (when-let ((exe (executable-find "cfn-lsp-extra")))
 
   ;; Copied from https://www.emacswiki.org/emacs/CfnLint

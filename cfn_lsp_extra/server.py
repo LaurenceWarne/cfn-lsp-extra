@@ -33,6 +33,7 @@ from pygls.lsp.types.language_features.completion import CompletionOptions
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
+from cfn_lsp_extra.decode import CfnDecodingException
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import ResourceExtractor
 from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
@@ -84,7 +85,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         document = server.workspace.get_document(uri)
         try:
             position_lookup = decode(document.source, document.filename, extractor)
-        except (yaml.scanner.ScannerError, yaml.parser.ParserError):
+        except CfnDecodingException:
             # Try adding a ':' and see if that makes the yaml valid
             new_source_lst = document.source.splitlines()
             new_source_lst[line_at] = new_source_lst[line_at].rstrip() + ":"
@@ -117,7 +118,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         document = server.workspace.get_document(uri)
         try:
             position_lookup = decode(document.source, document.filename, extractor)
-        except (yaml.scanner.ScannerError, yaml.parser.ParserError):
+        except CfnDecodingException:
             return None
         span = position_lookup.at(line_at, char_at)
         if not span:

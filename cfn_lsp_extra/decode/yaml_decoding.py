@@ -70,6 +70,7 @@ SafePositionLoader.add_multi_constructor(  # type: ignore[no-untyped-call]
     "!", multi_constructor
 )
 
+# A Tree type representing a recursive nested structure such as yaml or json
 # https://github.com/python/mypy/issues/731
-# Yaml = Dict[str, Union[str, "Yaml"]]
-Yaml = Any
+# Tree = Dict[str, Union[str, "Tree"]]
+Tree = Any

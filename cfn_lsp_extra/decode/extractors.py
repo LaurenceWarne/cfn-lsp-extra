@@ -16,20 +16,25 @@ from .position import PositionLookup
 from .position import Spanning
 from .yaml_decoding import POSITION_PREFIX
 from .yaml_decoding import VALUES_POSITION_PREFIX
-from .yaml_decoding import Yaml
+from .yaml_decoding import Tree
 
 
 E = TypeVar("E", covariant=True)
 
 
 class Extractor(ABC, Generic[E]):
-    def extract(self, node: Yaml) -> PositionLookup[E]:
+    def extract(self, node: Tree) -> PositionLookup[E]:
         """Call extract_node at each of the inner nodes of node.
 
         Parameters
         ----------
-        node : Yaml
-            node to extract from (recursively)"""
+        node : Tree
+            node to extract from (recursively).
+
+        Returns
+        -------
+        PositionLookup[T]
+            A PositionLookup object containing items from source."""
         position_lookup = PositionLookup[E]()
         for span in self.extract_node(node):
             position_lookup[span.value].append((span.line, span.char, span.span))
@@ -39,7 +44,7 @@ class Extractor(ABC, Generic[E]):
         return position_lookup
 
     @abstractmethod
-    def extract_node(self, node: Yaml) -> List[Spanning[E]]:
+    def extract_node(self, node: Tree) -> List[Spanning[E]]:
         ...
 
 
@@ -49,9 +54,14 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
     Methods
     -------
     extract(node)
-        Extract resource properties from node."""
+        Extract resource properties from node.
 
-    def extract_node(self, node: Yaml) -> List[Spanning[AWSProperty]]:
+    Returns
+    -------
+    PositionLookup[T]
+        A PositionLookup mapping AWSProperty objects to positions."""
+
+    def extract_node(self, node: Tree) -> List[Spanning[AWSProperty]]:
         props = []
         if "Properties" in node and "Type" in node:
             type_ = node["Type"]
@@ -74,9 +84,14 @@ class ResourceExtractor(Extractor[AWSResourceName]):
     Methods
     -------
     extract(node)
-        Extract a resource name from node."""
+        Extract a resource name from node.
 
-    def extract_node(self, node: Yaml) -> List[Spanning[AWSResourceName]]:
+    Returns
+    -------
+    PositionLookup[T]
+        A PositionLookup mapping AWSResourceName objects to positions."""
+
+    def extract_node(self, node: Tree) -> List[Spanning[AWSResourceName]]:
         if "Properties" in node and "Type" in node and VALUES_POSITION_PREFIX in node:
             type_ = node["Type"]
             value_positions = node[VALUES_POSITION_PREFIX]
@@ -96,10 +111,12 @@ T = TypeVar("T", covariant=True)
 
 
 class CompositeExtractor(Extractor[T]):
+    """Accumulates the results of multiple Extractor objects."""
+
     def __init__(self, *extractors: Extractor[T]):
         self._extractors = extractors
 
-    def extract_node(self, node: Yaml) -> List[Spanning[T]]:
+    def extract_node(self, node: Tree) -> List[Spanning[T]]:
         ls = []
         for extractor in self._extractors:
             ls.extend(extractor.extract_node(node))

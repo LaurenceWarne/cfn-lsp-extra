@@ -80,6 +80,6 @@ def json_string():
 
 def test_parsing(json_string):
     content = json.loads(json_string, cls=CfnJSONDecoder)
-    assert content["__position__AWSTemplateFormatVersion"] == [1, 6]
-    assert content["__position__Resources"] == [2, 6]
-    assert content["Resources"]["__position__taskdefinition"] == [3, 10]
+    assert content["__position__AWSTemplateFormatVersion"] == [1, 5]
+    assert content["__position__Resources"] == [2, 5]
+    assert content["Resources"]["__position__taskdefinition"] == [3, 9]

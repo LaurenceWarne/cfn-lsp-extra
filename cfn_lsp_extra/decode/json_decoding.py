@@ -1,3 +1,5 @@
+# type: ignore
+# flake8: noqa
 """
 Utilities for parsing json document strings.
 """
