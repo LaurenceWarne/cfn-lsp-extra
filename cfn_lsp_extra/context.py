@@ -22,6 +22,7 @@ def download_context() -> AWSContext:
     # Not using importlib.resources.files is considered legacy but is
     # necessary for python < 3.9
     urls = read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
+    logger.info(f"Downloading documentation from {len(urls)} urls")
     return asyncio.run(parse_urls(urls))
 
 

@@ -43,10 +43,7 @@ from .aws_data import AWSProperty
 from .aws_data import AWSResource
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
-from .context import cache
-from .context import download_context
 from .decode import decode
-from .scrape.markdown import parse_urls
 
 
 def server(aws_context: AWSContext) -> LanguageServer:

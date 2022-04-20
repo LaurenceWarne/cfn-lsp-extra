@@ -42,6 +42,7 @@ from typing import Tuple
 import aiohttp
 from aiohttp import ClientSession
 from aiohttp import StreamReader
+from tqdm.asyncio import tqdm_asyncio  # type: ignore[import]
 
 from ..aws_data import AWSContext
 from ..aws_data import AWSResource
@@ -102,5 +103,7 @@ class GithubCfnMarkdownParser:
 async def parse_urls(urls: List[str]) -> AWSContext:
     parser = GithubCfnMarkdownParser()
     async with aiohttp.ClientSession() as session:
-        resources = await asyncio.gather(*[parser.parse(session, url) for url in urls])
+        resources = await tqdm_asyncio.gather(
+            *[parser.parse(session, url) for url in urls]
+        )
         return AWSContext(resources={res.name: res for res in resources})
