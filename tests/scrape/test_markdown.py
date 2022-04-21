@@ -9,6 +9,4 @@ async def test_github_parse():
     gh_parser = GithubCfnMarkdownParser()
     async with aiohttp.ClientSession() as session:
         resource = await gh_parser.parse(session, url)
-        print(resource.name)
-        print(resource.property_descriptions["CidrBlock"])
-    # assert False
+    assert resource.name == "AWS::EC2::Subnet"

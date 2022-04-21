@@ -13,7 +13,7 @@ def tests(session):
     session.install("pytest", ".")
     session.install("pytest-asyncio", ".")
     session.install("pytest-mock", ".")
-    session.run("pytest")
+    session.run("pytest", "-s")
 
 
 @session(python=python_versions)

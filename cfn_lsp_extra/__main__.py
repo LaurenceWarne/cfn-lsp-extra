@@ -20,7 +20,6 @@ def main(ctx: Context, verbose: bool, no_cache: bool) -> None:
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
     # This fn is called regardless, so we have to check if a subcommand should be run
     if ctx.invoked_subcommand is None:
-        no_cache = True
         aws_context = download_context() if no_cache else cache()
         server(aws_context).start_io()  # type: ignore[no-untyped-call]
     return None

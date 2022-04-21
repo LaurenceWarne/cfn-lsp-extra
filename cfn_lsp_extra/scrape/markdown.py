@@ -29,20 +29,27 @@ property1 description
 """  # noqa
 
 
+import logging
 import re
 from itertools import dropwhile
 from itertools import takewhile
 from typing import List
+from typing import Optional
 from typing import Pattern
 from typing import Tuple
 
 import aiohttp
 from aiohttp import ClientSession
 from aiohttp import StreamReader
+from aiohttp.client import ClientTimeout
+from aiohttp.client import ServerTimeoutError
 from tqdm.asyncio import tqdm_asyncio  # type: ignore[import]
 
 from ..aws_data import AWSContext
 from ..aws_data import AWSResource
+
+
+logger = logging.getLogger(__name__)
 
 
 class GithubCfnMarkdownParser:
@@ -52,13 +59,31 @@ class GithubCfnMarkdownParser:
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "## Return values"
 
-    async def parse(self, session: ClientSession, url: str) -> AWSResource:
-        async with session.get(url) as response:
-            assert response.status == 200
-            return await self.parse_response(response.content)
+    async def parse(
+        self, session: ClientSession, url: str, retry: bool = True
+    ) -> Optional[AWSResource]:
+        try:
+            async with session.get(
+                url, timeout=ClientTimeout(total=None, sock_connect=5, sock_read=5)
+            ) as response:
+                assert response.status == 200
+                return await self.parse_response(response.content, url)
+        except ServerTimeoutError as e:
+            if retry:
+                logger.info(f"Timeout for {url}, retrying")
+                return await self.parse(session, url, False)
+            else:
+                raise e
 
-    async def parse_response(self, content: StreamReader) -> AWSResource:
-        name, description = await self.parse_heading(content)
+    async def parse_response(
+        self, content: StreamReader, url: str
+    ) -> Optional[AWSResource]:
+        maybe_resource = await self.parse_heading(content)
+        if maybe_resource:
+            name, description = maybe_resource
+        else:
+            logger.debug(f"{url} appears to point to a property, skipping")
+            return None
         async for line_b in content:
             if line_b.decode("utf-8").startswith(self.PROPERTY_LINE_PREFIX):
                 break
@@ -74,19 +99,20 @@ class GithubCfnMarkdownParser:
                 break
             else:
                 desc += line
+        if prop is None:
+            logger.info(f"Skipping {name} since no properties were found")
+            return None
         result[prop] = desc
         return AWSResource(
             name=name, description=description, property_descriptions=result
         )
 
-    async def parse_heading(self, content: StreamReader) -> Tuple[str, str]:
+    async def parse_heading(self, content: StreamReader) -> Optional[Tuple[str, str]]:
         first_line = await content.readline()
-        name = "".join(
-            takewhile(
-                lambda c: c != "<",
-                dropwhile(lambda c: not c.isalpha(), first_line.decode("utf-8")),
-            )
-        )
+        init = dropwhile(lambda c: not c.isalpha(), first_line.decode("utf-8"))
+        name = "".join(takewhile(lambda c: c != "<", init)).rstrip()
+        if " " in name:
+            return None  # It's a property (= "myresource myproperty")
         description = f"# {name}\n"
         async for line_b in content:
             line = line_b.decode("utf-8")
@@ -103,4 +129,4 @@ async def parse_urls(urls: List[str]) -> AWSContext:
         resources = await tqdm_asyncio.gather(
             *[parser.parse(session, url) for url in urls]
         )
-        return AWSContext(resources={res.name: res for res in resources})
+        return AWSContext(resources={res.name: res for res in resources if res})
