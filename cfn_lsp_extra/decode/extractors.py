@@ -60,7 +60,8 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
 
     def extract_node(self, node: Tree) -> List[Spanning[AWSProperty]]:
         props = []
-        if "Properties" in node and "Type" in node:
+        is_res_node = "Properties" in node and "Type" in node
+        if is_res_node and isinstance(node["Properties"], dict):
             type_ = node["Type"]
             for key, value in node["Properties"].items():
                 if key.startswith(POSITION_PREFIX):
@@ -72,6 +73,29 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
                             value=aws_prop, line=line, char=char, span=len(prop)
                         )
                     )
+        elif (
+            is_res_node
+            and isinstance(node["Properties"], str)
+            and VALUES_POSITION_PREFIX in node
+        ):
+            unfinished_property = node["Properties"]
+            type_ = node["Type"]
+            for dct in node[VALUES_POSITION_PREFIX]:
+                key = POSITION_PREFIX + unfinished_property
+                if key in dct:
+                    line, char = dct[key]
+                    aws_prop = AWSProperty(
+                        resource=type_, property_=unfinished_property
+                    )
+                    props.append(
+                        Spanning[AWSProperty](
+                            value=aws_prop,
+                            line=line,
+                            char=char,
+                            span=len(unfinished_property),
+                        )
+                    )
+                    break
         return props
 
 
@@ -89,19 +113,23 @@ class ResourceExtractor(Extractor[AWSResourceName]):
         A PositionLookup mapping AWSResourceName objects to positions."""
 
     def extract_node(self, node: Tree) -> List[Spanning[AWSResourceName]]:
-        if "Properties" in node and "Type" in node and VALUES_POSITION_PREFIX in node:
-            type_ = node["Type"]
-            value_positions = node[VALUES_POSITION_PREFIX]
-            for dct in value_positions:
-                key = POSITION_PREFIX + type_
-                if key in dct:
-                    line, char = dct[key]
-                    return [
-                        Spanning[AWSResourceName](
-                            value=type_, line=line, char=char, span=len(type_)
-                        )
-                    ]
-        return []
+        props = []
+        if "Resources" in node:
+            for _, resource_dct in node["Resources"].items():
+                if "Type" in resource_dct and VALUES_POSITION_PREFIX in resource_dct:
+                    type_ = resource_dct["Type"]
+                    value_positions = resource_dct[VALUES_POSITION_PREFIX]
+                    key = POSITION_PREFIX + type_
+                    for dct in value_positions:
+                        if key in dct:
+                            line, char = dct[key]
+                            props.append(
+                                Spanning[AWSResourceName](
+                                    value=type_, line=line, char=char, span=len(type_)
+                                )
+                            )
+                            break
+        return props
 
 
 T = TypeVar("T", covariant=True)

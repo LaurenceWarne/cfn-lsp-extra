@@ -110,10 +110,66 @@ def test_resource_property_extractor(document_mapping):
     assert len(positions) == 3
 
 
+def test_resource_property_extractor_for_resource_with_one_incomplete_property():
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "My template",
+        "Resources": {
+            "PublicSubnet": {
+                "Type": "AWS::EC2::Subnet",
+                "Properties": "CidrBlock",
+                "__position__Type": [5, 4],
+                "__value_positions__": [
+                    {"__position__AWS::EC2::Subnet": [5, 10]},
+                    {"__position__CidrBlock": [7, 6]},
+                ],
+                "__position__Properties": [6, 4],
+            },
+            "__position__PublicSubnet": [4, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__My template": [2, 13]},
+        ],
+        "__position__Description": [2, 0],
+        "__position__Resources": [3, 0],
+    }
+    extractor = ResourcePropertyExtractor()
+    positions = extractor.extract(document_mapping)
+    assert [(7, 6, 9)] == positions[
+        AWSProperty(resource="AWS::EC2::Subnet", property_="CidrBlock")
+    ]
+
+
 def test_resource_extractor(document_mapping):
     extractor = ResourceExtractor()
     positions = extractor.extract(document_mapping)
     assert [(9, 10, 16), (16, 10, 16)] == sorted(positions["AWS::EC2::Subnet"])
+
+
+def test_resource_extractor_for_incomplete_resource():
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Resources": {
+            "PublicSubnet": {
+                "Type": "AWS::EC2::Subnet",
+                "__position__Type": [9, 4],
+                "__value_positions__": [{"__position__AWS::EC2::Subnet": [9, 10]}],
+            },
+            "__position__PublicSubnet": [8, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__Description": [2, 0]},
+        ],
+        "__position__Parameters": [3, 0],
+        "__position__Resources": [7, 0],
+    }
+    extractor = ResourceExtractor()
+    positions = extractor.extract(document_mapping)
+    assert [(9, 10, 16)] == positions["AWS::EC2::Subnet"]
 
 
 def test_composite_extractor(document_mapping):

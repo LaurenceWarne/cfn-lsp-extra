@@ -47,9 +47,7 @@ class SafePositionLoader(SafeLoader):
             if isinstance(value_node, ScalarNode):
                 if VALUES_POSITION_PREFIX not in mapping:
                     mapping[VALUES_POSITION_PREFIX] = []
-                    position_key, position_value = self._positional_key_value(
-                        value_node
-                    )
+                position_key, position_value = self._positional_key_value(value_node)
                 mapping[VALUES_POSITION_PREFIX].append({position_key: position_value})
         return mapping
 
