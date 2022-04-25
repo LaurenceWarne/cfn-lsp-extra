@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import pytest
 
 from cfn_lsp_extra.aws_data import AWSProperty
+from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import Extractor
 from cfn_lsp_extra.decode.extractors import ResourceExtractor
@@ -97,15 +98,13 @@ def test_resource_property_extractor(document_mapping):
     extractor = ResourcePropertyExtractor()
     positions = extractor.extract(document_mapping)
     assert [(11, 6, 9), (18, 6, 9)] == sorted(
-        positions[AWSProperty(resource="AWS::EC2::Subnet", property_="CidrBlock")]
+        positions[AWSResourceName(value="AWS::EC2::Subnet") / "CidrBlock"]
     )
     assert [(12, 6, 19)] == sorted(
-        positions[
-            AWSProperty(resource="AWS::EC2::Subnet", property_="MapPublicIpOnLaunch")
-        ]
+        positions[AWSResourceName(value="AWS::EC2::Subnet") / "MapPublicIpOnLaunch"]
     )
     assert [(13, 6, 5), (19, 6, 5)] == sorted(
-        positions[AWSProperty(resource="AWS::EC2::Subnet", property_="VpcId")]
+        positions[AWSResourceName(value="AWS::EC2::Subnet") / "VpcId"]
     )
     assert len(positions) == 3
 
@@ -138,14 +137,16 @@ def test_resource_property_extractor_for_resource_with_one_incomplete_property()
     extractor = ResourcePropertyExtractor()
     positions = extractor.extract(document_mapping)
     assert [(7, 6, 9)] == positions[
-        AWSProperty(resource="AWS::EC2::Subnet", property_="CidrBlock")
+        AWSResourceName(value="AWS::EC2::Subnet") / "CidrBlock"
     ]
 
 
 def test_resource_extractor(document_mapping):
     extractor = ResourceExtractor()
     positions = extractor.extract(document_mapping)
-    assert [(9, 10, 16), (16, 10, 16)] == sorted(positions["AWS::EC2::Subnet"])
+    assert [(9, 10, 16), (16, 10, 16)] == sorted(
+        positions[AWSResourceName(value="AWS::EC2::Subnet")]
+    )
 
 
 def test_resource_extractor_for_incomplete_resource():
@@ -169,22 +170,24 @@ def test_resource_extractor_for_incomplete_resource():
     }
     extractor = ResourceExtractor()
     positions = extractor.extract(document_mapping)
-    assert [(9, 10, 16)] == positions["AWS::EC2::Subnet"]
+    assert [(9, 10, 16)] == positions[AWSResourceName(value="AWS::EC2::Subnet")]
 
 
 def test_composite_extractor(document_mapping):
     extractor = CompositeExtractor(ResourceExtractor(), ResourcePropertyExtractor())
     positions = extractor.extract(document_mapping)
-    assert [(9, 10, 16), (16, 10, 16)] == sorted(positions["AWS::EC2::Subnet"])
-    assert [(9, 10, 16), (16, 10, 16)] == sorted(positions["AWS::EC2::Subnet"])
+    assert [(9, 10, 16), (16, 10, 16)] == sorted(
+        positions[AWSResourceName(value="AWS::EC2::Subnet")]
+    )
+    assert [(9, 10, 16), (16, 10, 16)] == sorted(
+        positions[AWSResourceName(value="AWS::EC2::Subnet")]
+    )
     assert [(11, 6, 9), (18, 6, 9)] == sorted(
-        positions[AWSProperty(resource="AWS::EC2::Subnet", property_="CidrBlock")]
+        positions[AWSResourceName(value="AWS::EC2::Subnet") / "CidrBlock"]
     )
     assert [(12, 6, 19)] == sorted(
-        positions[
-            AWSProperty(resource="AWS::EC2::Subnet", property_="MapPublicIpOnLaunch")
-        ]
+        positions[AWSResourceName(value="AWS::EC2::Subnet") / "MapPublicIpOnLaunch"]
     )
     assert [(13, 6, 5), (19, 6, 5)] == sorted(
-        positions[AWSProperty(resource="AWS::EC2::Subnet", property_="VpcId")]
+        positions[AWSResourceName(value="AWS::EC2::Subnet") / "VpcId"]
     )

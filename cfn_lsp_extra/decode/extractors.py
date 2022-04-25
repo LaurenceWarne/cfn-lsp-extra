@@ -7,6 +7,8 @@ from typing import Generic
 from typing import List
 from typing import TypeVar
 
+from cfn_lsp_extra.aws_data import AWSPropertyName
+
 from ..aws_data import AWSProperty
 from ..aws_data import AWSResourceName
 from .position import PositionLookup
@@ -45,7 +47,7 @@ class Extractor(ABC, Generic[E]):
         ...
 
 
-class ResourcePropertyExtractor(Extractor[AWSProperty]):
+class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
     """Extractor for resource properties.
 
     Methods
@@ -56,9 +58,9 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
     Returns
     -------
     PositionLookup[T]
-        A PositionLookup mapping AWSProperty objects to positions."""
+        A PositionLookup mapping AWSPropertyName objects to positions."""
 
-    def extract_node(self, node: Tree) -> List[Spanning[AWSProperty]]:
+    def extract_node(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
         props = []
         is_res_node = "Properties" in node and "Type" in node
         if is_res_node and isinstance(node["Properties"], dict):
@@ -66,10 +68,10 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
             for key, value in node["Properties"].items():
                 if key.startswith(POSITION_PREFIX):
                     prop = key.lstrip(POSITION_PREFIX)
-                    aws_prop = AWSProperty(resource=type_, property_=prop)
+                    aws_prop = AWSResourceName(value=type_) / prop
                     line, char = value
                     props.append(
-                        Spanning[AWSProperty](
+                        Spanning[AWSPropertyName](
                             value=aws_prop, line=line, char=char, span=len(prop)
                         )
                     )
@@ -84,11 +86,9 @@ class ResourcePropertyExtractor(Extractor[AWSProperty]):
                 key = POSITION_PREFIX + unfinished_property
                 if key in dct:
                     line, char = dct[key]
-                    aws_prop = AWSProperty(
-                        resource=type_, property_=unfinished_property
-                    )
+                    aws_prop = AWSResourceName(value=type_) / unfinished_property
                     props.append(
-                        Spanning[AWSProperty](
+                        Spanning[AWSPropertyName](
                             value=aws_prop,
                             line=line,
                             char=char,
@@ -125,7 +125,10 @@ class ResourceExtractor(Extractor[AWSResourceName]):
                             line, char = dct[key]
                             props.append(
                                 Spanning[AWSResourceName](
-                                    value=type_, line=line, char=char, span=len(type_)
+                                    value=AWSResourceName(value=type_),
+                                    line=line,
+                                    char=char,
+                                    span=len(type_),
                                 )
                             )
                             break

@@ -87,12 +87,12 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ):
             return CompletionList(
                 is_incomplete=span.value.property_
-                in aws_context.resources[span.value.resource].property_descriptions,
+                in aws_context.resources[span.value.resource].properties,
                 items=[
                     CompletionItem(label=s)
                     for s in aws_context.resources[
                         span.value.resource
-                    ].property_descriptions.keys()
+                    ].properties.keys()
                 ],
             )
         return None

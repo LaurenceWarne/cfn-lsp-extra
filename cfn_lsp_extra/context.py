@@ -31,7 +31,7 @@ def load_context(ctx_path: Path = ctx_path, void_cache: bool = False) -> AWSCont
         ctx: AWSContext = download_context()
         ctx_path.parent.mkdir(parents=True, exist_ok=True)
         with ctx_path.open("w") as f:
-            json.dump(ctx.dict(), f)
+            json.dump(ctx.dict(), f, indent=2, sort_keys=True)
     else:
         with ctx_path.open("r") as f:
             ctx = AWSContext(**json.load(f))
