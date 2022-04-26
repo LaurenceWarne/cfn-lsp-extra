@@ -10,6 +10,12 @@ from typing import Union
 from pydantic import BaseModel
 
 
+# A Tree type representing a recursive nested structure such as yaml or json
+# https://github.com/python/mypy/issues/731
+# Tree = Dict[str, Union[str, "Tree"]]
+Tree = Any
+
+
 class AWSResourceName(BaseModel, frozen=True):
     value: str
 
@@ -39,6 +45,12 @@ class AWSPropertyName(BaseModel, frozen=True):
             return other == self.parent.value
         else:
             return other in self.parent
+
+    def split(self) -> List[str]:
+        if isinstance(self.parent, AWSResourceName):
+            return [str(self.parent), self.property_]
+        else:
+            return self.parent.split() + [self.property_]
 
 
 AWSPropertyName.update_forward_refs()
@@ -75,20 +87,24 @@ class AWSResource(BaseModel):
 class AWSContext(BaseModel):
     """A handle on AWS resource data for the lsp server."""
 
-    resources: Any  # Dict[str, AWSResource]
+    resources: Tree
 
     def __getitem__(self, aws_property: AWSProperty) -> str:
-        return self.resources[aws_property.resource][aws_property.property_]
+        return self.resources[aws_property.parent][aws_property.property_]
 
-    def description(self, obj: Union[AWSResourceName, AWSProperty]) -> str:
-        if isinstance(obj, AWSProperty):
+    def description(self, obj: Union[AWSResourceName, AWSPropertyName]) -> str:
+        if isinstance(obj, AWSPropertyName):
             try:
-                return self.resources[obj.resource][obj.property_]
+                resource, *subprops = obj.split()
+                prop = self.resources[resource]
+                for subprop in subprops:
+                    prop = prop["properties"][subprop]
+                return prop["description"]
             except KeyError:
                 raise ValueError(f"'{obj}' is not a recognised property")
         elif isinstance(obj, AWSResourceName):
             try:
-                return self.resources[obj].description
+                return self.resources[obj.value]["description"]
             except KeyError:
                 raise ValueError(f"'{obj}' is not a recognised resource")
         else:

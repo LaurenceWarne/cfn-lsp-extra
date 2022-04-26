@@ -6,16 +6,16 @@ from abc import abstractmethod
 from typing import Generic
 from typing import List
 from typing import TypeVar
-
-from cfn_lsp_extra.aws_data import AWSPropertyName
+from typing import Union
 
 from ..aws_data import AWSProperty
+from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
+from ..aws_data import Tree
 from .position import PositionLookup
 from .position import Spanning
 from .yaml_decoding import POSITION_PREFIX
 from .yaml_decoding import VALUES_POSITION_PREFIX
-from .yaml_decoding import Tree
 
 
 E = TypeVar("E", covariant=True)
@@ -65,37 +65,53 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
         is_res_node = "Properties" in node and "Type" in node
         if is_res_node and isinstance(node["Properties"], dict):
             type_ = node["Type"]
-            for key, value in node["Properties"].items():
-                if key.startswith(POSITION_PREFIX):
-                    prop = key.lstrip(POSITION_PREFIX)
-                    aws_prop = AWSResourceName(value=type_) / prop
-                    line, char = value
-                    props.append(
-                        Spanning[AWSPropertyName](
-                            value=aws_prop, line=line, char=char, span=len(prop)
-                        )
-                    )
+            props = self._extract_recursive(
+                node["Properties"], AWSResourceName(value=type_)
+            )
         elif (
             is_res_node
             and isinstance(node["Properties"], str)
             and VALUES_POSITION_PREFIX in node
         ):
-            unfinished_property = node["Properties"]
-            type_ = node["Type"]
-            for dct in node[VALUES_POSITION_PREFIX]:
-                key = POSITION_PREFIX + unfinished_property
-                if key in dct:
-                    line, char = dct[key]
-                    aws_prop = AWSResourceName(value=type_) / unfinished_property
-                    props.append(
-                        Spanning[AWSPropertyName](
-                            value=aws_prop,
-                            line=line,
-                            char=char,
-                            span=len(unfinished_property),
-                        )
+            props = self._extract_unfinished(node)
+        return props
+
+    def _extract_recursive(
+        self, node: Tree, parent: Union[AWSPropertyName, AWSResourceName]
+    ) -> List[Spanning[AWSPropertyName]]:
+        props = []
+        for key, value in node.items():
+            if key.startswith(POSITION_PREFIX):
+                prop = key.lstrip(POSITION_PREFIX)
+                aws_prop = parent / prop
+                line, char = value
+                props.append(
+                    Spanning[AWSPropertyName](
+                        value=aws_prop, line=line, char=char, span=len(prop)
                     )
-                    break
+                )
+                if isinstance(node[prop], dict):
+                    props.extend(self._extract_recursive(node[prop], aws_prop))
+        return props
+
+    def _extract_unfinished(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
+        props = []
+        unfinished_property = node["Properties"]
+        type_ = node["Type"]
+        for dct in node[VALUES_POSITION_PREFIX]:
+            key = POSITION_PREFIX + unfinished_property
+            if key in dct:
+                line, char = dct[key]
+                aws_prop = AWSResourceName(value=type_) / unfinished_property
+                props.append(
+                    Spanning[AWSPropertyName](
+                        value=aws_prop,
+                        line=line,
+                        char=char,
+                        span=len(unfinished_property),
+                    )
+                )
+                break
         return props
 
 

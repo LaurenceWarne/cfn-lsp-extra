@@ -109,6 +109,71 @@ def test_resource_property_extractor(document_mapping):
     assert len(positions) == 3
 
 
+def test_resource_property_extractor(document_mapping):
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "My template",
+        "Resources": {
+            "ECSService": {
+                "Type": "AWS::ECS::Service",
+                "Properties": {
+                    "DesiredCount": 1,
+                    "Cluster": {"Ref": "ECSCluster"},
+                    "LaunchType": "FARGATE",
+                    "NetworkConfiguration": {
+                        "AwsvpcConfiguration": {
+                            "AssignPublicIp": "ENABLED",
+                            "SecurityGroups": [{"Ref": "HTTPSecurityGroup"}],
+                            "Subnets": [{"Ref": "PublicSubnet"}],
+                            "__position__AssignPublicIp": [17, 10],
+                            "__value_positions__": [{"__position__ENABLED": [17, 26]}],
+                            "__position__SecurityGroups": [18, 10],
+                            "__position__Subnets": [20, 10],
+                        },
+                        "__position__AwsvpcConfiguration": [16, 8],
+                    },
+                    "TaskDefinition": {"Ref": "ECSTaskDefinition"},
+                    "__position__DesiredCount": [11, 6],
+                    "__value_positions__": [
+                        {"__position__1": [11, 20]},
+                        {"__position__ECSCluster": [12, 15]},
+                        {"__position__FARGATE": [13, 18]},
+                        {"__position__ECSTaskDefinition": [22, 22]},
+                    ],
+                    "__position__Cluster": [12, 6],
+                    "__position__LaunchType": [13, 6],
+                    "__position__NetworkConfiguration": [15, 6],
+                    "__position__TaskDefinition": [22, 6],
+                },
+                "__position__Type": [9, 4],
+                "__value_positions__": [{"__position__AWS::ECS::Service": [9, 10]}],
+                "__position__Properties": [10, 4],
+            },
+            "__position__ECSService": [8, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__My template": [2, 13]},
+        ],
+        "__position__Description": [2, 0],
+        "__position__Resources": [7, 0],
+    }
+    extractor = ResourcePropertyExtractor()
+    positions = extractor.extract(document_mapping)
+    assert [(16, 8, 19)] == positions[
+        AWSResourceName(value="AWS::ECS::Service")
+        / "NetworkConfiguration"
+        / "AwsvpcConfiguration"
+    ]
+    assert [(17, 10, 14)] == positions[
+        AWSResourceName(value="AWS::ECS::Service")
+        / "NetworkConfiguration"
+        / "AwsvpcConfiguration"
+        / "AssignPublicIp"
+    ]
+
+
 def test_resource_property_extractor_for_resource_with_one_incomplete_property():
     document_mapping = {
         "AWSTemplateFormatVersion": "2010-09-09",

@@ -31,6 +31,7 @@ from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
 
 from .aws_data import AWSContext
 from .aws_data import AWSProperty
+from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .decode import decode
@@ -82,8 +83,8 @@ def server(aws_context: AWSContext) -> LanguageServer:
         span = position_lookup.at(line_at, char_at)
         if (
             span
-            and isinstance(span.value, AWSProperty)
-            and span.value.resource in aws_context.resources
+            and isinstance(span.value, AWSPropertyName)
+            and span.value.parent in aws_context.resources
         ):
             return CompletionList(
                 is_incomplete=span.value.property_

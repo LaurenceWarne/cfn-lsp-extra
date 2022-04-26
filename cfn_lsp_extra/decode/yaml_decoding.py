@@ -17,6 +17,8 @@ from yaml.nodes import MappingNode
 from yaml.nodes import Node
 from yaml.nodes import ScalarNode
 
+from ..aws_data import Tree
+
 
 POSITION_PREFIX = "__position__"
 VALUES_POSITION_PREFIX = "__value_positions__"
@@ -55,8 +57,3 @@ class SafePositionLoader(SafeLoader):
 SafePositionLoader.add_multi_constructor(  # type: ignore[no-untyped-call]
     "!", multi_constructor
 )
-
-# A Tree type representing a recursive nested structure such as yaml or json
-# https://github.com/python/mypy/issues/731
-# Tree = Dict[str, Union[str, "Tree"]]
-Tree = Any

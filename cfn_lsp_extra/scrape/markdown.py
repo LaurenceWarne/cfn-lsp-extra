@@ -65,8 +65,8 @@ T = TypeVar("T")
 
 class BaseCfnDocParser(ABC, Generic[T]):
 
-    HEADER_REGEX: Pattern[str] = re.compile("^`([a-zA-Z0-9]+)`.*<a*.a>")
-    SUB_PROP_REGEX: Pattern[str] = re.compile("^\*Type\*:.*\[.*\]\((.*\.md)\)")
+    HEADER_REGEX: Pattern[str] = re.compile(r"^`([a-zA-Z0-9]+)`.*<a*.a>")
+    SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "## Return values"
 
@@ -124,35 +124,37 @@ class BaseCfnDocParser(ABC, Generic[T]):
         async for line_b in content:
             if line_b.decode("utf-8").startswith(self.PROPERTY_LINE_PREFIX):
                 break
-        result, prop_name, desc, subprop = {}, None, "", None
 
         # Parse all properties
+        properties, prop_name, desc, subprop = {}, None, "", {}
         async for line_b in content:
             line = line_b.decode("utf-8")
             match = re.match(self.HEADER_REGEX, line)
             if match:
                 if prop_name:
-                    result[prop_name.property_] = subprop
+                    properties[prop_name.property_] = {
+                        "description": desc,
+                        "properties": subprop["properties"] if subprop else {},
+                    }
                 prop_name, desc = name / match.group(1), f"`{match.group(1)}`\n"
-                sub_prop = None
+                subprop = {}
             elif line.startswith(self.PROPERTY_END_PREFIX):
                 break
             else:
-                sub_prop_match = re.match(self.SUB_PROP_REGEX, line)
-                if sub_prop_match:
-                    sub_url = f"{self.base_url}/{sub_prop_match.group(1)}"
-
+                subprop_match = re.match(self.SUB_PROP_REGEX, line)
+                if subprop_match:
+                    sub_url = f"{self.base_url}/{subprop_match.group(2)}"
                     subprop = await self.parse_subproperty(session, prop_name, sub_url)
                 desc += line
 
         if prop_name is None:
             logger.info(f"Skipping {name} since no properties were found")
             return None
-        result[prop_name.property_] = {
+        properties[prop_name.property_] = {
             "description": desc,
-            "subproperties": subprop or {},
+            "properties": subprop["properties"] if subprop else {},
         }
-        return name, description, result
+        return name, description, properties
 
     async def parse_subproperty(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
@@ -230,7 +232,7 @@ class CfnPropertyDocParser(BaseCfnDocParser[AWSProperty]):
         description: str,
         properties: Dict[str, AWSProperty],
     ) -> Optional[AWSProperty]:
-        return {"description": description, "subproperties": properties or {}}
+        return {"description": description, "properties": properties}
 
 
 BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/"
