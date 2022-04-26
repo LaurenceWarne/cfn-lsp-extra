@@ -8,7 +8,6 @@ from typing import List
 from typing import TypeVar
 from typing import Union
 
-from ..aws_data import AWSProperty
 from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
 from ..aws_data import Tree

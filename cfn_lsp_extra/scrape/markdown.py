@@ -27,7 +27,7 @@ property1 description
 .
 # ... 
 """  # noqa
-
+from __future__ import annotations
 
 import logging
 import re
@@ -35,8 +35,8 @@ from abc import ABC
 from abc import abstractmethod
 from itertools import dropwhile
 from itertools import takewhile
+from typing import Callable
 from typing import Dict
-from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Pattern
@@ -56,28 +56,28 @@ from ..aws_data import AWSContext
 from ..aws_data import AWSName
 from ..aws_data import AWSProperty
 from ..aws_data import AWSPropertyName
-from ..aws_data import AWSResource
+from ..aws_data import Tree
 
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-class BaseCfnDocParser(ABC, Generic[T]):
+class BaseCfnDocParser(ABC):
 
     HEADER_REGEX: Pattern[str] = re.compile(r"^`([a-zA-Z0-9]+)`.*<a*.a>")
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "## Return values"
 
-    def __init__(self, base_url):
+    def __init__(self, base_url: str):
         self.base_url = base_url
-        self.ignore_condition = (
+        self.ignore_condition: Callable[[AWSPropertyName], bool] = (
             lambda prop_name: "Condition" in prop_name or "Rules" in prop_name
         )
 
     @abstractmethod
-    def subproperty_parser(self, base_url: str, name: str):
+    def subproperty_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         ...
 
     @abstractmethod
@@ -90,12 +90,12 @@ class BaseCfnDocParser(ABC, Generic[T]):
         name: AWSName,
         description: str,
         properties: Dict[str, AWSProperty],
-    ) -> Optional[T]:
+    ) -> Optional[Tree]:
         ...
 
     async def parse(
         self, session: ClientSession, url: str, retry: bool = True
-    ) -> Optional[T]:
+    ) -> Optional[Tree]:
         try:
             async with session.get(
                 url, timeout=ClientTimeout(total=None, sock_connect=5, sock_read=5)
@@ -116,7 +116,7 @@ class BaseCfnDocParser(ABC, Generic[T]):
 
     async def parse_response_raw(
         self, content: StreamReader, url: str, session: ClientSession
-    ) -> Optional[Tuple[AWSName, str, Dict[str, AWSProperty]]]:
+    ) -> Optional[Tuple[AWSName, str, Tree]]:
         name = await self.parse_name(content)
         if not name:
             return None
@@ -126,13 +126,14 @@ class BaseCfnDocParser(ABC, Generic[T]):
                 break
 
         # Parse all properties
+        subprop: Tree
         properties, prop_name, desc, subprop = {}, None, "", {}
         async for line_b in content:
             line = line_b.decode("utf-8")
             match = re.match(self.HEADER_REGEX, line)
             if match:
                 if prop_name:
-                    properties[prop_name.property_] = {
+                    properties[prop_name.property_] = {  # type: ignore[unreachable]
                         "description": desc,
                         "properties": subprop["properties"] if subprop else {},
                     }
@@ -144,7 +145,9 @@ class BaseCfnDocParser(ABC, Generic[T]):
                 subprop_match = re.match(self.SUB_PROP_REGEX, line)
                 if subprop_match:
                     sub_url = f"{self.base_url}/{subprop_match.group(2)}"
-                    subprop = await self.parse_subproperty(session, prop_name, sub_url)
+                    subprop = await self.parse_subproperty(
+                        session, prop_name, sub_url  # type: ignore[arg-type]
+                    )
                 desc += line
 
         if prop_name is None:
@@ -158,8 +161,8 @@ class BaseCfnDocParser(ABC, Generic[T]):
 
     async def parse_subproperty(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
-    ) -> Optional[AWSProperty]:
-        print(f"parsing {property_name}")
+    ) -> Optional[Tree]:
+        logger.info(f"parsing {property_name}")
         if self.ignore_condition(property_name):
             return None
         else:
@@ -177,13 +180,10 @@ class BaseCfnDocParser(ABC, Generic[T]):
         return description
 
 
-class CfnResourceDocParser(BaseCfnDocParser[AWSResource]):
+class CfnResourceDocParser(BaseCfnDocParser):
     """Class for parsing cfn github content."""
 
-    def __init__(self, base_url: str):
-        super().__init__(base_url)
-
-    def subproperty_parser(self, base_url: str, name: str):
+    def subproperty_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         return CfnPropertyDocParser(base_url, name)
 
     async def parse_name(self, content: StreamReader) -> Optional[AWSName]:
@@ -199,11 +199,11 @@ class CfnResourceDocParser(BaseCfnDocParser[AWSResource]):
         name: AWSName,
         description: str,
         properties: Dict[str, AWSProperty],
-    ) -> Optional[AWSResource]:
+    ) -> Optional[Tree]:
         return {"name": str(name), "description": description, "properties": properties}
 
 
-class CfnPropertyDocParser(BaseCfnDocParser[AWSProperty]):
+class CfnPropertyDocParser(BaseCfnDocParser):
     """Class for parsing cfn github content."""
 
     def __init__(self, base_url: str, name: AWSName, max_depth: int = 8):
@@ -211,7 +211,7 @@ class CfnPropertyDocParser(BaseCfnDocParser[AWSProperty]):
         self.name = name
         self.max_depth = max_depth
 
-    def subproperty_parser(self, base_url: str, name: str):
+    def subproperty_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         return CfnPropertyDocParser(base_url, name, self.max_depth - 1)
 
     async def parse_name(self, content: StreamReader) -> Optional[AWSName]:
@@ -220,7 +220,7 @@ class CfnPropertyDocParser(BaseCfnDocParser[AWSProperty]):
 
     async def parse_subproperty(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
-    ) -> Optional[AWSProperty]:
+    ) -> Optional[Tree]:
         if self.max_depth > 0:
             return await super().parse_subproperty(session, property_name, url)
         else:
@@ -231,11 +231,11 @@ class CfnPropertyDocParser(BaseCfnDocParser[AWSProperty]):
         name: AWSName,
         description: str,
         properties: Dict[str, AWSProperty],
-    ) -> Optional[AWSProperty]:
+    ) -> Optional[Tree]:
         return {"description": description, "properties": properties}
 
 
-BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/"
+BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/"  # noqa
 
 
 async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContext:

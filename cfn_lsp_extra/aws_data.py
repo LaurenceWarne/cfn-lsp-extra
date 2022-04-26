@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Union
 
 from pydantic import BaseModel
@@ -80,7 +81,7 @@ class AWSResource(BaseModel):
     description: str
     properties: Dict[str, AWSProperty]
 
-    def __getitem__(self, property_name: AWSPropertyName) -> str:
+    def __getitem__(self, property_name: AWSPropertyName) -> AWSProperty:
         return self.properties[property_name.property_]
 
 
@@ -89,8 +90,10 @@ class AWSContext(BaseModel):
 
     resources: Tree
 
-    def __getitem__(self, aws_property: AWSProperty) -> str:
-        return self.resources[aws_property.parent][aws_property.property_]
+    def __getitem__(self, aws_property_name: AWSPropertyName) -> str:
+        return self.resources[aws_property_name.parent][  # type: ignore[no-any-return]
+            aws_property_name.property_
+        ]
 
     def description(self, obj: Union[AWSResourceName, AWSPropertyName]) -> str:
         if isinstance(obj, AWSPropertyName):
@@ -99,12 +102,14 @@ class AWSContext(BaseModel):
                 prop = self.resources[resource]
                 for subprop in subprops:
                     prop = prop["properties"][subprop]
-                return prop["description"]
+                return prop["description"]  # type: ignore[no-any-return]
             except KeyError:
                 raise ValueError(f"'{obj}' is not a recognised property")
         elif isinstance(obj, AWSResourceName):
             try:
-                return self.resources[obj.value]["description"]
+                return self.resources[obj.value][  # type: ignore[no-any-return]
+                    "description"
+                ]
             except KeyError:
                 raise ValueError(f"'{obj}' is not a recognised resource")
         else:

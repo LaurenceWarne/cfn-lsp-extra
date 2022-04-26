@@ -17,8 +17,6 @@ from yaml.nodes import MappingNode
 from yaml.nodes import Node
 from yaml.nodes import ScalarNode
 
-from ..aws_data import Tree
-
 
 POSITION_PREFIX = "__position__"
 VALUES_POSITION_PREFIX = "__value_positions__"

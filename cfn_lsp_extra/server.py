@@ -30,7 +30,6 @@ from cfn_lsp_extra.decode.extractors import ResourceExtractor
 from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
 
 from .aws_data import AWSContext
-from .aws_data import AWSProperty
 from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
@@ -39,7 +38,7 @@ from .decode import decode
 
 def server(aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer()
-    extractor = CompositeExtractor[Union[AWSResourceName, AWSProperty]](
+    extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
         ResourcePropertyExtractor(), ResourceExtractor()
     )
 
@@ -88,12 +87,10 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ):
             return CompletionList(
                 is_incomplete=span.value.property_
-                in aws_context.resources[span.value.resource].properties,
+                in aws_context.resources[span.value.parent].properties,
                 items=[
                     CompletionItem(label=s)
-                    for s in aws_context.resources[
-                        span.value.resource
-                    ].properties.keys()
+                    for s in aws_context.resources[span.value.parent].properties.keys()
                 ],
             )
         return None
