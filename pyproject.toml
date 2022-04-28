@@ -28,7 +28,6 @@ tqdm = "4.64^"
 Pygments = ">=2.10.0"
 black = ">=21.10b0"
 coverage = {extras = ["toml"], version = ">=6.2"}
-darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-bandit = ">=2.1.2"
 flake8-bugbear = ">=21.9.2"
@@ -41,11 +40,7 @@ pep8-naming = ">=0.12.1"
 pytest = ">=6.2.5"
 pytest-asyncio = "^0.18"
 pytest-mock = "^3.7"
-pyupgrade = ">=2.29.1"
-safety = ">=1.10.3"
 typeguard = ">=2.13.3"
-xdoctest = {extras = ["colors"], version = ">=0.15.10"}
-myst-parser = {version = ">=0.16.1"}
 python-lsp-server = ">=1.4.1"
 nox = ">=2022.1"
 nox-poetry = ">=0.9"
@@ -59,11 +54,11 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["cfn_lsp_extra", "tests"]
+source = ["cfn_lsp_extra"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
+fail_under = 50
 
 [tool.black]
 preview = true
