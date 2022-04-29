@@ -7,6 +7,7 @@ import pytest
 from cfn_lsp_extra.decode import CfnDecodingException
 from cfn_lsp_extra.decode import decode
 from cfn_lsp_extra.decode.extractors import Extractor
+from cfn_lsp_extra.decode.extractors import remove_prefix
 from cfn_lsp_extra.decode.position import PositionLookup
 from cfn_lsp_extra.decode.position import Spanning
 from cfn_lsp_extra.decode.yaml_decoding import POSITION_PREFIX
@@ -22,7 +23,7 @@ def extractor():
             spans = []
             for key, value in node.items():
                 if key.startswith(POSITION_PREFIX):
-                    name = key.lstrip(POSITION_PREFIX)
+                    name = remove_prefix(key, POSITION_PREFIX)
                     line, char = value
                     spans.append(Spanning(value=name, line=line, char=char, span=1))
             return spans

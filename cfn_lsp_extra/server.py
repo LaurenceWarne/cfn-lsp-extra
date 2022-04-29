@@ -80,20 +80,19 @@ def server(aws_context: AWSContext) -> LanguageServer:
             position_lookup = decode(new_source, document.filename, extractor)
 
         span = position_lookup.at(line_at, char_at)
-        if (
-            span
-            and isinstance(span.value, AWSPropertyName)
-            and span.value.parent in aws_context.resources
-        ):
-            return CompletionList(
-                is_incomplete=span.value.property_
-                in aws_context.resources[span.value.parent].properties,
-                items=[
-                    CompletionItem(label=s)
-                    for s in aws_context.resources[span.value.parent].properties.keys()
-                ],
+        if not span:
+            return None
+
+        completions = aws_context.same_level(span.value)
+        return CompletionList(
+            is_incomplete=(
+                span.value.value
+                if isinstance(span.value, AWSResourceName)
+                else span.value.property_
             )
-        return None
+            not in completions,
+            items=[CompletionItem(label=s) for s in completions],
+        )
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:

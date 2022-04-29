@@ -17,6 +17,14 @@ from .yaml_decoding import POSITION_PREFIX
 from .yaml_decoding import VALUES_POSITION_PREFIX
 
 
+# credit https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string
+def remove_prefix(text: str, prefix: str) -> str:
+    """Remove prefix from text if necessary."""
+    if text.startswith(prefix):
+        return text[len(prefix) :]
+    return text
+
+
 E = TypeVar("E", covariant=True)
 
 
@@ -81,7 +89,7 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
         props = []
         for key, value in node.items():
             if key.startswith(POSITION_PREFIX):
-                prop = key.lstrip(POSITION_PREFIX)
+                prop = remove_prefix(key, POSITION_PREFIX)
                 aws_prop = parent / prop
                 line, char = value
                 props.append(

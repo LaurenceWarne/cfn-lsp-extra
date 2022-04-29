@@ -95,7 +95,8 @@ class AWSContext(BaseModel):
             aws_property_name.property_
         ]
 
-    def description(self, obj: Union[AWSResourceName, AWSPropertyName]) -> str:
+    def description(self, obj: AWSName) -> str:
+        """Get the description of obj."""
         if isinstance(obj, AWSPropertyName):
             try:
                 resource, *subprops = obj.split()
@@ -114,3 +115,23 @@ class AWSContext(BaseModel):
                 raise ValueError(f"'{obj}' is not a recognised resource")
         else:
             raise ValueError(f"Can't get a description for value of type '{type(obj)}'")
+
+    def same_level(self, obj: AWSName) -> List[str]:
+        """Return names at the same (property/resource) level as obj."""
+        if isinstance(obj, AWSResourceName):
+            return list(self.resources.keys())
+        elif isinstance(obj, AWSPropertyName):
+            try:
+                parent = obj.parent
+                if isinstance(parent, AWSResourceName):
+                    return list(self.resources[parent.value]["properties"].keys())
+                else:
+                    resource, *subprops = obj.split()
+                    prop = self.resources[resource]
+                    for subprop in subprops[:-1]:
+                        prop = prop["properties"][subprop]
+                    return list(prop["properties"].keys())
+            except KeyError:
+                return []
+        else:
+            raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
