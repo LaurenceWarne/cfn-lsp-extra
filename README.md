@@ -4,6 +4,8 @@
 
 An experimental cloudformation lsp server built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) aiming to provide hovering, completion, etc.
 
+https://user-images.githubusercontent.com/17688577/166110762-71058f8f-4cb6-44ae-960b-9370a166125a.mp4
+
 ## Usage
 
 ```bash
