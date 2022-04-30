@@ -60,6 +60,38 @@ def nested_aws_context(nested_aws_context_dct):
     return AWSContext(resources=nested_aws_context_dct["resources"])
 
 
+def test_aws_property_split():
+    property_name = (
+        AWSResourceName(value="AWS::EC2::CapacityReservation") / "AvailabilityZone"
+    )
+    assert property_name.split() == [
+        "AWS::EC2::CapacityReservation",
+        "AvailabilityZone",
+    ]
+
+
+def test_aws_context_getitem_for_resource(aws_context):
+    resource_name = AWSResourceName(value="AWS::EC2::CapacityReservation")
+    assert aws_context[resource_name] == aws_context.resources[resource_name.value]
+
+
+def test_aws_context_getitem_for_property(aws_context):
+    property_name = (
+        AWSResourceName(value="AWS::EC2::CapacityReservation") / "AvailabilityZone"
+    )
+    assert (
+        aws_context[property_name]
+        == aws_context.resources[property_name.parent.value]["properties"][
+            property_name.property_
+        ]
+    )
+
+
+def test_aws_context_getitem_errors_for_bad_type(aws_context):
+    with pytest.raises(ValueError):
+        aws_context["resource_name"]
+
+
 def test_aws_context_description_for_resource(aws_context):
     resource_name = AWSResourceName(value="AWS::EC2::CapacityReservation")
     assert (

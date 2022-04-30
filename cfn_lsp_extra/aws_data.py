@@ -90,31 +90,27 @@ class AWSContext(BaseModel):
 
     resources: Tree
 
-    def __getitem__(self, aws_property_name: AWSPropertyName) -> str:
-        return self.resources[aws_property_name.parent][  # type: ignore[no-any-return]
-            aws_property_name.property_
-        ]
-
-    def description(self, obj: AWSName) -> str:
-        """Get the description of obj."""
-        if isinstance(obj, AWSPropertyName):
+    def __getitem__(self, name: AWSName) -> Tree:
+        if isinstance(name, AWSResourceName):
             try:
-                resource, *subprops = obj.split()
+                return self.resources[name.value]
+            except KeyError:
+                raise ValueError(f"'{name}' is not a recognised resource")
+        elif isinstance(name, AWSPropertyName):
+            try:
+                resource, *subprops = name.split()
                 prop = self.resources[resource]
                 for subprop in subprops:
                     prop = prop["properties"][subprop]
-                return prop["description"]  # type: ignore[no-any-return]
+                return prop
             except KeyError:
-                raise ValueError(f"'{obj}' is not a recognised property")
-        elif isinstance(obj, AWSResourceName):
-            try:
-                return self.resources[obj.value][  # type: ignore[no-any-return]
-                    "description"
-                ]
-            except KeyError:
-                raise ValueError(f"'{obj}' is not a recognised resource")
+                raise ValueError(f"'{name}' is not a recognised property")
         else:
-            raise ValueError(f"Can't get a description for value of type '{type(obj)}'")
+            raise ValueError(f"obj has to be of type AWSName, but was '{type(name)}'")
+
+    def description(self, name: AWSName) -> str:
+        """Get the description of obj."""
+        return self[name]["description"]  # type: ignore[no-any-return]
 
     def same_level(self, obj: AWSName) -> List[str]:
         """Return names at the same (property/resource) level as obj."""
@@ -126,11 +122,7 @@ class AWSContext(BaseModel):
                 if isinstance(parent, AWSResourceName):
                     return list(self.resources[parent.value]["properties"].keys())
                 else:
-                    resource, *subprops = obj.split()
-                    prop = self.resources[resource]
-                    for subprop in subprops[:-1]:
-                        prop = prop["properties"][subprop]
-                    return list(prop["properties"].keys())
+                    return list(self[parent]["properties"].keys())
             except KeyError:
                 return []
         else:

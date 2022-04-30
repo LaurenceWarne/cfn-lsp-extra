@@ -4,7 +4,7 @@
 ** TODO hovers for resources in json
 ** TODO integration tests
 ** TODO completion after first character on new line
-** TODO parse sub properties
+** DONE parse sub properties
 ** TODO completion for resources
 
 * Bugs
