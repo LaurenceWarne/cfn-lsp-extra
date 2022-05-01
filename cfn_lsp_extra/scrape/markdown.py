@@ -36,7 +36,6 @@ from abc import abstractmethod
 from itertools import dropwhile
 from itertools import takewhile
 from typing import Callable
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Pattern
@@ -54,7 +53,6 @@ from cfn_lsp_extra.aws_data import AWSResourceName
 
 from ..aws_data import AWSContext
 from ..aws_data import AWSName
-from ..aws_data import AWSProperty
 from ..aws_data import AWSPropertyName
 from ..aws_data import Tree
 
@@ -89,7 +87,7 @@ class BaseCfnDocParser(ABC):
         self,
         name: AWSName,
         description: str,
-        properties: Dict[str, AWSProperty],
+        properties: Tree,
     ) -> Optional[Tree]:
         ...
 
@@ -198,7 +196,7 @@ class CfnResourceDocParser(BaseCfnDocParser):
         self,
         name: AWSName,
         description: str,
-        properties: Dict[str, AWSProperty],
+        properties: Tree,
     ) -> Optional[Tree]:
         return {"name": str(name), "description": description, "properties": properties}
 
@@ -230,7 +228,7 @@ class CfnPropertyDocParser(BaseCfnDocParser):
         self,
         name: AWSName,
         description: str,
-        properties: Dict[str, AWSProperty],
+        properties: Tree,
     ) -> Optional[Tree]:
         return {"description": description, "properties": properties}
 

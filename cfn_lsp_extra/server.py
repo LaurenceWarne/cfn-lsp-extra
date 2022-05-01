@@ -82,16 +82,21 @@ def server(aws_context: AWSContext) -> LanguageServer:
         span = position_lookup.at(line_at, char_at)
         if not span:
             return None
+        name = span.value
 
-        completions = aws_context.same_level(span.value)
+        completions = aws_context.same_level(name)
+        add_documentation = isinstance(name, AWSPropertyName)
         return CompletionList(
-            is_incomplete=(
-                span.value.value
-                if isinstance(span.value, AWSResourceName)
-                else span.value.property_
-            )
-            not in completions,
-            items=[CompletionItem(label=s) for s in completions],
+            is_incomplete=name.split()[-1] not in completions,
+            items=[
+                CompletionItem(
+                    label=s,
+                    documentation=aws_context.description(name.parent / s)
+                    if add_documentation
+                    else None,
+                )
+                for s in completions
+            ],
         )
 
     @server.feature(HOVER)

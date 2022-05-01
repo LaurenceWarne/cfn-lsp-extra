@@ -5,7 +5,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from cfn_lsp_extra.aws_data import AWSProperty
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import Extractor

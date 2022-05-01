@@ -3,8 +3,8 @@ Classes for dealing with aws properties
 """
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any
-from typing import Dict
 from typing import List
 from typing import Union
 
@@ -17,14 +17,32 @@ from pydantic import BaseModel
 Tree = Any
 
 
+class AWSRoot(Enum):
+    """Represents the root of the heirarchy.
+
+    This enum's root value is this type's sole value."""
+
+    root = 0
+
+    def parent(self) -> AWSRoot:
+        return self
+
+    def __truediv__(self, resource: str) -> AWSResourceName:
+        return AWSResourceName(value=resource)
+
+
 class AWSResourceName(BaseModel, frozen=True):
     value: str
+    parent: AWSRoot = AWSRoot.root
 
     def __str__(self) -> str:
         return self.value
 
     def __truediv__(self, other: str) -> AWSPropertyName:
         return AWSPropertyName(parent=self, property_=other)
+
+    def split(self) -> List[str]:
+        return [self.value]
 
 
 class AWSPropertyName(BaseModel, frozen=True):
@@ -57,32 +75,7 @@ class AWSPropertyName(BaseModel, frozen=True):
 AWSPropertyName.update_forward_refs()
 
 
-class AWSProperty(BaseModel):
-    """Property of an AWS resource."""
-
-    name: AWSPropertyName
-    description: str
-    subproperties: Dict[str, AWSProperty] = {}
-
-
-AWSProperty.update_forward_refs()
-
-
 AWSName = Union[AWSResourceName, AWSPropertyName]
-
-
-class AWSResource(BaseModel):
-    """Information on an AWS Cloudformation resource and its supported properties.
-
-    It's a thin wrapper around a dictionary mapping property names of a given
-    aws resource e.g. 'InstanceType' to properties themselves."""
-
-    name: AWSResourceName
-    description: str
-    properties: Dict[str, AWSProperty]
-
-    def __getitem__(self, property_name: AWSPropertyName) -> AWSProperty:
-        return self.properties[property_name.property_]
 
 
 class AWSContext(BaseModel):
@@ -91,22 +84,14 @@ class AWSContext(BaseModel):
     resources: Tree
 
     def __getitem__(self, name: AWSName) -> Tree:
-        if isinstance(name, AWSResourceName):
-            try:
-                return self.resources[name.value]
-            except KeyError:
-                raise ValueError(f"'{name}' is not a recognised resource")
-        elif isinstance(name, AWSPropertyName):
-            try:
-                resource, *subprops = name.split()
-                prop = self.resources[resource]
-                for subprop in subprops:
-                    prop = prop["properties"][subprop]
-                return prop
-            except KeyError:
-                raise ValueError(f"'{name}' is not a recognised property")
-        else:
-            raise ValueError(f"obj has to be of type AWSName, but was '{type(name)}'")
+        try:
+            resource, *subprops = name.split()
+            prop = self.resources[resource]
+            for subprop in subprops:
+                prop = prop["properties"][subprop]
+            return prop
+        except KeyError:
+            raise ValueError(f"'{name}' is not a recognised property")
 
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
@@ -118,11 +103,7 @@ class AWSContext(BaseModel):
             return list(self.resources.keys())
         elif isinstance(obj, AWSPropertyName):
             try:
-                parent = obj.parent
-                if isinstance(parent, AWSResourceName):
-                    return list(self.resources[parent.value]["properties"].keys())
-                else:
-                    return list(self[parent]["properties"].keys())
+                return list(self[obj.parent]["properties"].keys())
             except KeyError:
                 return []
         else:
