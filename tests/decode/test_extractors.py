@@ -173,6 +173,69 @@ def test_resource_property_extractor(document_mapping):
     ]
 
 
+def test_resource_property_extractor_for_nested_list():
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "My template",
+        "Resources": {
+            "SSHSecurityGroup": {
+                "Type": "AWS::EC2::SecurityGroup",
+                "Properties": {
+                    "GroupDescription": "SSH access",
+                    "VpcId": {
+                        "Ref": "DefaultVpcId",
+                        "__position__Ref": [11, 9],
+                        "__value_positions__": [{"__position__DefaultVpcId": [11, 14]}],
+                    },
+                    "SecurityGroupIngress": [
+                        {
+                            "IpProtocol": "tcp",
+                            "FromPort": 22,
+                            "ToPort": 22,
+                            "CidrIp": "0.0.0.0/0",
+                            "__position__IpProtocol": [13, 8],
+                            "__value_positions__": [
+                                {"__position__tcp": [13, 20]},
+                                {"__position__22": [14, 18]},
+                                {"__position__22": [15, 16]},
+                                {"__position__0.0.0.0/0": [16, 16]},
+                            ],
+                            "__position__FromPort": [14, 8],
+                            "__position__ToPort": [15, 8],
+                            "__position__CidrIp": [16, 8],
+                        }
+                    ],
+                    "__position__GroupDescription": [9, 6],
+                    "__value_positions__": [{"__position__SSH access": [9, 24]}],
+                    "__position__VpcId": [10, 6],
+                    "__position__SecurityGroupIngress": [12, 6],
+                },
+                "__position__Type": [7, 4],
+                "__value_positions__": [
+                    {"__position__AWS::EC2::SecurityGroup": [7, 10]}
+                ],
+                "__position__Properties": [8, 4],
+            },
+            "__position__SSHSecurityGroup": [6, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [1, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [1, 26]},
+            {"__position__My template": [3, 13]},
+        ],
+        "__position__Description": [3, 0],
+        "__position__Resources": [5, 0],
+    }
+    extractor = ResourcePropertyExtractor()
+    positions = extractor.extract(document_mapping)
+    print(positions)
+    assert [(13, 8, 10)] == positions[
+        AWSResourceName(value="AWS::EC2::SecurityGroup")
+        / "SecurityGroupIngress"
+        / "IpProtocol"
+    ]
+
+
 def test_resource_property_extractor_for_resource_with_one_incomplete_property():
     document_mapping = {
         "AWSTemplateFormatVersion": "2010-09-09",

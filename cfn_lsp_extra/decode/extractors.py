@@ -99,6 +99,9 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
                 )
                 if isinstance(node[prop], dict):
                     props.extend(self._extract_recursive(node[prop], aws_prop))
+                elif isinstance(node[prop], list):
+                    for sub_node in filter(lambda p: isinstance(p, dict), node[prop]):
+                        props.extend(self._extract_recursive(sub_node, aws_prop))
         return props
 
     def _extract_unfinished(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
