@@ -51,3 +51,45 @@ def decode(source: str, filename: str, extractor: Extractor[T]) -> PositionLooku
     ) as e:
         raise CfnDecodingException(f"Error decoding {filename}") from e
     return extractor.extract(data)
+
+
+def decode_unfinished(
+    source: str, filename: str, extractor: Extractor[T], line: int
+) -> PositionLookup[T]:
+    """Return a PositionLookup object containing items from source.
+
+    If decoding fails, attempt to 'fix' source by making edits to the
+    current line.
+
+    Parameters
+    ----------
+    source : str
+        template content, expected to be either json or yaml.
+    filename: str
+        name of the template file, determined whether source is taken to
+        be json or yaml.
+    extractor: Extractor[T]
+        Extractor object used to construct the PositionLookup object
+        based on the decoded source.
+    line: int
+        The line of the user's cursor
+
+    Returns
+    -------
+    PositionLookup[T]
+        A PositionLookup object containing items from source.
+
+    Raises
+    ------
+    CfnDecodingException
+        If json or yaml parsing fails even after edits."""
+    try:
+        return decode(source, filename, extractor)
+    except CfnDecodingException:
+        new_source_lst = source.splitlines()
+        if filename.endswith("json"):
+            new_source_lst[line] = new_source_lst[line].rstrip(":, ") + ': "",'
+        else:
+            new_source_lst[line] = new_source_lst[line].rstrip() + ":"
+        new_source = "\n".join(new_source_lst)
+        return decode(new_source, filename, extractor)

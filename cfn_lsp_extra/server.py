@@ -34,6 +34,7 @@ from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .decode import decode
+from .decode import decode_unfinished
 
 
 def server(aws_context: AWSContext) -> LanguageServer:
@@ -71,14 +72,11 @@ def server(aws_context: AWSContext) -> LanguageServer:
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
-            position_lookup = decode(document.source, document.filename, extractor)
+            position_lookup = decode_unfinished(
+                document.source, document.filename, extractor, line_at
+            )
         except CfnDecodingException:
-            # Try adding a ':' and see if that makes the yaml valid
-            new_source_lst = document.source.splitlines()
-            new_source_lst[line_at] = new_source_lst[line_at].rstrip() + ":"
-            new_source = "\n".join(new_source_lst)
-            position_lookup = decode(new_source, document.filename, extractor)
-
+            return None
         span = position_lookup.at(line_at, char_at)
         if not span:
             return None
