@@ -5,7 +5,9 @@
 ** TODO integration tests
 ** TODO completion after first character on new line
 ** DONE parse sub properties
-** TODO completion for resources
+** DONE completion for resources
+** TODO limit completion of resources, e.g. only after "AWS::EX"
+** TODO cut docstrings
 
 * Bugs
 ** TODO AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load

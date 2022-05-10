@@ -1,5 +1,5 @@
 """
-Classes for dealing with aws properties
+Classes for dealing with aws properties.
 """
 from __future__ import annotations
 

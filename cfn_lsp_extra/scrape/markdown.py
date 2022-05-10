@@ -31,8 +31,10 @@ from __future__ import annotations
 
 import logging
 import re
+import textwrap
 from abc import ABC
 from abc import abstractmethod
+from collections import deque
 from itertools import dropwhile
 from itertools import takewhile
 from typing import Callable
@@ -55,6 +57,7 @@ from ..aws_data import AWSContext
 from ..aws_data import AWSName
 from ..aws_data import AWSPropertyName
 from ..aws_data import Tree
+from .markdown_textwrapper import MarkdownTextWrapper
 
 
 logger = logging.getLogger(__name__)
@@ -67,6 +70,9 @@ class BaseCfnDocParser(ABC):
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "## Return values"
+    TEXT_WRAPPER = MarkdownTextWrapper(
+        width=79, break_long_words=False, replace_whitespace=False
+    )
 
     def __init__(self, base_url: str):
         self.base_url = base_url
@@ -132,7 +138,7 @@ class BaseCfnDocParser(ABC):
             if match:
                 if prop_name:
                     properties[prop_name.property_] = {  # type: ignore[unreachable]
-                        "description": desc,
+                        "description": self.format_description(desc),
                         "properties": subprop["properties"] if subprop else {},
                     }
                 prop_name, desc = name / match.group(1), f"`{match.group(1)}`\n"
@@ -152,10 +158,10 @@ class BaseCfnDocParser(ABC):
             logger.info(f"Skipping {name} since no properties were found")
             return None
         properties[prop_name.property_] = {
-            "description": desc,
+            "description": self.format_description(desc),
             "properties": subprop["properties"] if subprop else {},
         }
-        return name, description, properties
+        return name, self.format_description(description), properties
 
     async def parse_subproperty(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
@@ -176,6 +182,26 @@ class BaseCfnDocParser(ABC):
             else:
                 description += line
         return description
+
+    def format_description(self, description: str) -> str:
+        first_line, *rest = description.splitlines()
+        body_ls, rest_deque = [], deque(rest)
+        while rest_deque and not rest_deque[0].startswith("*"):
+            body_ls.append(rest_deque.popleft())
+        extra_ls = [
+            textwrap.shorten(s, width=200) if s.startswith("*Allowed") else s
+            for s in rest_deque
+        ]
+        extra = "\n".join(s + "`" if s.count("`") == 1 else s for s in extra_ls)
+        # https://stackoverflow.com/questions/1166317/python-textwrap-library-how-to-preserve-line-breaks
+        body = "\n".join(
+            [
+                "\n".join(self.TEXT_WRAPPER.wrap(line))
+                for line in body_ls
+                if line.strip()
+            ]
+        )
+        return f"{first_line}\n{body}\n{extra}"
 
 
 class CfnResourceDocParser(BaseCfnDocParser):
