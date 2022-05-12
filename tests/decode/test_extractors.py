@@ -228,7 +228,6 @@ def test_resource_property_extractor_for_nested_list():
     }
     extractor = ResourcePropertyExtractor()
     positions = extractor.extract(document_mapping)
-    print(positions)
     assert [(13, 8, 10)] == positions[
         AWSResourceName(value="AWS::EC2::SecurityGroup")
         / "SecurityGroupIngress"

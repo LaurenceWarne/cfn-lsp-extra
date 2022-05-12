@@ -1,13 +1,13 @@
 #+TITLE: Todo
 
 * Features
-** TODO hovers for resources in json
+** DONE hovers for resources in json
 ** TODO integration tests
 ** TODO completion after first character on new line
 ** DONE parse sub properties
 ** DONE completion for resources
 ** TODO limit completion of resources, e.g. only after "AWS::EX"
-** TODO cut docstrings
+** DONE cut docstrings
 
 * Bugs
-** TODO AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load
+** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load

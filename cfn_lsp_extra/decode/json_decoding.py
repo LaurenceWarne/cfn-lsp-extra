@@ -16,6 +16,7 @@ from typing import Any
 from typing import List
 
 from .yaml_decoding import POSITION_PREFIX
+from .yaml_decoding import VALUES_POSITION_PREFIX
 
 
 # This is a slightly modified version of json.decoder.JSONObject
@@ -87,10 +88,17 @@ def cfn_json_object(
         except StopIteration as err:
             raise JSONDecodeError("Expecting value", s, err.value) from None
         pairs_append((key, value))
-        # if isinstance(value, str):
-        #     pairs_append(("__values_position__" + value, [value_start, end]))
         # EDIT: adds positional data to result
-        pairs_append(("__position__" + key, [key_start, key_end]))
+        if isinstance(value, str):
+            pair_keys = {k for k, _ in pairs}
+            if VALUES_POSITION_PREFIX not in pairs:
+                values_lst = []
+                pairs_append((VALUES_POSITION_PREFIX, values_lst))
+            else:
+                values_lst = next(v for k, v in pairs if k == VALUES_POSITION_PREFIX)
+            values_lst.append({POSITION_PREFIX + value: [value_start, end]})
+        # END EDIT
+        pairs_append((POSITION_PREFIX + key, [key_start, key_end]))
         try:
             nextchar = s[end]
             if nextchar in _ws:
@@ -113,12 +121,10 @@ def cfn_json_object(
             )
     if object_pairs_hook is not None:
         result = object_pairs_hook(pairs)
-        # pairs["__position__"] = [init, end]
         return result, end
     pairs = dict(pairs)
     if object_hook is not None:
         pairs = object_hook(pairs)
-    # pairs["__position__"] = [init, end]
     return pairs, end
 
 
