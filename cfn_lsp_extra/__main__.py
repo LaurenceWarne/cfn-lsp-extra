@@ -14,7 +14,7 @@ from .server import server
 @click.version_option()
 @click.option("-v", "--verbose", count=True, help="Print more output.")
 @click.pass_context
-def main(ctx: Context, verbose: int) -> None:
+def cli(ctx: Context, verbose: int) -> None:
     """Start a cfn-lsp-extra server."""
     level = [logging.ERROR, logging.INFO, logging.DEBUG][min(verbose, 2)]
     logging.basicConfig(level=level)
@@ -25,13 +25,16 @@ def main(ctx: Context, verbose: int) -> None:
     return None
 
 
-@main.command()
+@cli.command()
 def generate_cache() -> None:
     """Generate the documentation cache and exit."""
     download_context()
     return None
 
 
-# TODO this is not used by install.poetry.scripts
+def main() -> None:
+    cli(prog_name="cfn-lsp-extra", auto_envvar_prefix="CFN_LSP_EXTRA")
+
+
 if __name__ == "__main__":
-    main(prog_name="cfn-lsp-extra", auto_envvar_prefix="CFN_LSP_EXTRA")
+    main()
