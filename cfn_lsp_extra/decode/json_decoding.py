@@ -30,7 +30,7 @@ def cfn_json_object(
     memo=None,
     _w=WHITESPACE.match,
     _ws=WHITESPACE_STR,
-):
+):  # pragma: no cover
     s, end = s_and_end
     init = end
     pairs = []

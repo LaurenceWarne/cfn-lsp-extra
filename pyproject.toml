@@ -55,6 +55,7 @@ tests = ["tests", "*/tests"]
 [tool.coverage.run]
 branch = true
 source = ["cfn_lsp_extra"]
+omit = ["cfn_lsp_extra/cfnlint_integration.py"]
 
 [tool.coverage.report]
 show_missing = true

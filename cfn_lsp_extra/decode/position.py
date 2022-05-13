@@ -1,6 +1,4 @@
-"""
-
-"""
+from __future__ import annotations
 
 from typing import Dict
 from typing import Generic
@@ -58,6 +56,6 @@ class PositionLookup(Dict[T, PositionList]):
                     )
         return None
 
-    def extend_with_appends(self, other: "PositionLookup[T]") -> None:
+    def extend_with_appends(self, other: PositionLookup[T]) -> None:
         for key, value in other.items():
             self[key].extend(value)
