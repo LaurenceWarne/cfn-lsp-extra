@@ -8,6 +8,8 @@
 ** DONE completion for resources
 ** TODO limit completion of resources, e.g. only after "AWS::EX"
 ** DONE cut docstrings
+** DONE Search for customisation file in ~~/.config~ instead of ~~/.cache~
+** TODO add flag which allows for custom resources and parameters in custom files
 
 * Bugs
 ** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load

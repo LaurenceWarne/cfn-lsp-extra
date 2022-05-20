@@ -2,6 +2,7 @@ import pytest
 
 from cfn_lsp_extra.aws_data import AWSContext
 from cfn_lsp_extra.aws_data import AWSResourceName
+from cfn_lsp_extra.aws_data import OverridingKeyNotInContextException
 
 
 @pytest.fixture
@@ -152,3 +153,51 @@ def test_aws_context_same_level_nested_property(nested_aws_context):
         / "Extensions"
     )
     assert nested_aws_context.same_level(property_name) == ["Extensions"]
+
+
+def test_aws_update(aws_context):
+    new_name = "foobar"
+    new_ctx = AWSContext(
+        resources={"AWS::EC2::CapacityReservation": {"name": new_name}}
+    )
+    aws_context.update(new_ctx)
+    assert aws_context["AWS::EC2::CapacityReservation"]["name"] == new_name
+
+
+def test_aws_update_nested(nested_aws_context):
+    new_description = "foobar"
+    new_ctx = AWSContext(
+        resources={
+            "AWS::ACMPCA::Certificate": {
+                "properties": {
+                    "ApiPassthrough": {
+                        "properties": {"Extensions": {"description": new_description}},
+                    }
+                },
+            }
+        }
+    )
+    nested_aws_context.update(new_ctx)
+    assert (
+        nested_aws_context["AWS::ACMPCA::Certificate"]["properties"]["ApiPassthrough"][
+            "properties"
+        ]["Extensions"]["description"]
+        == new_description
+    )
+
+
+def test_aws_update_errors_if_key_not_in_ctx(aws_context):
+    bad_key = "notakey"
+    new_ctx = AWSContext(
+        resources={"AWS::EC2::CapacityReservation": {bad_key: "new_name"}}
+    )
+    with pytest.raises(OverridingKeyNotInContextException) as e:
+        aws_context.update(new_ctx)
+    assert e.value.path == f"resources/AWS::EC2::CapacityReservation/{bad_key}"
+
+
+def test_aws_update_no_errors_if_key_not_in_ctx(aws_context):
+    new_ctx = AWSContext(
+        resources={"AWS::EC2::CapacityReservation": {"notakey": "new_name"}}
+    )
+    aws_context.update(new_ctx, error_if_new=False)

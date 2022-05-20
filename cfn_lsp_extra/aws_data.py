@@ -78,6 +78,12 @@ AWSPropertyName.update_forward_refs()
 AWSName = Union[AWSResourceName, AWSPropertyName]
 
 
+class OverridingKeyNotInContextException(Exception):
+    def __init__(self, message: str, path: str):
+        super().__init__(message)
+        self.path = path
+
+
 class AWSContext(BaseModel):
     """A handle on AWS resource data for the lsp server."""
 
@@ -108,3 +114,23 @@ class AWSContext(BaseModel):
                 return []
         else:
             raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
+
+    def update(self, other: AWSContext, error_if_new: bool = True) -> None:
+        """Add elements from other to this object."""
+
+        def update_dict_recursive(mp1: Tree, mp2: Tree, path: str) -> None:
+            for key, value in mp2.items():
+                if key not in mp1:
+                    if error_if_new:
+                        bad_path = f"{path}/{key}"
+                        raise OverridingKeyNotInContextException(
+                            f"{bad_path} is not in the base context!", bad_path
+                        )
+                    else:
+                        mp1[key] = value
+                if not isinstance(mp1[key], dict) or not isinstance(value, dict):
+                    mp1[key] = value
+                else:
+                    update_dict_recursive(mp1[key], value, f"{path}/{key}")
+
+        return update_dict_recursive(self.resources, other.resources, "resources")

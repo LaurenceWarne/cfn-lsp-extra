@@ -85,7 +85,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         completions = aws_context.same_level(name)
         add_documentation = isinstance(name, AWSPropertyName)
         return CompletionList(
-            is_incomplete=name.split()[-1] not in completions,
+            is_incomplete=False,
             items=[
                 CompletionItem(
                     label=s,

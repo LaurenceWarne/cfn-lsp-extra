@@ -16,14 +16,14 @@ def aws_context_str(aws_context_dct):
 
 @pytest.fixture
 def mocker_cache_file(mocker, aws_context_dct, aws_context_str):
-    cache_file = mocker.MagicMock(__open__=aws_context_str, exists=True)
+    cache_file = mocker.MagicMock(__open__=aws_context_str, exists=lambda: True)
     mocker.patch("json.load", lambda f: aws_context_dct)
     return cache_file
 
 
 @pytest.fixture
 def mocker_inexistant_cache_file(mocker):
-    cache_file = mocker.MagicMock(exists=False)
+    cache_file = mocker.MagicMock(exists=lambda: False)
     return cache_file
 
 

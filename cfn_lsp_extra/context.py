@@ -16,10 +16,11 @@ from .scrape.markdown import parse_urls
 
 logger = logging.getLogger(__name__)
 dirs = PlatformDirs("cfn-lsp-extra", "cfn-lsp-extra")
-ctx_path_override = Path(dirs.user_cache_dir) / "context.json"
+override_ctx_path = Path(dirs.user_config_dir) / "context.json"
+custom_ctx_path = Path(dirs.user_config_dir) / "custom.json"
 
 
-def download_context(path: Path = ctx_path_override) -> None:
+def download_context(path: Path = override_ctx_path) -> None:
     # Not using importlib.resources.files is considered legacy but is
     # necessary for python < 3.9
     urls = read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
@@ -30,13 +31,25 @@ def download_context(path: Path = ctx_path_override) -> None:
         json.dump(ctx.dict(), f, indent=2, sort_keys=True)
 
 
-def load_context(override_path: Path = ctx_path_override) -> AWSContext:
+def with_custom(context: AWSContext, custom_path: Path = custom_ctx_path) -> AWSContext:
+    """Overwrite part of context with custom content."""
+    logger.info(f"Updating context using custom file {custom_path}")
+    with open_text("cfn_lsp_extra.resources", "custom.json") as f:
+        context.update(AWSContext(**json.load(f)))
+    if custom_path.exists():
+        logger.info(f"Updating context using custom file {custom_path}")
+        with custom_path.open("r") as f:
+            context.update(AWSContext(**json.load(f)))
+    return context
+
+
+def load_context(override_path: Path = override_ctx_path) -> AWSContext:
     """Load AWS context from a cache."""
-    if override_path.exists:
+    if override_path.exists():
         logger.info(f"Loading custom context from {override_path}")
         with override_path.open("r") as f:
-            return AWSContext(**json.load(f))
+            return with_custom(AWSContext(**json.load(f)))
     else:
-        logger.info("Loading context...")  # type: ignore[unreachable]
+        logger.info("Loading context...")
         with open_text("cfn_lsp_extra.resources", "context.json") as f:
-            return AWSContext(**json.load(f))
+            return with_custom(AWSContext(**json.load(f)))
