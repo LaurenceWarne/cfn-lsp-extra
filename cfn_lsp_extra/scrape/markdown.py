@@ -133,7 +133,7 @@ class BaseCfnDocParser(ABC):
         subprop: Tree
         properties, prop_name, desc, subprop = {}, None, "", {}
         async for line_b in content:
-            line = line_b.decode("utf-8")
+            line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
             match = re.match(self.HEADER_REGEX, line)
             if match:
                 if prop_name:
