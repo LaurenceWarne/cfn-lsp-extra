@@ -9,6 +9,8 @@ from cfn_lsp_extra.context import with_custom
 
 from .test_aws_data import aws_context
 from .test_aws_data import aws_context_dct
+from .test_aws_data import aws_property_string
+from .test_aws_data import aws_resource_string
 
 
 @pytest.fixture

@@ -6,14 +6,24 @@ from cfn_lsp_extra.aws_data import OverridingKeyNotInContextException
 
 
 @pytest.fixture
-def aws_context_dct():
+def aws_resource_string():
+    return "AWS::EC2::CapacityReservation"
+
+
+@pytest.fixture
+def aws_property_string():
+    return "AvailabilityZone"
+
+
+@pytest.fixture
+def aws_context_dct(aws_resource_string, aws_property_string):
     return {
         "resources": {
-            "AWS::EC2::CapacityReservation": {
+            aws_resource_string: {
                 "name": "AWS::EC2::CapacityReservation",
                 "description": """Creates a new Capacity Reservation with the specified attributes. For more information, see Capacity Reservations in the Amazon EC2 User Guide.""",
                 "properties": {
-                    "AvailabilityZone": {
+                    aws_property_string: {
                         "description": """`AvailabilityZone`\nThe Availability Zone in which to create the Capacity Reservation\\ """,
                         "properties": {},
                     }
@@ -71,15 +81,15 @@ def test_aws_property_split():
     ]
 
 
-def test_aws_context_getitem_for_resource(aws_context):
-    resource_name = AWSResourceName(value="AWS::EC2::CapacityReservation")
+def test_aws_context_getitem_for_resource(aws_context, aws_resource_string):
+    resource_name = AWSResourceName(value=aws_resource_string)
     assert aws_context[resource_name] == aws_context.resources[resource_name.value]
 
 
-def test_aws_context_getitem_for_property(aws_context):
-    property_name = (
-        AWSResourceName(value="AWS::EC2::CapacityReservation") / "AvailabilityZone"
-    )
+def test_aws_context_getitem_for_property(
+    aws_resource_string, aws_property_string, aws_context
+):
+    property_name = AWSResourceName(value=aws_resource_string) / aws_property_string
     assert (
         aws_context[property_name]
         == aws_context.resources[property_name.parent.value]["properties"][
@@ -93,18 +103,18 @@ def test_aws_context_getitem_errors_for_bad_type(aws_context):
         aws_context["resource_name"]
 
 
-def test_aws_context_description_for_resource(aws_context):
-    resource_name = AWSResourceName(value="AWS::EC2::CapacityReservation")
+def test_aws_context_description_for_resource(aws_resource_string, aws_context):
+    resource_name = AWSResourceName(value=aws_resource_string)
     assert (
         aws_context.description(resource_name)
         == aws_context.resources[resource_name.value]["description"]
     )
 
 
-def test_aws_context_description_for_property(aws_context):
-    property_name = (
-        AWSResourceName(value="AWS::EC2::CapacityReservation") / "AvailabilityZone"
-    )
+def test_aws_context_description_for_property(
+    aws_resource_string, aws_property_string, aws_context
+):
+    property_name = AWSResourceName(value=aws_resource_string) / aws_property_string
     assert (
         aws_context.description(property_name)
         == aws_context.resources[property_name.parent.value]["properties"][
@@ -134,16 +144,16 @@ def test_aws_context_description_errors_for_bad_type(aws_context):
         aws_context.description("resource_name")
 
 
-def test_aws_context_same_level_for_property(aws_context):
-    resource_name = AWSResourceName(value="AWS::EC2::CapacityReservation")
+def test_aws_context_same_level_for_property(aws_resource_string, aws_context):
+    resource_name = AWSResourceName(value=aws_resource_string)
     assert aws_context.same_level(resource_name / "AvailabilityZone") == [
         "AvailabilityZone"
     ]
 
 
-def test_aws_context_same_level_for_resource(aws_context):
-    resource_name = AWSResourceName(value="AWS::EC2::CapacityReservation")
-    assert aws_context.same_level(resource_name) == ["AWS::EC2::CapacityReservation"]
+def test_aws_context_same_level_for_resource(aws_resource_string, aws_context):
+    resource_name = AWSResourceName(value=aws_resource_string)
+    assert aws_context.same_level(resource_name) == [aws_resource_string]
 
 
 def test_aws_context_same_level_nested_property(nested_aws_context):
@@ -186,20 +196,18 @@ def test_aws_context_update_nested(nested_aws_context):
     )
 
 
-def test_aws_context_update_errors_if_key_not_in_ctx(aws_context):
+def test_aws_context_update_errors_if_key_not_in_ctx(aws_resource_string, aws_context):
     bad_key = "notakey"
-    new_ctx = AWSContext(
-        resources={"AWS::EC2::CapacityReservation": {bad_key: "new_name"}}
-    )
+    new_ctx = AWSContext(resources={aws_resource_string: {bad_key: "new_name"}})
     with pytest.raises(OverridingKeyNotInContextException) as e:
         aws_context.update(new_ctx)
-    assert e.value.path == f"resources/AWS::EC2::CapacityReservation/{bad_key}"
+    assert e.value.path == f"resources/{aws_resource_string}/{bad_key}"
 
 
-def test_aws_context_update_no_errors_if_key_not_in_ctx(aws_context):
-    new_ctx = AWSContext(
-        resources={"AWS::EC2::CapacityReservation": {"notakey": "new_name"}}
-    )
+def test_aws_context_update_no_errors_if_key_not_in_ctx(
+    aws_resource_string, aws_context
+):
+    new_ctx = AWSContext(resources={aws_resource_string: {"notakey": "new_name"}})
     aws_context.update(new_ctx, error_if_new=False)
 
 
