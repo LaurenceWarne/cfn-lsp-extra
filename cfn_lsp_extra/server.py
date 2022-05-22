@@ -19,7 +19,6 @@ from pygls.lsp.types import MarkupContent
 from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
-from pygls.lsp.types.language_features.completion import CompletionItem
 from pygls.lsp.types.language_features.completion import CompletionList
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
@@ -33,6 +32,7 @@ from .aws_data import AWSContext
 from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
+from .completions import completions_for
 from .decode import decode
 from .decode import decode_unfinished
 
@@ -81,21 +81,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         if not span:
             return None
         name = span.value
-
-        completions = aws_context.same_level(name)
-        add_documentation = isinstance(name, AWSPropertyName)
-        return CompletionList(
-            is_incomplete=False,
-            items=[
-                CompletionItem(
-                    label=s,
-                    documentation=aws_context.description(name.parent / s)
-                    if add_documentation
-                    else None,
-                )
-                for s in completions
-            ],
-        )
+        return completions_for(name, aws_context)
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:

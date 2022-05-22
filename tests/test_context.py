@@ -5,7 +5,9 @@ from pytest_mock import mocker
 
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.context import load_context
+from cfn_lsp_extra.context import with_custom
 
+from .test_aws_data import aws_context
 from .test_aws_data import aws_context_dct
 
 
@@ -27,6 +29,23 @@ def mocker_inexistant_cache_file(mocker):
     return cache_file
 
 
+@pytest.fixture
+def mocker_custom_file(mocker):
+    def _mocker_custom_file(new_description):
+        custom_context_dct = {
+            "resources": {
+                "AWS::EC2::CapacityReservation": {"description": new_description}
+            }
+        }
+        cache_file = mocker.MagicMock(
+            __open__=str(custom_context_dct), exists=lambda: True
+        )
+        mocker.patch("json.load", lambda f: custom_context_dct)
+        return cache_file
+
+    return _mocker_custom_file
+
+
 def test_load_context_reads_override_file(mocker, mocker_cache_file, aws_context_dct):
     result = load_context(mocker_cache_file)
     assert result == aws_context_dct
@@ -34,3 +53,12 @@ def test_load_context_reads_override_file(mocker, mocker_cache_file, aws_context
 
 def test_load_context_reads_package_file(mocker_inexistant_cache_file):
     load_context(mocker_inexistant_cache_file)
+
+
+def test_with_custom(aws_context, mocker_custom_file):
+    new_description = "new_description"
+    result = with_custom(aws_context, custom_path=mocker_custom_file(new_description))
+    assert (
+        result.resources["AWS::EC2::CapacityReservation"]["description"]
+        == new_description
+    )

@@ -95,7 +95,7 @@ pyflakes = ["+*"]
 "flake8-*" = ["+*"]
 # explicitly disable plugin
 #flake8-docstrings = ["-*"]
-pycodestyle = ["+*", "-W503", "-E203"]
+pycodestyle = ["+*", "-W503", "-E203", "-E731"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,11 +1,14 @@
 """
 Classes for dealing with aws properties.
+
+For reference as of 21/05/2022 there are 186 resource prefixes.
 """
 from __future__ import annotations
 
 from enum import Enum
 from typing import Any
 from typing import List
+from typing import Set
 from typing import Union
 
 from pydantic import BaseModel
@@ -88,6 +91,10 @@ class AWSContext(BaseModel):
     """A handle on AWS resource data for the lsp server."""
 
     resources: Tree
+
+    def resource_prefixes(self) -> Set[str]:
+        """Return a set of all 'service-provider::service-name' strings."""
+        return {s.rsplit("::", 1)[0] for s in self.resources.keys()}
 
     def __getitem__(self, name: AWSName) -> Tree:
         try:

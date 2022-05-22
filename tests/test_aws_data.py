@@ -155,7 +155,7 @@ def test_aws_context_same_level_nested_property(nested_aws_context):
     assert nested_aws_context.same_level(property_name) == ["Extensions"]
 
 
-def test_aws_update(aws_context):
+def test_aws_context_update(aws_context):
     new_name = "foobar"
     new_ctx = AWSContext(
         resources={"AWS::EC2::CapacityReservation": {"name": new_name}}
@@ -164,7 +164,7 @@ def test_aws_update(aws_context):
     assert aws_context["AWS::EC2::CapacityReservation"]["name"] == new_name
 
 
-def test_aws_update_nested(nested_aws_context):
+def test_aws_context_update_nested(nested_aws_context):
     new_description = "foobar"
     new_ctx = AWSContext(
         resources={
@@ -186,7 +186,7 @@ def test_aws_update_nested(nested_aws_context):
     )
 
 
-def test_aws_update_errors_if_key_not_in_ctx(aws_context):
+def test_aws_context_update_errors_if_key_not_in_ctx(aws_context):
     bad_key = "notakey"
     new_ctx = AWSContext(
         resources={"AWS::EC2::CapacityReservation": {bad_key: "new_name"}}
@@ -196,8 +196,12 @@ def test_aws_update_errors_if_key_not_in_ctx(aws_context):
     assert e.value.path == f"resources/AWS::EC2::CapacityReservation/{bad_key}"
 
 
-def test_aws_update_no_errors_if_key_not_in_ctx(aws_context):
+def test_aws_context_update_no_errors_if_key_not_in_ctx(aws_context):
     new_ctx = AWSContext(
         resources={"AWS::EC2::CapacityReservation": {"notakey": "new_name"}}
     )
     aws_context.update(new_ctx, error_if_new=False)
+
+
+def test_aws_context_resource_prefixes(aws_context):
+    assert aws_context.resource_prefixes() == {"AWS::EC2"}
