@@ -1,7 +1,9 @@
 """
 Classes for dealing with aws properties.
 
-For reference as of 21/05/2022 there are 186 resource prefixes.
+For reference as of 21/05/2022 there are 186 resource prefixes. and a total
+of 899 resources.  The most properties for a resource is 52 for
+'AWS::RDS::DBInstance' and the average is 6.193548387096774.
 """
 from __future__ import annotations
 
