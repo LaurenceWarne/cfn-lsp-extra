@@ -131,7 +131,7 @@ class BaseCfnDocParser(ABC):
 
         # Parse all properties
         subprop: Tree
-        properties, prop_name, desc, subprop = {}, None, "", {}
+        properties, prop_name, desc, subprop, required = {}, None, "", {}, False
         async for line_b in content:
             line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
             match = re.match(self.HEADER_REGEX, line)
@@ -139,10 +139,11 @@ class BaseCfnDocParser(ABC):
                 if prop_name:
                     properties[prop_name.property_] = {  # type: ignore[unreachable]
                         "description": self.format_description(desc),
+                        "required": required,
                         "properties": subprop["properties"] if subprop else {},
                     }
                 prop_name, desc = name / match.group(1), f"`{match.group(1)}`\n"
-                subprop = {}
+                subprop, required = {}, False
             elif line.startswith(self.PROPERTY_END_PREFIX):
                 break
             else:
@@ -152,6 +153,7 @@ class BaseCfnDocParser(ABC):
                     subprop = await self.parse_subproperty(
                         session, prop_name, sub_url  # type: ignore[arg-type]
                     )
+                required |= line.startswith("*Required*: Yes")
                 desc += line
 
         if prop_name is None:
@@ -159,6 +161,7 @@ class BaseCfnDocParser(ABC):
             return None
         properties[prop_name.property_] = {
             "description": self.format_description(desc),
+            "required": required,
             "properties": subprop["properties"] if subprop else {},
         }
         return name, self.format_description(description), properties
