@@ -15,6 +15,8 @@ def test_property_completions(aws_resource_string, aws_property_string, aws_cont
             property_=aws_property_string,
         ),
         aws_context,
+        [""],
+        0,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
@@ -26,6 +28,8 @@ def test_resource_completions_start(
     result = completions_for(
         AWSResourceName(value=aws_resource_string.split("::")[0]),
         aws_context,
+        [""],
+        0,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_resource_string.rsplit("::", 1)[0]
@@ -37,6 +41,37 @@ def test_resource_completions_end(
     result = completions_for(
         AWSResourceName(value=aws_resource_string.rsplit("::", 1)[0]),
         aws_context,
+        [""],
+        0,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_resource_string
+
+
+def test_resource_completions_snippet_required(
+    aws_resource_string, aws_property_string, aws_context
+):
+    aws_context.resources[aws_resource_string]["properties"][aws_property_string][
+        "required"
+    ] = True
+    result = completions_for(
+        AWSResourceName(value=aws_resource_string.rsplit("::", 1)[0]),
+        aws_context,
+        [""],
+        0,
+    )
+    assert len(result.items) == 1
+    assert f"{aws_property_string}: $1" in result.items[0].insert_text
+
+
+def test_resource_completions_snippet_not_required(
+    aws_resource_string, aws_property_string, aws_context
+):
+    result = completions_for(
+        AWSResourceName(value=aws_resource_string.rsplit("::", 1)[0]),
+        aws_context,
+        [""],
+        0,
+    )
+    assert len(result.items) == 1
+    assert f"{aws_property_string}: $1" not in result.items[0].insert_text

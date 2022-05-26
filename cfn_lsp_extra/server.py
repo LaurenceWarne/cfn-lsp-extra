@@ -61,7 +61,6 @@ def server(aws_context: AWSContext) -> LanguageServer:
         diags = diagnostics(text_doc.source, file_path)
         # Publishing diagnostics removes old ones
         ls.publish_diagnostics(text_doc.uri, diags)
-        ls.show_message("Finished processing Text Document Did Change")
 
     @server.feature(COMPLETION)
     def completions(
@@ -81,7 +80,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         if not span:
             return None
         name = span.value
-        return completions_for(name, aws_context)
+        return completions_for(name, aws_context, document.source.splitlines(), line_at)
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:

@@ -25,6 +25,7 @@ def aws_context_dct(aws_resource_string, aws_property_string):
                 "properties": {
                     aws_property_string: {
                         "description": """`AvailabilityZone`\nThe Availability Zone in which to create the Capacity Reservation\\ """,
+                        "required": False,
                         "properties": {},
                     }
                 },
