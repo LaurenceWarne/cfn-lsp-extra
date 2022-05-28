@@ -14,10 +14,10 @@ First install the executable, [`pipx`](https://pypa.github.io/pipx/) is recommen
 pipx install cfn-lsp-extra
 ```
 
-Or from source:
+Or get the bleeding edge from source:
 
 ```bash
-pipx install git+https://github.com/LaurenceWarne/cfn-lsp-extra
+pipx install git+https://github.com/laurencewarne/cfn-lsp-extra.git@$(git ls-remote git@github.com:laurencewarne/cfn-lsp-extra.git | head -1 | cut -f1)
 ```
 
 Updating:
@@ -25,7 +25,6 @@ Updating:
 ```bash
 pipx upgrade cfn-lsp-extra
 ```
-
 
 ### Emacs
 
@@ -62,6 +61,8 @@ You need to install an lsp client like [lsp-mode](https://github.com/emacs-lsp/l
                     :activation-fn (lsp-activate-on "cloudformation")
                     :server-id 'cfn-lsp-extra)))
 ```
+
+Please send a patch if you know how to do this for other editors 🙏
 
 ## Alternatives
 
