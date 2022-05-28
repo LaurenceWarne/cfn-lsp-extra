@@ -1,7 +1,6 @@
 """
 Completion logic.
 """
-from typing import Callable
 from typing import List
 
 from pygls.lsp.types.language_features.completion import CompletionItem
@@ -47,34 +46,25 @@ def resource_completions(
     split = name.value.split("::")
     if len(split) <= 1:
         items = [
-            CompletionItem(
-                label=res,
-                insert_text=res + "::",
-            )
+            CompletionItem(label=res, insert_text=res + "::")
             for res in aws_context.resource_prefixes()
         ]
     else:
-        get_desc: Callable[[str], str] = lambda s: aws_context.description(
-            name.parent / s
-        )
-        if (
+        is_snippet = (
             current_line == len(document_lines) - 1
             or not document_lines[current_line + 1].strip()
-        ):
-            insert_text_format = InsertTextFormat.Snippet
-        else:
-            insert_text_format = None
+        )
         items = [
             CompletionItem(
                 label=s,
-                documentation=get_desc(s),
-                insert_text=s.split("::")[-1]
+                documentation=aws_context.description(name.parent / s),
+                insert_text=s.rsplit("::", 1)[-1]
                 + (
                     "\n" + resource_snippet(AWSResourceName(value=s), aws_context)
-                    if insert_text_format
+                    if is_snippet
                     else ""
                 ),
-                insert_text_format=insert_text_format,
+                insert_text_format=is_snippet and InsertTextFormat.Snippet,
             )
             for s in aws_context.same_level(name)
             if s.startswith("::".join(split[:-1]))
@@ -90,5 +80,4 @@ def resource_snippet(name: AWSResourceName, aws_context: AWSContext) -> str:
     for idx, prop in enumerate(required_props):
         props += f"\t{prop}: ${idx + 1}\n"
     # $0 defines the final tab stop
-    props += "\t$0"
-    return props
+    return props + "\t$0"
