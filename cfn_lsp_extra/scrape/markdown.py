@@ -34,7 +34,6 @@ import re
 import textwrap
 from abc import ABC
 from abc import abstractmethod
-from collections import deque
 from itertools import dropwhile
 from itertools import takewhile
 from typing import Callable
@@ -71,7 +70,9 @@ class BaseCfnDocParser(ABC):
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "## Return values"
     TEXT_WRAPPER = MarkdownTextWrapper(
-        width=79, break_long_words=True, replace_whitespace=False
+        width=79,
+        break_long_words=True,
+        replace_whitespace=False,
     )
 
     def __init__(self, base_url: str):
@@ -188,23 +189,13 @@ class BaseCfnDocParser(ABC):
 
     def format_description(self, description: str) -> str:
         first_line, *rest = description.splitlines()
-        body_ls, rest_deque = [], deque(rest)
-        while rest_deque and not rest_deque[0].startswith("*Required"):
-            body_ls.append(rest_deque.popleft())
-        extra_ls = [
-            textwrap.shorten(s, width=200) if s.startswith("*Allowed") else s
-            for s in rest_deque
-        ]
-        extra = "\n".join(s + "`" if s.count("`") == 1 else s for s in extra_ls)
-        # https://stackoverflow.com/questions/1166317/python-textwrap-library-how-to-preserve-line-breaks
-        body = "\n".join(
-            [
-                "\n".join(self.TEXT_WRAPPER.wrap(line))
-                for line in body_ls
-                if line.strip()
-            ]
-        )
-        return f"{first_line}\n{body}\n{extra}"
+        body = ""
+        for line in filter(lambda l: l.strip(), rest):
+            if line.startswith("*Allowed"):
+                line = textwrap.shorten(line, width=200)
+                line += "`" if line.count("`") == 1 else ""
+            body += "\n".join(self.TEXT_WRAPPER.wrap(line)) + "\n"
+        return f"{first_line}\n{body}\n"
 
 
 class CfnResourceDocParser(BaseCfnDocParser):
