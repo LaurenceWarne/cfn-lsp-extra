@@ -1,6 +1,6 @@
 # Cfn Lsp Extra
 
-<!-- [![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra)][python version] -->
+![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra) [![Version](https://img.shields.io/github/v/tag/laurencewarne/cfn-lsp-extra?label=release)](CHANGELOG.md)
 
 An experimental cloudformation lsp server built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) aiming to provide hovering, completion, etc.
 
