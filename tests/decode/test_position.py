@@ -1,6 +1,5 @@
 import pytest
 
-
 from cfn_lsp_extra.decode.position import PositionLookup
 from cfn_lsp_extra.decode.position import Spanning
 

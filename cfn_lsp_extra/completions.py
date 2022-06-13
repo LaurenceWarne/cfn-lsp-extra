@@ -2,7 +2,6 @@
 Completion logic.
 """
 from typing import List
-from typing import Optional
 
 from pygls.lsp.types.basic_structures import Position
 from pygls.lsp.types.language_features.completion import CompletionItem

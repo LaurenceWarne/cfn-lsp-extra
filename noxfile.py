@@ -20,7 +20,10 @@ def tests(session):
 def lint(session):
     session.install("flakeheaven")
     session.install("flake8-bugbear")
+    session.install("isort")
     session.run("flakeheaven", "lint", package)
+    session.run("flakeheaven", "lint", package)
+    session.run("isort", "-c", "cfn-lsp-extra", "tests")
 
 
 @session(python=python_versions)
