@@ -67,20 +67,16 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ls: LanguageServer, params: CompletionParams
     ) -> Optional[CompletionList]:
         """Returns completion items."""
-        line_at, char_at = params.position.line, params.position.character
+        line_at = params.position.line
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
-            position_lookup = decode_unfinished(
-                document.source, document.filename, extractor, line_at
+            template_data = decode_unfinished(
+                document.source, document.filename, line_at
             )
         except CfnDecodingException:
             return None
-        span = position_lookup.at(line_at, char_at)
-        if not span:
-            return None
-        name = span.value
-        return completions_for(name, aws_context, document.source.splitlines(), line_at)
+        return completions_for(template_data, aws_context, document, params.position)
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
@@ -89,9 +85,10 @@ def server(aws_context: AWSContext) -> LanguageServer:
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
-            position_lookup = decode(document.source, document.filename, extractor)
+            template_data = decode(document.source, document.filename)
         except CfnDecodingException:
             return None
+        position_lookup = extractor.extract(template_data)
         span = position_lookup.at(line_at, char_at)
         if not span:
             return None

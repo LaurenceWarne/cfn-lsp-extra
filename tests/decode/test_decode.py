@@ -33,31 +33,41 @@ def extractor():
 
 
 @pytest.fixture
-def unfinished_json_string():
-    return """{
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Resources": {
-        "taskdefinition": {
-            "Type": "AWS::ECS::TaskDefinition",
-            "Properties": {
-                "RequiresCompatibili"
-                "Volumes": [
-                    {
-                        "Host": {
-                            "SourcePath": "/var/lib/docker/vfs/dir/"
-                        },
-                        "Name": "my-vol"
-                    }
-                ]
-            }
-        }
-    }
-}"""
+def partial_property():
+    return "RequiresCompatibili"
 
 
 @pytest.fixture
-def unfinished_yaml_string():
-    return """AWSTemplateFormatVersion: "2010-09-09"
+def resource_of_partial_property():
+    return "taskdefinition"
+
+
+@pytest.fixture
+def unfinished_json_string(partial_property, resource_of_partial_property):
+    return f"""{{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {{
+        "{resource_of_partial_property}": {{
+            "Type": "AWS::ECS::TaskDefinition",
+            "Properties": {{
+                "{partial_property}"
+                "Volumes": [
+                    {{
+                        "Host": {{
+                            "SourcePath": "/var/lib/docker/vfs/dir/"
+                        }},
+                        "Name": "my-vol"
+                    }}
+                ]
+            }}
+        }}
+    }}
+}}"""
+
+
+@pytest.fixture
+def unfinished_yaml_string(partial_property, resource_of_partial_property):
+    return f"""AWSTemplateFormatVersion: "2010-09-09"
 # Pointless comment
 Description: My template
 Parameters:
@@ -65,49 +75,59 @@ Parameters:
     Type: String
     Default: vpc-1431243213
 Resources:
-  PublicSubnet:
-    Type: AWS::EC2::Subnet
+  {resource_of_partial_property}:
+    Type: AWS::ECS::TaskDefinition
     Properties:
-      CidrBlock: 172.31.48.0/20
-      MapPublicIpOnLa"""
+      NetworkMode: awsvpc
+      {partial_property}"""
 
 
 def test_decode_for_json(extractor, json_string):
-    result = decode(json_string, "f.json", extractor)
+    result = decode(json_string, "f.json")
     assert "AWSTemplateFormatVersion" in result
 
 
 def test_decode_for_yaml(extractor, yaml_string):
-    result = decode(yaml_string, "f.yaml", extractor)
+    result = decode(yaml_string, "f.yaml")
     assert "AWSTemplateFormatVersion" in result
 
 
 def test_decode_for_invalid_json(extractor, yaml_string):
     with pytest.raises(CfnDecodingException):
-        decode(yaml_string, "f.json", extractor)
+        decode(yaml_string, "f.json")
 
 
 def test_decode_for_invalid_yaml(extractor):
     invalid_yaml = "foo: {bar"
     with pytest.raises(CfnDecodingException):
-        decode(invalid_yaml, "f.yaml", extractor)
+        decode(invalid_yaml, "f.yaml")
 
 
 def test_decode_unfinished_for_json(extractor, json_string):
-    result = decode_unfinished(json_string, "f.json", extractor, 6)
+    result = decode_unfinished(json_string, "f.json", 6)
     assert "AWSTemplateFormatVersion" in result
 
 
 def test_decode_unfinished_for_yaml(extractor, yaml_string):
-    result = decode_unfinished(yaml_string, "f.yaml", extractor, 12)
+    result = decode_unfinished(yaml_string, "f.yaml", 12)
     assert "AWSTemplateFormatVersion" in result
 
 
-def test_decode_unfinished_for_unfinished_json(extractor, unfinished_json_string):
-    result = decode_unfinished(unfinished_json_string, "f.json", extractor, 6)
-    assert "RequiresCompatibili" in result
+def test_decode_unfinished_for_unfinished_json(
+    extractor, unfinished_json_string, resource_of_partial_property, partial_property
+):
+    result = decode_unfinished(unfinished_json_string, "f.json", 6)
+    assert (
+        partial_property
+        in result["Resources"][resource_of_partial_property]["Properties"]
+    )
 
 
-def test_decode_unfinished_for_unfinished_yaml(extractor, unfinished_yaml_string):
-    result = decode_unfinished(unfinished_yaml_string, "f.yaml", extractor, 12)
-    assert "MapPublicIpOnLa" in result
+def test_decode_unfinished_for_unfinished_yaml(
+    extractor, unfinished_yaml_string, resource_of_partial_property, partial_property
+):
+    result = decode_unfinished(unfinished_yaml_string, "f.yaml", 12)
+    assert (
+        partial_property
+        in result["Resources"][resource_of_partial_property]["Properties"]
+    )

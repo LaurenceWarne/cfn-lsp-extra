@@ -1,23 +1,18 @@
 import json
-from typing import TypeVar
 
 import yaml
 
-from .extractors import Extractor
+from ..aws_data import Tree
 from .json_decoding import CfnJSONDecoder  # type: ignore[attr-defined]
-from .position import PositionLookup
 from .yaml_decoding import SafePositionLoader
-
-
-T = TypeVar("T")
 
 
 class CfnDecodingException(Exception):
     pass
 
 
-def decode(source: str, filename: str, extractor: Extractor[T]) -> PositionLookup[T]:
-    """Return a PositionLookup object containing items from source.
+def decode(source: str, filename: str) -> Tree:
+    """Deserialise the cloudformation template source into a dictionary.
 
     Parameters
     ----------
@@ -26,14 +21,12 @@ def decode(source: str, filename: str, extractor: Extractor[T]) -> PositionLooku
     filename: str
         name of the template file, determined whether source is taken to
         be json or yaml.
-    extractor: Extractor[T]
-        Extractor object used to construct the PositionLookup object
-        based on the decoded source.
 
     Returns
     -------
-    PositionLookup[T]
-        A PositionLookup object containing items from source.
+    Tree
+        A recursive dictionary containing items and positional information
+        from source.
 
     Raises
     ------
@@ -50,13 +43,11 @@ def decode(source: str, filename: str, extractor: Extractor[T]) -> PositionLooku
         json.JSONDecodeError,
     ) as e:
         raise CfnDecodingException(f"Error decoding {filename}") from e
-    return extractor.extract(data)
+    return data
 
 
-def decode_unfinished(
-    source: str, filename: str, extractor: Extractor[T], line: int
-) -> PositionLookup[T]:
-    """Return a PositionLookup object containing items from source.
+def decode_unfinished(source: str, filename: str, line: int) -> Tree:
+    """Deserialise the cloudformation template source into a dictionary.
 
     If decoding fails, attempt to 'fix' source by making edits to the
     current line.
@@ -68,23 +59,21 @@ def decode_unfinished(
     filename: str
         name of the template file, determined whether source is taken to
         be json or yaml.
-    extractor: Extractor[T]
-        Extractor object used to construct the PositionLookup object
-        based on the decoded source.
     line: int
         The line of the user's cursor
 
     Returns
     -------
-    PositionLookup[T]
-        A PositionLookup object containing items from source.
+    Tree
+        A recursive dictionary containing items and positional information
+        from source.
 
     Raises
     ------
     CfnDecodingException
         If json or yaml parsing fails even after edits."""
     try:
-        return decode(source, filename, extractor)
+        return decode(source, filename)
     except CfnDecodingException:
         new_source_lst = source.splitlines()
         if filename.endswith("json"):
@@ -92,4 +81,4 @@ def decode_unfinished(
         else:
             new_source_lst[line] = new_source_lst[line].rstrip() + ":"
         new_source = "\n".join(new_source_lst)
-        return decode(new_source, filename, extractor)
+        return decode(new_source, filename)

@@ -2,25 +2,37 @@
 Completion logic.
 """
 from typing import List
+from typing import Optional
 
+from pygls.lsp.types.basic_structures import Position
 from pygls.lsp.types.language_features.completion import CompletionItem
 from pygls.lsp.types.language_features.completion import CompletionList
 from pygls.lsp.types.language_features.completion import InsertTextFormat
+from pygls.workspace import Document
+
+from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
 
 from .aws_data import AWSContext
-from .aws_data import AWSName
 from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
+from .aws_data import Tree
+from .decode.extractors import ResourceExtractor
 
 
 def completions_for(
-    name: AWSName, aws_context: AWSContext, document_lines: List[str], current_line: int
+    template_data: Tree, aws_context: AWSContext, document: Document, position: Position
 ) -> CompletionList:
-    """Return a list of completion items for name."""
-    if isinstance(name, AWSPropertyName):
-        return property_completions(name, aws_context)
-    else:
-        return resource_completions(name, aws_context, document_lines, current_line)
+    """Return a list of completion items for the users position in document."""
+    line, char = position.line, position.character
+    resource_lookup = ResourceExtractor().extract(template_data)
+    res_span = resource_lookup.at(line, char)
+    if res_span:
+        return resource_completions(res_span.value, aws_context, document.lines, line)
+    prop_lookup = ResourcePropertyExtractor().extract(template_data)
+    prop_span = prop_lookup.at(line, char)
+    if prop_span:
+        return property_completions(prop_span.value, aws_context)
+    return intrinsic_function_completions(document, position)
 
 
 def property_completions(
@@ -81,3 +93,16 @@ def resource_snippet(name: AWSResourceName, aws_context: AWSContext) -> str:
         props += f"\t{prop}: ${idx + 1}\n"
     # $0 defines the final tab stop
     return props + "\t$0"
+
+
+def intrinsic_function_completions(
+    document: Document, position: Position
+) -> CompletionList:
+    word = document.word_at_position(position)
+    if word.startswith("Fn"):
+        items: List[CompletionItem] = []
+    elif word.startswith("!"):
+        items = []
+    else:
+        return CompletionList(is_incomplete=False, items=[])
+    return CompletionList(is_incomplete=False, items=items)
