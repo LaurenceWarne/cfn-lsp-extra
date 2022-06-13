@@ -140,10 +140,14 @@ class ResourceExtractor(Extractor[AWSResourceName]):
 
     def extract_node(self, node: Tree) -> List[Spanning[AWSResourceName]]:
         props = []
-        if "Resources" in node:
+        if "Resources" in node and isinstance(node["Resources"], dict):
             for _, resource_dct in node["Resources"].items():
-                if "Type" in resource_dct and VALUES_POSITION_PREFIX in resource_dct:
-                    type_ = resource_dct["Type"]
+                if (
+                    isinstance(resource_dct, dict)
+                    and "Type" in resource_dct
+                    and VALUES_POSITION_PREFIX in resource_dct
+                ):
+                    type_ = resource_dct["Type"] or ""
                     value_positions = resource_dct[VALUES_POSITION_PREFIX]
                     key = POSITION_PREFIX + type_
                     for dct in value_positions:

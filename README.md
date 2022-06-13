@@ -62,7 +62,7 @@ You need to install an lsp client like [lsp-mode](https://github.com/emacs-lsp/l
                     :server-id 'cfn-lsp-extra)))
 ```
 
-Please send a patch if you're able to provide integration steps for other editors 🙏
+Patches detailing integration steps for other editors are very welcome 🙏
 
 ## Alternatives
 

@@ -299,6 +299,44 @@ def test_resource_extractor_for_incomplete_resource():
     assert [(9, 10, 16)] == positions[AWSResourceName(value="AWS::EC2::Subnet")]
 
 
+def test_resource_extractor_for_empty_resources():
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Resources": "MyTaskde",
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__MyTaskde": [2, 2]},
+        ],
+        "__position__Resources": [1, 0],
+    }
+    extractor = ResourceExtractor()
+    positions = extractor.extract(document_mapping)
+    assert not positions
+
+
+def test_resource_extractor_for_incomplete_logical_id():
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Resources": {
+            "MyResource": 3,
+            "MyTaskde": None,
+            "__position__MyResource": [2, 2],
+            "__value_positions__": [
+                {"__position__3": [2, 8]},
+                {"__position__": [3, 11]},
+            ],
+            "__position__MyTaskde": [3, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [{"__position__2010-09-09": [0, 26]}],
+        "__position__Resources": [1, 0],
+    }
+    extractor = ResourceExtractor()
+    positions = extractor.extract(document_mapping)
+    assert not positions
+
+
 def test_composite_extractor(document_mapping):
     extractor = CompositeExtractor(ResourceExtractor(), ResourcePropertyExtractor())
     positions = extractor.extract(document_mapping)

@@ -61,7 +61,7 @@ def resource_completions(
             for res in aws_context.resource_prefixes()
         ]
     else:
-        is_snippet = (
+        use_snippet = (
             current_line == len(document_lines) - 1
             or not document_lines[current_line + 1].strip()
         )
@@ -72,10 +72,10 @@ def resource_completions(
                 insert_text=s.rsplit("::", 1)[-1]
                 + (
                     "\n" + resource_snippet(AWSResourceName(value=s), aws_context)
-                    if is_snippet
+                    if use_snippet
                     else ""
                 ),
-                insert_text_format=is_snippet and InsertTextFormat.Snippet,
+                insert_text_format=InsertTextFormat.Snippet if use_snippet else None,
             )
             for s in aws_context.same_level(name)
             if s.startswith("::".join(split[:-1]))
