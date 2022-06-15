@@ -149,7 +149,7 @@ class ResourceExtractor(Extractor[AWSResourceName]):
                 ):
                     type_ = resource_dct["Type"] or ""
                     value_positions = resource_dct[VALUES_POSITION_PREFIX]
-                    key = POSITION_PREFIX + type_
+                    key = POSITION_PREFIX + str(type_)  # type could be fn call
                     for dct in value_positions:
                         if key in dct:
                             line, char = dct[key]
