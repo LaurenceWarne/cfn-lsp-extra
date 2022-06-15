@@ -21,6 +21,7 @@ from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 from pygls.lsp.types.language_features.completion import CompletionList
+from pygls.lsp.types.language_features.completion import CompletionOptions
 from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
@@ -66,7 +67,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         # Publishing diagnostics removes old ones
         ls.publish_diagnostics(text_doc.uri, diags)
 
-    @server.feature(COMPLETION)
+    @server.feature(COMPLETION, CompletionOptions(trigger_characters=["!"]))
     def completions(
         ls: LanguageServer, params: CompletionParams
     ) -> Optional[CompletionList]:

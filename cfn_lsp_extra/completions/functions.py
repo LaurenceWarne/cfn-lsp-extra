@@ -96,4 +96,4 @@ def word_at_position(lines: List[str], position: Position) -> str:
     m_start = RE_START_WORD.findall(start)
     m_end = RE_END_WORD.findall(end)
 
-    return m_start[0] + m_end[-1]
+    return m_start[0] + m_end[-1]  # type: ignore[no-any-return]

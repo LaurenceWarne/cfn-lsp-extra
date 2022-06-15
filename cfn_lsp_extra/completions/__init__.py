@@ -27,14 +27,11 @@ def completions_for(
     resource_lookup = ResourceExtractor().extract(template_data)
     res_span = resource_lookup.at(line, char)
     if res_span:
-        print("in resource span")
         return resource_completions(res_span.value, aws_context, document.lines, line)
     prop_lookup = ResourcePropertyExtractor().extract(template_data)
     prop_span = prop_lookup.at(line, char)
     if prop_span:
-        print("in prop span")
         return property_completions(prop_span.value, aws_context)
-    print("Getting intrinsic functions")
     return intrinsic_function_completions(document, position)
 
 
