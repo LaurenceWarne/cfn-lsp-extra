@@ -4,6 +4,7 @@ https://pygls.readthedocs.io/en/latest/
 https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 """
 
+import logging
 from typing import Optional
 from typing import Union
 
@@ -35,6 +36,9 @@ from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .completions import completions_for
 from .decode import decode
 from .decode import decode_unfinished
+
+
+logger = logging.getLogger(__name__)
 
 
 def server(aws_context: AWSContext) -> LanguageServer:

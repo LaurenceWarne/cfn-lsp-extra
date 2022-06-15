@@ -1,0 +1,20 @@
+"""
+Intrinsic function completions, see:
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+For more information.
+"""
+
+from pygls.lsp.types.language_features.completion import CompletionList
+
+
+def intrinsic_function_completions(
+    document: Document, position: Position
+) -> CompletionList:
+    word = document.word_at_position(position)
+    if word.startswith("Fn"):
+        items: List[CompletionItem] = []
+    elif word.startswith("!"):
+        items = []
+    else:
+        return CompletionList(is_incomplete=False, items=[])
+    return CompletionList(is_incomplete=False, items=items)

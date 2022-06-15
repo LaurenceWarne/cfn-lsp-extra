@@ -1,8 +1,3 @@
-"""
-
-"""
-from types import SimpleNamespace
-
 import pytest
 
 from cfn_lsp_extra.aws_data import AWSResourceName
