@@ -72,14 +72,14 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ls: LanguageServer, params: CompletionParams
     ) -> Optional[CompletionList]:
         """Returns completion items."""
-        line_at = params.position.line
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         try:
             template_data = decode_unfinished(
-                document.source, document.filename, line_at
+                document.source, document.filename, params.position
             )
-        except CfnDecodingException:
+        except CfnDecodingException as e:
+            logger.debug(f"Failed to decode document: {e}")
             return None
         return completions_for(template_data, aws_context, document, params.position)
 

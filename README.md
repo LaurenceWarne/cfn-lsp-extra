@@ -2,7 +2,7 @@
 
 ![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra) [![Version](https://img.shields.io/github/v/tag/laurencewarne/cfn-lsp-extra?label=release)](CHANGELOG.md)
 
-An experimental cloudformation lsp server built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) aiming to provide hovering, completion, etc.
+An experimental cloudformation lsp server built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) aiming to provide hovering, completion, etc.  YAML and JSON are supported, though YAML has more features currently implemented (for example snippets) and will give a better experience.  Trust me.
 
 https://user-images.githubusercontent.com/17688577/166110762-71058f8f-4cb6-44ae-960b-9370a166125a.mp4
 

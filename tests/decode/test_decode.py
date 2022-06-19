@@ -3,6 +3,7 @@ Tests for cfn_lsp_extra/decode/__init__.py
 """
 
 import pytest
+from pygls.lsp.types.basic_structures import Position
 
 from cfn_lsp_extra.decode import CfnDecodingException
 from cfn_lsp_extra.decode import decode
@@ -104,19 +105,21 @@ def test_decode_for_invalid_yaml(extractor):
 
 
 def test_decode_unfinished_for_json(extractor, json_string):
-    result = decode_unfinished(json_string, "f.json", 6)
+    result = decode_unfinished(json_string, "f.json", Position(line=6, character=0))
     assert "AWSTemplateFormatVersion" in result
 
 
 def test_decode_unfinished_for_yaml(extractor, yaml_string):
-    result = decode_unfinished(yaml_string, "f.yaml", 12)
+    result = decode_unfinished(yaml_string, "f.yaml", Position(line=12, character=0))
     assert "AWSTemplateFormatVersion" in result
 
 
 def test_decode_unfinished_for_unfinished_json(
     extractor, unfinished_json_string, resource_of_partial_property, partial_property
 ):
-    result = decode_unfinished(unfinished_json_string, "f.json", 6)
+    result = decode_unfinished(
+        unfinished_json_string, "f.json", Position(line=6, character=0)
+    )
     assert (
         partial_property
         in result["Resources"][resource_of_partial_property]["Properties"]
@@ -126,8 +129,29 @@ def test_decode_unfinished_for_unfinished_json(
 def test_decode_unfinished_for_unfinished_yaml(
     extractor, unfinished_yaml_string, resource_of_partial_property, partial_property
 ):
-    result = decode_unfinished(unfinished_yaml_string, "f.yaml", 12)
+    result = decode_unfinished(
+        unfinished_yaml_string, "f.yaml", Position(line=12, character=0)
+    )
     assert (
         partial_property
         in result["Resources"][resource_of_partial_property]["Properties"]
     )
+
+
+def test_decode_unfinished_for_yaml_with_empty_line(
+    extractor, resource_of_partial_property
+):
+    doc = f"""AWSTemplateFormatVersion: "2010-09-09"
+Description: My template
+Parameters:
+  DefaultVpcId:
+    Type: String
+    Default: vpc-1431243213
+Resources:
+  {resource_of_partial_property}:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      
+      NetworkMode: awsvpc"""
+    result = decode_unfinished(doc, "f.yaml", Position(line=10, character=6))
+    assert "." in result["Resources"][resource_of_partial_property]["Properties"]

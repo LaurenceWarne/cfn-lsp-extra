@@ -1,6 +1,7 @@
 import json
 
 import yaml
+from pygls.lsp.types.basic_structures import Position
 
 from ..aws_data import Tree
 from .json_decoding import CfnJSONDecoder  # type: ignore[attr-defined]
@@ -46,11 +47,12 @@ def decode(source: str, filename: str) -> Tree:
     return data
 
 
-def decode_unfinished(source: str, filename: str, line: int) -> Tree:
+def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
     """Deserialise the cloudformation template source into a dictionary.
 
     If decoding fails, attempt to 'fix' source by making edits to the
-    current line.
+    current line.  If position is on an empty line, the character at
+    position will be set to an '.' (to aid completions).
 
     Parameters
     ----------
@@ -59,8 +61,8 @@ def decode_unfinished(source: str, filename: str, line: int) -> Tree:
     filename: str
         name of the template file, determined whether source is taken to
         be json or yaml.
-    line: int
-        The line of the user's cursor
+    position: Position
+        The position of the user's cursor in the document
 
     Returns
     -------
@@ -72,13 +74,18 @@ def decode_unfinished(source: str, filename: str, line: int) -> Tree:
     ------
     CfnDecodingException
         If json or yaml parsing fails even after edits."""
+    source_lst = source.splitlines()
+    line, char = position.line, position.character
+    if not filename.endswith("json"):
+        if not source_lst[line].strip():
+            source_lst[line] = source_lst[line][:char] + "."
+            source = "\n".join(source_lst)
     try:
         return decode(source, filename)
     except CfnDecodingException:
-        new_source_lst = source.splitlines()
         if filename.endswith("json"):
-            new_source_lst[line] = new_source_lst[line].rstrip(":, ") + ': "",'
+            source_lst[line] = source_lst[line].rstrip(":, ") + ': "",'
         else:
-            new_source_lst[line] = new_source_lst[line].rstrip() + ":"
-        new_source = "\n".join(new_source_lst)
-        return decode(new_source, filename)
+            source_lst[line] = source_lst[line].rstrip() + ":"
+        source = "\n".join(source_lst)
+        return decode(source, filename)
