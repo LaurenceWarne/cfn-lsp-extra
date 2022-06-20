@@ -83,6 +83,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+markers = ["integration: mark the test as an integration test"]
 
 [tool.flakeheaven]
 max-line-length = 88

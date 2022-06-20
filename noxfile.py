@@ -17,6 +17,14 @@ def tests(session):
 
 
 @session(python=python_versions)
+def integration_tests(session):
+    session.install("pytest", ".")
+    session.install("pytest-asyncio", ".")
+    session.install("pytest-mock", ".")
+    session.run("pytest", "--run-integration", "-s", *session.posargs)
+
+
+@session(python=python_versions)
 def lint(session):
     session.install("flakeheaven")
     session.install("flake8-bugbear")
