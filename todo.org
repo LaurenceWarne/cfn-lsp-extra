@@ -3,7 +3,7 @@
 * Features
 ** DONE hovers for resources in json
 ** TODO integration tests
-** TODO completion after first character on new line
+** DONE completion after first character on new line
 ** DONE parse sub properties
 ** DONE completion for resources
 ** DONE limit completion of resources, e.g. only after "AWS::EX"

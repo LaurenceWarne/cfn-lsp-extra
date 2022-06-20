@@ -20,14 +20,17 @@ from .functions import intrinsic_function_completions
 
 
 def completions_for(
-    template_data: Tree, aws_context: AWSContext, document: Document, position: Position
+    template_data: Tree,
+    aws_context: AWSContext,
+    document: Document,
+    position: Position,
 ) -> CompletionList:
     """Return a list of completion items for the user's position in document."""
     line, char = position.line, position.character
     resource_lookup = ResourceExtractor().extract(template_data)
     res_span = resource_lookup.at(line, char)
     if res_span:
-        return resource_completions(res_span.value, aws_context, document.lines, line)
+        return resource_completions(res_span.value, aws_context, document, line)
     prop_lookup = ResourcePropertyExtractor().extract(template_data)
     prop_span = prop_lookup.at(line, char)
     if prop_span:
@@ -52,7 +55,7 @@ def property_completions(
 def resource_completions(
     name: AWSResourceName,
     aws_context: AWSContext,
-    document_lines: List[str],
+    document: Document,
     current_line: int,
 ) -> CompletionList:
     split = name.value.split("::")
@@ -62,9 +65,9 @@ def resource_completions(
             for res in aws_context.resource_prefixes()
         ]
     else:
-        use_snippet = (
-            current_line == len(document_lines) - 1
-            or not document_lines[current_line + 1].strip()
+        use_snippet = not document.filename.endswith("json") and (
+            current_line == len(document.lines) - 1
+            or not document.lines[current_line + 1].strip()
         )
         items = [
             CompletionItem(
