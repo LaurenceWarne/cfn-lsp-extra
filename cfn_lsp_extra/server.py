@@ -91,7 +91,8 @@ def server(aws_context: AWSContext) -> LanguageServer:
         document = server.workspace.get_document(uri)
         try:
             template_data = decode(document.source, document.filename)
-        except CfnDecodingException:
+        except CfnDecodingException as e:
+            logger.debug(f"Failed to decode document: {e}")
             return None
         position_lookup = extractor.extract(template_data)
         span = position_lookup.at(line_at, char_at)

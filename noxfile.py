@@ -13,6 +13,7 @@ def tests(session):
     session.install("pytest", ".")
     session.install("pytest-asyncio", ".")
     session.install("pytest-mock", ".")
+    session.install("pytest-lsp", ".")
     session.run("pytest", "-s", *session.posargs)
 
 
@@ -21,6 +22,7 @@ def integration_tests(session):
     session.install("pytest", ".")
     session.install("pytest-asyncio", ".")
     session.install("pytest-mock", ".")
+    session.install("pytest-lsp", ".")
     session.run("pytest", "--run-integration", "-s", *session.posargs)
 
 
@@ -46,6 +48,7 @@ def coverage(session):
     session.install("pytest", ".")
     session.install("pytest-asyncio", ".")
     session.install("pytest-mock", ".")
+    session.install("pytest-lsp", ".")
     session.install("coverage", ".")
     session.run("coverage", "run", "-m", "pytest")
     session.run("coverage", "xml")

@@ -1,7 +1,6 @@
 """
-Integration tests for completions
+Integration tests for completions.
 """
-
 import pytest
 
 
@@ -10,9 +9,21 @@ import pytest
 pytestmark = pytest.mark.integration
 
 
-def test_integration():
-    assert 1 == 2
+@pytest.mark.asyncio
+async def test_property_completion(client):
+    test_uri = client.root_uri + "/template.yaml"
+    result = await client.completion_request(test_uri, line=57, character=6)
+
+    labels = [c.label for c in result.items]
+    assert "Bucket" in labels
+    assert "PolicyDocument" in labels
 
 
-def test_integration():
-    assert 1 == 2
+@pytest.mark.asyncio
+async def test_nested_property_completion(client):
+    test_uri = client.root_uri + "/template.yaml"
+    result = await client.completion_request(test_uri, line=51, character=8)
+
+    labels = [c.label for c in result.items]
+    assert "LogFilePrefix" in labels
+    assert "DestinationBucketName" in labels

@@ -10,6 +10,9 @@ from .context import load_context
 from .server import server
 
 
+logger = logging.getLogger(__name__)
+
+
 @click.group(invoke_without_command=True)
 @click.version_option()
 @click.option("-v", "--verbose", count=True, help="Print more output.")
@@ -21,6 +24,7 @@ def cli(ctx: Context, verbose: int) -> None:
     # This fn is called regardless, so we have to check if a subcommand should be run
     if ctx.invoked_subcommand is None:
         aws_context = load_context()
+        logger.info("Starting cfn-lsp-extra server")
         server(aws_context).start_io()  # type: ignore[no-untyped-call]
     return None
 
