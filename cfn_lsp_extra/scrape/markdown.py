@@ -50,11 +50,10 @@ from aiohttp.client import ClientTimeout
 from aiohttp.client import ServerTimeoutError
 from tqdm.asyncio import tqdm_asyncio  # type: ignore[import]
 
-from cfn_lsp_extra.aws_data import AWSResourceName
-
 from ..aws_data import AWSContext
 from ..aws_data import AWSName
 from ..aws_data import AWSPropertyName
+from ..aws_data import AWSResourceName
 from ..aws_data import Tree
 from .markdown_textwrapper import MarkdownTextWrapper
 

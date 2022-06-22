@@ -77,8 +77,11 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
     source_lst = source.splitlines()
     line, char = position.line, position.character
     if not filename.endswith("json"):
-        if not source_lst[line].strip():
+        if not source_lst[line].strip():  # Empty line for property
             source_lst[line] = source_lst[line][:char] + "."
+            source = "\n".join(source_lst)
+        elif source_lst[line].strip() == "Type:":  # For resource
+            source_lst[line] = source_lst[line] + "."
             source = "\n".join(source_lst)
     try:
         return decode(source, filename)

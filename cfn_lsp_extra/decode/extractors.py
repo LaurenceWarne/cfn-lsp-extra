@@ -71,7 +71,7 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
         props = []
         is_res_node = "Properties" in node and "Type" in node
         if is_res_node and isinstance(node["Properties"], dict):
-            type_ = node["Type"]
+            type_ = node["Type"] or ""
             props = self._extract_recursive(
                 node["Properties"], AWSResourceName(value=type_)
             )

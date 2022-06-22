@@ -138,7 +138,7 @@ def test_decode_unfinished_for_unfinished_yaml(
     )
 
 
-def test_decode_unfinished_for_yaml_with_empty_line(
+def test_decode_unfinished_for_yaml_with_empty_line_property(
     extractor, resource_of_partial_property
 ):
     doc = f"""AWSTemplateFormatVersion: "2010-09-09"
@@ -155,3 +155,19 @@ Resources:
       NetworkMode: awsvpc"""
     result = decode_unfinished(doc, "f.yaml", Position(line=10, character=6))
     assert "." in result["Resources"][resource_of_partial_property]["Properties"]
+
+
+def test_decode_unfinished_for_yaml_with_resource_type(
+    extractor, resource_of_partial_property
+):
+    doc = f"""AWSTemplateFormatVersion: "2010-09-09"
+Description: My template
+Parameters:
+  DefaultVpcId:
+    Type: String
+    Default: vpc-1431243213
+Resources:
+  {resource_of_partial_property}:
+    Type: """
+    result = decode_unfinished(doc, "f.yaml", Position(line=8, character=10))
+    assert "." == result["Resources"][resource_of_partial_property]["Type"]

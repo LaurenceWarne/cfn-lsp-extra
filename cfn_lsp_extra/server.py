@@ -5,6 +5,7 @@ https://microsoft.github.io/language-server-protocol/specifications/specificatio
 """
 
 import logging
+import re
 from typing import Optional
 from typing import Union
 
@@ -27,18 +28,18 @@ from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 from pygls.server import LanguageServer
 
-from cfn_lsp_extra.decode import CfnDecodingException
-from cfn_lsp_extra.decode.extractors import CompositeExtractor
-from cfn_lsp_extra.decode.extractors import ResourceExtractor
-from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
-
 from .aws_data import AWSContext
 from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .completions import completions_for
+from .completions.resources import resolve_resource_completion_item
+from .decode import CfnDecodingException
 from .decode import decode
 from .decode import decode_unfinished
+from .decode.extractors import CompositeExtractor
+from .decode.extractors import ResourceExtractor
+from .decode.extractors import ResourcePropertyExtractor
 
 
 logger = logging.getLogger(__name__)
@@ -93,7 +94,10 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ls: LanguageServer, completion_item: CompletionItem
     ) -> CompletionItem:
         """Resolves a completion item."""
-        return completion_item
+        if re.match(r"^.+::.+::.+$", completion_item.label):
+            return resolve_resource_completion_item(completion_item, aws_context)
+        else:
+            return completion_item  # Not a resource
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:

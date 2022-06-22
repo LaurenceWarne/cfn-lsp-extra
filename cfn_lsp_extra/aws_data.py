@@ -106,7 +106,7 @@ class AWSContext(BaseModel):
                 prop = prop["properties"][subprop]
             return prop
         except KeyError:
-            raise ValueError(f"'{name}' is not a recognised property")
+            raise ValueError(f"'{name}' is not a recognised resource or property")
 
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
