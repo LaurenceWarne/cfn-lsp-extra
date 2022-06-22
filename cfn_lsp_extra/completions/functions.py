@@ -8,9 +8,9 @@ import re
 from typing import List
 
 from pydantic import BaseModel
-from pygls.lsp.types.basic_structures import Position
-from pygls.lsp.types.language_features.completion import CompletionItem
-from pygls.lsp.types.language_features.completion import CompletionList
+from pygls.lsp.types import Position
+from pygls.lsp.types import CompletionItem
+from pygls.lsp.types import CompletionList
 from pygls.workspace import Document
 from pygls.workspace import position_from_utf16
 

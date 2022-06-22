@@ -9,9 +9,14 @@ from typing import Optional
 from typing import Union
 
 from pygls.lsp.methods import COMPLETION
+from pygls.lsp.methods import COMPLETION_ITEM_RESOLVE
 from pygls.lsp.methods import HOVER
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_CHANGE
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_OPEN
+from pygls.lsp.types import CompletionItem
+from pygls.lsp.types import CompletionList
+from pygls.lsp.types import CompletionOptions
+from pygls.lsp.types import CompletionParams
 from pygls.lsp.types import DidChangeTextDocumentParams
 from pygls.lsp.types import DidOpenTextDocumentParams
 from pygls.lsp.types import Hover
@@ -20,9 +25,6 @@ from pygls.lsp.types import MarkupContent
 from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
-from pygls.lsp.types.language_features.completion import CompletionList
-from pygls.lsp.types.language_features.completion import CompletionOptions
-from pygls.lsp.types.language_features.completion import CompletionParams
 from pygls.server import LanguageServer
 
 from cfn_lsp_extra.decode import CfnDecodingException
@@ -67,7 +69,10 @@ def server(aws_context: AWSContext) -> LanguageServer:
         # Publishing diagnostics removes old ones
         ls.publish_diagnostics(text_doc.uri, diags)
 
-    @server.feature(COMPLETION, CompletionOptions(trigger_characters=["!"]))
+    @server.feature(
+        COMPLETION,
+        CompletionOptions(trigger_characters=["!"], resolve_provider=True),
+    )
     def completions(
         ls: LanguageServer, params: CompletionParams
     ) -> Optional[CompletionList]:
@@ -82,6 +87,13 @@ def server(aws_context: AWSContext) -> LanguageServer:
             logger.debug(f"Failed to decode document: {e}")
             return None
         return completions_for(template_data, aws_context, document, params.position)
+
+    @server.feature(COMPLETION_ITEM_RESOLVE)
+    def completion_item_resolve(
+        ls: LanguageServer, completion_item: CompletionItem
+    ) -> CompletionItem:
+        """Resolves a completion item."""
+        return completion_item
 
     @server.feature(HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:

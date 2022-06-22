@@ -1,5 +1,5 @@
 import pytest
-from pygls.lsp.types.basic_structures import Position
+from pygls.lsp.types import Position
 from pygls.workspace import Document
 
 from cfn_lsp_extra.completions import intrinsic_function_completions

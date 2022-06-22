@@ -1,10 +1,10 @@
 """
 Completion logic.
 """
-from pygls.lsp.types.basic_structures import Position
-from pygls.lsp.types.language_features.completion import CompletionItem
-from pygls.lsp.types.language_features.completion import CompletionList
-from pygls.lsp.types.language_features.completion import InsertTextFormat
+from pygls.lsp.types import CompletionItem
+from pygls.lsp.types import CompletionList
+from pygls.lsp.types import InsertTextFormat
+from pygls.lsp.types import Position
 from pygls.workspace import Document
 
 from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor

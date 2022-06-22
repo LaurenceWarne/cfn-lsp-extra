@@ -17,8 +17,8 @@ from cfnlint.rules import RulesCollection
 from cfnlint.rules import TransformError
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
-from pygls.lsp.types.basic_structures import Diagnostic
-from pygls.lsp.types.basic_structures import DiagnosticSeverity
+from pygls.lsp.types import Diagnostic
+from pygls.lsp.types import DiagnosticSeverity
 
 
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:

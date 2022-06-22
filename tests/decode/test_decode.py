@@ -3,7 +3,7 @@ Tests for cfn_lsp_extra/decode/__init__.py
 """
 
 import pytest
-from pygls.lsp.types.basic_structures import Position
+from pygls.lsp.types import Position
 
 from cfn_lsp_extra.decode import CfnDecodingException
 from cfn_lsp_extra.decode import decode

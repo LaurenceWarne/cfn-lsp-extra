@@ -1,7 +1,7 @@
 import json
 
 import yaml
-from pygls.lsp.types.basic_structures import Position
+from pygls.lsp.types import Position
 
 from ..aws_data import Tree
 from .json_decoding import CfnJSONDecoder  # type: ignore[attr-defined]

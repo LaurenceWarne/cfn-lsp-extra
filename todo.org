@@ -2,7 +2,8 @@
 
 * Features
 ** DONE hovers for resources in json
-** TODO integration tests
+** DONE integration tests
+** TODO integration tests for json
 ** DONE completion after first character on new line
 ** DONE parse sub properties
 ** DONE completion for resources
@@ -14,3 +15,4 @@
 
 * Bugs
 ** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load
+** TODO HTML appears in the hover of ~AWS::S3:Bucket/LogFilePrefix~ after ~Update Requries~. Also the case for ~AWS::S3::BucketPolicy/PolicyDocument~
