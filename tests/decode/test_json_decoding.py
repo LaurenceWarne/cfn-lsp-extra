@@ -16,6 +16,7 @@ def json_string():
     "Resources": {
         "taskdefinition": {
             "Type": "AWS::ECS::TaskDefinition",
+            "DependsOn": "OriginAccessIdentity",
             "Properties": {
                 "RequiresCompatibilities": [
                     "EC2"
@@ -74,6 +75,14 @@ def json_string():
                     }
                 ]
             }
+        },
+        "OriginAccessIdentity": {
+            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties": {
+                "CloudFrontOriginAccessIdentityConfig": {
+                    "Comment": "foobar"
+                }
+            }
         }
     }
 }"""
@@ -90,5 +99,6 @@ def test_parsing_of_value_positions(json_string):
     content = json.loads(json_string, cls=CfnJSONDecoder)
     assert content[VALUES_POSITION_PREFIX] == [{"__position__2010-09-09": [1, 32]}]
     assert content["Resources"]["taskdefinition"]["__value_positions__"] == [
-        {"__position__AWS::ECS::TaskDefinition": [4, 20]}
+        {"__position__AWS::ECS::TaskDefinition": [4, 20]},
+        {"__position__OriginAccessIdentity": [5, 25]},
     ]

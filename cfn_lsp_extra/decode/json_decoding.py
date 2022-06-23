@@ -90,8 +90,7 @@ def cfn_json_object(
         pairs_append((key, value))
         # EDIT: adds positional data to result
         if isinstance(value, str):
-            pair_keys = {k for k, _ in pairs}
-            if VALUES_POSITION_PREFIX not in pairs:
+            if VALUES_POSITION_PREFIX not in {k for k, _ in pairs}:
                 values_lst = []
                 pairs_append((VALUES_POSITION_PREFIX, values_lst))
             else:

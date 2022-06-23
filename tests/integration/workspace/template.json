@@ -1,0 +1,310 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Taken from https://github.com/awslabs/aws-cloudformation-templates/blob/master/community/solutions/StaticS3CloudFront.yml\nCreates the following resources:\n  - An S3 bucket for the website\n  - A CloudFront for serving the static assets\n",
+    "Parameters": {
+        "CertificateArn": {
+            "Type": "String",
+            "Description": "The ARN of the SSL Certificate for Remix"
+        },
+        "FQDN": {
+            "Type": "String",
+            "Description": "The desired FQDN of the website"
+        },
+        "EnvType": {
+            "Type": "String",
+            "Description": "The type of environment to create.",
+            "Default": "dev",
+            "AllowedValues": [
+                "dev",
+                "prod"
+            ],
+            "ConstraintDescription": "must specify prod or dev."
+        }
+    },
+    "Mappings": {
+        "CacheSettings": {
+            "dev": {
+                "DefaultTTL": 0
+            },
+            "prod": {
+                "DefaultTTL": 86400
+            }
+        }
+    },
+    "Resources": {
+        "OriginAccessIdentity": {
+            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties": {
+                "CloudFrontOriginAccessIdentityConfig": {
+                    "Comment": {
+                        "Fn::Sub": "Static assets in ${AWS::StackName}"
+                    }
+                }
+            }
+        },
+        "WebBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "LoggingConfiguration": {
+                    "DestinationBucketName": {
+                        "Ref": "LogBucket"
+                    },
+                    "LogFilePrefix": {
+                        "Fn::If": [
+                            "NoFQDN",
+                            {
+                                "Fn::Sub": "s3/${AWS::StackName}/"
+                            },
+                            {
+                                "Fn::Sub": "s3/${FQDN}/"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "WebBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "DependsOn": "OriginAccessIdentity",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "WebBucket"
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:GetObject"
+                            ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        {
+                                            "Fn::GetAtt": [
+                                                "WebBucket",
+                                                "Arn"
+                                            ]
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            },
+                            "Principal": {
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "OriginAccessIdentity",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "Distribution": {
+            "Type": "AWS::CloudFront::Distribution",
+            "DependsOn": "OriginAccessIdentity",
+            "Properties": {
+                "DistributionConfig": {
+                    "Enabled": true,
+                    "HttpVersion": "http2",
+                    "PriceClass": "PriceClass_100",
+                    "ViewerCertificate": {
+                        "Fn::If": [
+                            "NoSSL",
+                            {
+                                "Ref": "AWS::NoValue"
+                            },
+                            {
+                                "AcmCertificateArn": {
+                                    "Ref": "CertificateArn"
+                                },
+                                "MinimumProtocolVersion": "TLSv1.1_2016",
+                                "SslSupportMethod": "sni-only"
+                            }
+                        ]
+                    },
+                    "Comment": {
+                        "Fn::If": [
+                            "NoFQDN",
+                            {
+                                "Ref": "AWS::NoValue"
+                            },
+                            {
+                                "Ref": "FQDN"
+                            }
+                        ]
+                    },
+                    "Aliases": {
+                        "Fn::If": [
+                            "NoFQDN",
+                            {
+                                "Ref": "AWS::NoValue"
+                            },
+                            [
+                                {
+                                    "Ref": "FQDN"
+                                }
+                            ]
+                        ]
+                    },
+                    "DefaultRootObject": "index.html",
+                    "DefaultCacheBehavior": {
+                        "ForwardedValues": {
+                            "QueryString": false
+                        },
+                        "AllowedMethods": [
+                            "HEAD",
+                            "GET",
+                            "OPTIONS"
+                        ],
+                        "Compress": true,
+                        "DefaultTTL": {
+                            "Fn::FindInMap": [
+                                "CacheSettings",
+                                {
+                                    "Ref": "EnvType"
+                                },
+                                "DefaultTTL"
+                            ]
+                        },
+                        "ViewerProtocolPolicy": {
+                            "Fn::If": [
+                                "NoSSL",
+                                "allow-all",
+                                "redirect-to-https"
+                            ]
+                        },
+                        "TargetOriginId": "Bucket"
+                    },
+                    "Origins": [
+                        {
+                            "Id": "Bucket",
+                            "DomainName": {
+                                "Fn::GetAtt": [
+                                    "WebBucket",
+                                    "DomainName"
+                                ]
+                            },
+                            "S3OriginConfig": {
+                                "OriginAccessIdentity": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            "origin-access-identity",
+                                            "cloudfront",
+                                            {
+                                                "Ref": "OriginAccessIdentity"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "Logging": {
+                        "Bucket": {
+                            "Fn::Join": [
+                                ".",
+                                [
+                                    {
+                                        "Ref": "LogBucket"
+                                    },
+                                    "s3",
+                                    {
+                                        "Ref": "AWS::URLSuffix"
+                                    }
+                                ]
+                            ]
+                        },
+                        "Prefix": {
+                            "Fn::If": [
+                                "NoFQDN",
+                                {
+                                    "Fn::Sub": "web/${AWS::StackName}/"
+                                },
+                                {
+                                    "Fn::Sub": "web/${FQDN}/"
+                                }
+                            ]
+                        },
+                        "IncludeCookies": true
+                    }
+                }
+            }
+        },
+        "LogBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "AccessControl": "LogDeliveryWrite",
+                "VersioningConfiguration": {
+                    "Status": "Suspended"
+                },
+                "LifecycleConfiguration": {
+                    "Rules": [
+                        {
+                            "Status": "Enabled",
+                            "ExpirationInDays": 3653,
+                            "NoncurrentVersionExpirationInDays": 1
+                        }
+                    ]
+                }
+            }
+        },
+        "SharedLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "RetentionInDays": 7,
+                "LogGroupName": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "LogGroup"
+                        ]
+                    ]
+                }
+            }
+        }
+    },
+    "Conditions": {
+        "NoFQDN": {
+            "Fn::Equals": [
+                {
+                    "Ref": "FQDN"
+                },
+                ""
+            ]
+        },
+        "NoSSL": {
+            "Fn::Equals": [
+                {
+                    "Ref": "CertificateArn"
+                },
+                ""
+            ]
+        }
+    },
+    "Outputs": {
+        "WebBucketArn": {
+            "Description": "ARN of S3 bucket hosting the website",
+            "Value": {
+                "Fn::GetAtt": [
+                    "WebBucket",
+                    "Arn"
+                ]
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}WebBucketArn"
+                }
+            }
+        }
+    }
+}
