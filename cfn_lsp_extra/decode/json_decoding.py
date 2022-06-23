@@ -95,7 +95,7 @@ def cfn_json_object(
                 pairs_append((VALUES_POSITION_PREFIX, values_lst))
             else:
                 values_lst = next(v for k, v in pairs if k == VALUES_POSITION_PREFIX)
-            values_lst.append({POSITION_PREFIX + value: [value_start, end]})
+            values_lst.append({POSITION_PREFIX + value: [value_start + 1, end + 1]})
         # END EDIT
         pairs_append((POSITION_PREFIX + key, [key_start, key_end]))
         try:
