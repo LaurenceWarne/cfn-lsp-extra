@@ -72,7 +72,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
 
     @server.feature(
         COMPLETION,
-        CompletionOptions(trigger_characters=["!"], resolve_provider=True),
+        CompletionOptions(trigger_characters=["!", '"'], resolve_provider=True),
     )
     def completions(
         ls: LanguageServer, params: CompletionParams

@@ -1,6 +1,8 @@
 """
 Completion logic.
 """
+import re
+
 from pygls.lsp.types import CompletionItem
 from pygls.lsp.types import CompletionList
 from pygls.lsp.types import Position
@@ -30,18 +32,24 @@ def completions_for(
     prop_lookup = ResourcePropertyExtractor().extract(template_data)
     prop_span = prop_lookup.at(line, char)
     if prop_span:
-        return property_completions(prop_span.value, aws_context)
+        return property_completions(prop_span.value, aws_context, document, position)
     return intrinsic_function_completions(document, position)
 
 
 def property_completions(
-    name: AWSPropertyName, aws_context: AWSContext
+    name: AWSPropertyName,
+    aws_context: AWSContext,
+    document: Document,
+    position: Position,
 ) -> CompletionList:
+    add_colon = not re.match(r".*:.*", document.lines[position.line])
     return CompletionList(
         is_incomplete=False,
         items=[
             CompletionItem(
-                label=s, documentation=aws_context.description(name.parent / s)
+                label=s,
+                documentation=aws_context.description(name.parent / s),
+                insert_text=s + (": " if add_colon else ""),
             )
             for s in aws_context.same_level(name)
         ],

@@ -14,7 +14,7 @@ from ..test_aws_data import aws_resource_string
 
 @pytest.fixture
 def document():
-    return Document(uri="", source="\n" * 20)
+    return Document(uri="", source="\n" * 50)
 
 
 @pytest.fixture
@@ -94,6 +94,27 @@ def test_property_completions(
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
+    assert result.items[0].insert_text == aws_property_string + ": "
+
+
+def test_property_completions_with_colon(
+    aws_context,
+    document_mapping_incomplete_property,
+    aws_property_string,
+    property_position,
+):
+    document = Document(
+        uri="",
+        source="\n".join(
+            (":" if i == property_position.line else "") for i in range(60)
+        ),
+    )
+    result = completions_for(
+        document_mapping_incomplete_property, aws_context, document, property_position
+    )
+    assert len(result.items) == 1
+    assert result.items[0].label == aws_property_string
+    assert result.items[0].insert_text == aws_property_string
 
 
 def test_resource_completions(
