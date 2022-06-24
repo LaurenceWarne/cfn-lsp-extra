@@ -97,8 +97,8 @@ def test_parsing_of_key_positions(json_string):
 
 def test_parsing_of_value_positions(json_string):
     content = json.loads(json_string, cls=CfnJSONDecoder)
-    assert content[VALUES_POSITION_PREFIX] == [{"__position__2010-09-09": [1, 32]}]
+    assert content[VALUES_POSITION_PREFIX] == [{"__position__2010-09-09": [1, 33]}]
     assert content["Resources"]["taskdefinition"]["__value_positions__"] == [
-        {"__position__AWS::ECS::TaskDefinition": [4, 20]},
-        {"__position__OriginAccessIdentity": [5, 25]},
+        {"__position__AWS::ECS::TaskDefinition": [4, 21]},
+        {"__position__OriginAccessIdentity": [5, 26]},
     ]

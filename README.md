@@ -70,5 +70,4 @@ Patches detailing integration steps for other editors are very welcome 🙏
 
 ### [cfn-lint](https://github.com/aws-cloudformation/cfn-lint)
 
-Note this is used by `cfn-lsp-extra` under the hood.
-
+Note this is used by `cfn-lsp-extra` under the hood to generate [diagnostics](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic).  One difference with `cfn-lsp-extra` is that diagnostics will be refreshed every time you make a change to the document, in other words you don't need to save the file.

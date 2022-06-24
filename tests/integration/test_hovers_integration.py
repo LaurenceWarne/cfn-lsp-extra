@@ -2,12 +2,7 @@
 Integration tests for hovers.
 """
 import pytest
-from pygls.lsp.methods import HOVER
-from pygls.lsp.types import CompletionItem
-from pygls.lsp.types import Hover
-from pygls.lsp.types import HoverParams
 from pygls.lsp.types import Position
-from pygls.lsp.types import TextDocumentIdentifier
 
 
 # See
