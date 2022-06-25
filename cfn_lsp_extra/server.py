@@ -11,6 +11,7 @@ from typing import Union
 
 from pygls.lsp.methods import COMPLETION
 from pygls.lsp.methods import COMPLETION_ITEM_RESOLVE
+from pygls.lsp.methods import DEFINITION
 from pygls.lsp.methods import HOVER
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_CHANGE
 from pygls.lsp.methods import TEXT_DOCUMENT_DID_OPEN
@@ -18,10 +19,12 @@ from pygls.lsp.types import CompletionItem
 from pygls.lsp.types import CompletionList
 from pygls.lsp.types import CompletionOptions
 from pygls.lsp.types import CompletionParams
+from pygls.lsp.types import DefinitionParams
 from pygls.lsp.types import DidChangeTextDocumentParams
 from pygls.lsp.types import DidOpenTextDocumentParams
 from pygls.lsp.types import Hover
 from pygls.lsp.types import HoverParams
+from pygls.lsp.types import Location
 from pygls.lsp.types import MarkupContent
 from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
@@ -30,6 +33,7 @@ from pygls.server import LanguageServer
 
 from .aws_data import AWSContext
 from .aws_data import AWSPropertyName
+from .aws_data import AWSRefName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .completions import completions_for
@@ -38,8 +42,10 @@ from .decode import CfnDecodingException
 from .decode import decode
 from .decode import decode_unfinished
 from .decode.extractors import CompositeExtractor
+from .decode.extractors import KeyExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
+from .ref import resolve_ref
 
 
 logger = logging.getLogger(__name__)
@@ -128,5 +134,44 @@ def server(aws_context: AWSContext) -> LanguageServer:
                 ),
                 contents=MarkupContent(kind=MarkupKind.Markdown, value=description),
             )
+
+    @server.feature(DEFINITION)
+    def goto_definition(
+        ls: LanguageServer, params: DefinitionParams
+    ) -> Optional[Location]:
+        logger.info("CALLED GOTO DEFINITION")
+        line_at, char_at = params.position.line, params.position.character
+        document = server.workspace.get_document(params.text_document.uri)
+        try:
+            template_data = decode(document.source, document.filename)
+        except CfnDecodingException as e:
+            logger.debug(f"Failed to decode document: {e}")
+            return None
+        ref_extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
+        ref_lookup = ref_extractor.extract(template_data)
+        logger.info(template_data)
+        logger.info(ref_lookup)
+        span = ref_lookup.at(line_at, char_at)
+        logger.info(f"FOUND SPAN {span}")
+        if span:
+            from .decode.extractors import ParameterExtractor
+
+            param_extractor = ParameterExtractor()
+            param_lookup = param_extractor.extract(template_data)
+            logger.info(list(param_lookup.items()))
+            position = resolve_ref(span.value, template_data)
+            if position:
+                return Location(
+                    uri=document.uri,
+                    range=Range(
+                        start=position,
+                        end=Position(
+                            line=position.line,
+                            character=position.character + len(span.value.value),
+                        ),
+                    ),
+                )
+        else:
+            return None
 
     return server

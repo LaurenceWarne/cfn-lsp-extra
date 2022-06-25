@@ -146,7 +146,7 @@ class AWSContext(BaseModel):
         return update_dict_recursive(self.resources, other.resources, "resources")
 
 
-class AWSParameterName(BaseModel, frozen=True):
+class AWSRefName(BaseModel, frozen=True):
     value: str
 
 
@@ -155,3 +155,9 @@ class AWSParameter(BaseModel, frozen=True):
     type_: str
     description: Optional[str] = None
     default: Optional[str] = None
+
+    def as_documentation(self):
+        return f"""`{self.logical_name}`
+{self.description}
+*type*: {self.type_}
+*default*: {self.default}"""

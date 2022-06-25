@@ -1,7 +1,7 @@
 import pytest
 
 from cfn_lsp_extra.aws_data import AWSParameter
-from cfn_lsp_extra.aws_data import AWSParameterName
+from cfn_lsp_extra.aws_data import AWSRefName
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import Extractor
@@ -25,7 +25,7 @@ def document_mapping():
                 "__position__Type": [5, 4],
                 "__value_positions__": [
                     {"__position__String": [5, 10]},
-                    {"__position__Default": [6, 4]},
+                    {"__position__vpc-1431243213": [6, 13]},
                 ],
                 "__position__Default": [6, 4],
             },
@@ -37,12 +37,14 @@ def document_mapping():
                 "Properties": {
                     "CidrBlock": "172.31.48.0/20",
                     "MapPublicIpOnLaunch": True,
-                    "VpcId": {"Ref": "DefaultVpcId"},
+                    "VpcId": {
+                        "Ref": "DefaultVpcId",
+                        "__value_positions__": [{"__position__DefaultVpcId": [13, 18]}],
+                    },
                     "__position__CidrBlock": [11, 6],
                     "__value_positions__": [
                         {"__position__172.31.48.0/20": [11, 17]},
-                        {"__position__MapPublicIpOnLaunch": [12, 6]},
-                        {"__position__VpcId": [13, 6]},
+                        {"__position__true": [12, 27]},
                     ],
                     "__position__MapPublicIpOnLaunch": [12, 6],
                     "__position__VpcId": [13, 6],
@@ -74,7 +76,7 @@ def document_mapping():
         "__position__AWSTemplateFormatVersion": [0, 0],
         "__value_positions__": [
             {"__position__2010-09-09": [0, 26]},
-            {"__position__Description": [2, 0]},
+            {"__position__My template": [2, 13]},
         ],
         "__position__Description": [2, 0],
         "__position__Parameters": [3, 0],
@@ -358,8 +360,8 @@ def test_composite_extractor(document_mapping):
 
 
 def test_key_extractor(document_mapping):
-    extractor = KeyExtractor[AWSParameterName](
-        "Ref", lambda s: AWSParameterName(value=s)
-    )
+    extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
     positions = extractor.extract(document_mapping)
-    assert [(20, 13, 12)] == positions[AWSParameterName(value="DefaultVpcId")]
+    assert [(13, 18, 12), (20, 13, 12)] == sorted(
+        positions[AWSRefName(value="DefaultVpcId")]
+    )

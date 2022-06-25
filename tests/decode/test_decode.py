@@ -8,7 +8,7 @@ from pygls.lsp.types import Position
 from cfn_lsp_extra.decode import CfnDecodingException
 from cfn_lsp_extra.decode import decode
 from cfn_lsp_extra.decode import decode_unfinished
-from cfn_lsp_extra.decode.extractors import Extractor
+from cfn_lsp_extra.decode.extractors import RecursiveExtractor
 from cfn_lsp_extra.decode.extractors import remove_prefix
 from cfn_lsp_extra.decode.position import PositionLookup
 from cfn_lsp_extra.decode.position import Spanning
@@ -20,7 +20,7 @@ from .test_yaml_decoding import yaml_string
 
 @pytest.fixture
 def extractor():
-    class TestExtractor(Extractor[str]):
+    class TestExtractor(RecursiveExtractor[str]):
         def extract_node(self, node):
             spans = []
             for key, value in node.items():
