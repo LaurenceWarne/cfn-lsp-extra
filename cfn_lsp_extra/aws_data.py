@@ -10,6 +10,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 from typing import List
+from typing import Optional
 from typing import Set
 from typing import Union
 
@@ -143,3 +144,14 @@ class AWSContext(BaseModel):
                     update_dict_recursive(mp1[key], value, f"{path}/{key}")
 
         return update_dict_recursive(self.resources, other.resources, "resources")
+
+
+class AWSParameterName(BaseModel, frozen=True):
+    value: str
+
+
+class AWSParameter(BaseModel, frozen=True):
+    logical_name: str
+    type_: str
+    description: Optional[str] = None
+    default: Optional[str] = None

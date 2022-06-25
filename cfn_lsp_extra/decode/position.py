@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict
 from typing import Generic
+from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -59,3 +60,10 @@ class PositionLookup(Dict[T, PositionList]):
     def extend_with_appends(self, other: PositionLookup[T]) -> None:
         for key, value in other.items():
             self[key].extend(value)
+
+    @classmethod
+    def from_iterable(cls, iterable: Iterable[Spanning[T]]) -> PositionLookup[T]:
+        lookup: PositionLookup[T] = cls()
+        for span in iterable:
+            lookup[span.value].append((span.line, span.char, span.span))
+        return lookup

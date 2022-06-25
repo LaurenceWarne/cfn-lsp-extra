@@ -1,8 +1,13 @@
 import pytest
 
+from cfn_lsp_extra.aws_data import AWSParameter
+from cfn_lsp_extra.aws_data import AWSParameterName
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import Extractor
+from cfn_lsp_extra.decode.extractors import KeyExtractor
+from cfn_lsp_extra.decode.extractors import ParameterExtractor
+from cfn_lsp_extra.decode.extractors import RecursiveExtractor
 from cfn_lsp_extra.decode.extractors import ResourceExtractor
 from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
 from cfn_lsp_extra.decode.position import Spanning
@@ -77,8 +82,8 @@ def document_mapping():
     }
 
 
-def test_extract():
-    class TestExtractor(Extractor[str]):
+def test_recursive_extractor():
+    class TestExtractor(RecursiveExtractor[str]):
         def extract_node(self, node):
             return [Spanning(value="prop", line=0, char=0, span=1)]
 
@@ -350,3 +355,11 @@ def test_composite_extractor(document_mapping):
     assert [(13, 6, 5), (19, 6, 5)] == sorted(
         positions[AWSResourceName(value="AWS::EC2::Subnet") / "VpcId"]
     )
+
+
+def test_key_extractor(document_mapping):
+    extractor = KeyExtractor[AWSParameterName](
+        "Ref", lambda s: AWSParameterName(value=s)
+    )
+    positions = extractor.extract(document_mapping)
+    assert [(20, 13, 12)] == positions[AWSParameterName(value="DefaultVpcId")]

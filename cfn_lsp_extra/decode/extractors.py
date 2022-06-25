@@ -1,12 +1,17 @@
 """
+Classes for extracting positional information from decoded documents.
 
+For example extracting the positions of resource parameters.
 """
 from abc import ABC
 from abc import abstractmethod
+from typing import Callable
 from typing import Generic
 from typing import List
 from typing import TypeVar
 from typing import Union
+
+from cfn_lsp_extra.aws_data import AWSParameter
 
 from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
@@ -29,6 +34,23 @@ E = TypeVar("E", covariant=True)
 
 
 class Extractor(ABC, Generic[E]):
+    @abstractmethod
+    def extract(self, node: Tree) -> PositionLookup[E]:
+        """Call extract contents from node.
+
+        Parameters
+        ----------
+        node : Tree
+            node to extract from (recursively).
+
+        Returns
+        -------
+        PositionLookup[T]
+            A PositionLookup object containing items from source."""
+        ...
+
+
+class RecursiveExtractor(Extractor[E]):
     def extract(self, node: Tree) -> PositionLookup[E]:
         """Call extract_node at each of the inner nodes of node.
 
@@ -41,9 +63,7 @@ class Extractor(ABC, Generic[E]):
         -------
         PositionLookup[T]
             A PositionLookup object containing items from source."""
-        position_lookup = PositionLookup[E]()
-        for span in self.extract_node(node):
-            position_lookup[span.value].append((span.line, span.char, span.span))
+        position_lookup = PositionLookup.from_iterable(self.extract_node(node))
         for child in node.values():
             if isinstance(child, dict):
                 position_lookup.extend_with_appends(self.extract(child))
@@ -54,18 +74,13 @@ class Extractor(ABC, Generic[E]):
         ...
 
 
-class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
-    """Extractor for resource properties.
+class ResourcePropertyExtractor(RecursiveExtractor[AWSPropertyName]):
+    """Extractor for resource and nested properties.
 
     Methods
     -------
     extract(node)
-        Extract resource properties from node.
-
-    Returns
-    -------
-    PositionLookup[T]
-        A PositionLookup mapping AWSPropertyName objects to positions."""
+        Extract resource and nested properties from node."""
 
     def extract_node(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
         props = []
@@ -131,14 +146,9 @@ class ResourceExtractor(Extractor[AWSResourceName]):
     Methods
     -------
     extract(node)
-        Extract a resource name from node.
+        Extract resource names from node."""
 
-    Returns
-    -------
-    PositionLookup[T]
-        A PositionLookup mapping AWSResourceName objects to positions."""
-
-    def extract_node(self, node: Tree) -> List[Spanning[AWSResourceName]]:
+    def extract(self, node: Tree) -> PositionLookup[AWSResourceName]:
         props = []
         if "Resources" in node and isinstance(node["Resources"], dict):
             for _, resource_dct in node["Resources"].items():
@@ -162,7 +172,81 @@ class ResourceExtractor(Extractor[AWSResourceName]):
                                 )
                             )
                             break
-        return props
+        return PositionLookup.from_iterable(props)
+
+
+class ParameterExtractor(Extractor[AWSParameter]):
+    """Extractor for parameters.
+
+    Methods
+    -------
+    extract(node)
+        Extract resource names from node."""
+
+    SECTION = "Parameters"
+
+    def extract(self, node: Tree) -> PositionLookup[AWSParameter]:
+        if self.SECTION in node and isinstance(node[self.SECTION], dict):
+            params = []
+            for param_name, content_dct in node[self.SECTION].items():
+                key = POSITION_PREFIX + param_name
+                add_parameter = (
+                    key in node[self.SECTION]
+                    and isinstance(content_dct, dict)
+                    and "Type" in content_dct
+                )
+                if add_parameter:
+                    type_ = content_dct["Type"]
+                    line, char = node[self.SECTION][key]
+                    param = AWSParameter(
+                        logical_name=param_name,
+                        type_=type_,
+                        description=content_dct.get("description", None),
+                        default=content_dct.get("default", None),
+                    )
+                    params.append(
+                        Spanning[AWSParameter](
+                            value=param,
+                            line=line,
+                            char=char,
+                            span=len(param_name),
+                        )
+                    )
+        return PositionLookup.from_iterable(params)
+
+
+K = TypeVar("K", covariant=True)
+
+
+class KeyExtractor(RecursiveExtractor[K]):
+    """Extractor for named key values.
+
+    Methods
+    -------
+    extract(node)
+        Extract keys from node."""
+
+    def __init__(self, key_name: str, name_fn: Callable[[str], K]):
+        self.key_name = key_name
+        self.name_fn = name_fn
+
+    def extract_node(self, node: Tree) -> List[Spanning[K]]:
+        found = []
+        for key, value in node.items():
+            if key == self.key_name and VALUES_POSITION_PREFIX in node:
+                for val_pos_dct in node[VALUES_POSITION_PREFIX]:
+                    p_key = POSITION_PREFIX + str(value)
+                    if p_key in val_pos_dct:
+                        line, char = val_pos_dct[p_key]
+                        found.append(
+                            Spanning[K](
+                                value=self.name_fn(value),
+                                line=line,
+                                char=char,
+                                span=len(value),
+                            )
+                        )
+        return found
 
 
 T = TypeVar("T", covariant=True)
@@ -174,8 +258,8 @@ class CompositeExtractor(Extractor[T]):
     def __init__(self, *extractors: Extractor[T]):
         self._extractors = extractors
 
-    def extract_node(self, node: Tree) -> List[Spanning[T]]:
-        ls = []
+    def extract(self, node: Tree) -> PositionLookup[T]:
+        lookup = PositionLookup[T]()
         for extractor in self._extractors:
-            ls.extend(extractor.extract_node(node))
-        return ls
+            lookup.extend_with_appends(extractor.extract(node))
+        return lookup
