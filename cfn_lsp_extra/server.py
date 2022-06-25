@@ -139,7 +139,6 @@ def server(aws_context: AWSContext) -> LanguageServer:
     def goto_definition(
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:
-        logger.info("CALLED GOTO DEFINITION")
         line_at, char_at = params.position.line, params.position.character
         document = server.workspace.get_document(params.text_document.uri)
         try:
@@ -149,16 +148,8 @@ def server(aws_context: AWSContext) -> LanguageServer:
             return None
         ref_extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
         ref_lookup = ref_extractor.extract(template_data)
-        logger.info(template_data)
-        logger.info(ref_lookup)
         span = ref_lookup.at(line_at, char_at)
-        logger.info(f"FOUND SPAN {span}")
         if span:
-            from .decode.extractors import ParameterExtractor
-
-            param_extractor = ParameterExtractor()
-            param_lookup = param_extractor.extract(template_data)
-            logger.info(list(param_lookup.items()))
             position = resolve_ref(span.value, template_data)
             if position:
                 return Location(
@@ -171,7 +162,6 @@ def server(aws_context: AWSContext) -> LanguageServer:
                         ),
                     ),
                 )
-        else:
-            return None
+        return None
 
     return server

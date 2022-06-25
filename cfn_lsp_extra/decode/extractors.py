@@ -41,7 +41,7 @@ class Extractor(ABC, Generic[E]):
         Parameters
         ----------
         node : Tree
-            node to extract from (recursively).
+            The root node to extract from.
 
         Returns
         -------
@@ -63,10 +63,20 @@ class RecursiveExtractor(Extractor[E]):
         -------
         PositionLookup[T]
             A PositionLookup object containing items from source."""
-        position_lookup = PositionLookup.from_iterable(self.extract_node(node))
-        for child in node.values():
+        if isinstance(node, dict):
+            position_lookup = PositionLookup.from_iterable(self.extract_node(node))
+            iterable = node.values()
+        else:
+            position_lookup = PositionLookup[E]()
+            iterable = node
+        for child in iterable:
             if isinstance(child, dict):
                 position_lookup.extend_with_appends(self.extract(child))
+            elif isinstance(child, list):
+                for sub_child in filter(
+                    lambda c: isinstance(c, dict) or isinstance(c, list), child
+                ):
+                    position_lookup.extend_with_appends(self.extract(sub_child))
         return position_lookup
 
     @abstractmethod
@@ -74,7 +84,7 @@ class RecursiveExtractor(Extractor[E]):
         ...
 
 
-class ResourcePropertyExtractor(RecursiveExtractor[AWSPropertyName]):
+class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
     """Extractor for resource and nested properties.
 
     Methods
@@ -82,26 +92,38 @@ class ResourcePropertyExtractor(RecursiveExtractor[AWSPropertyName]):
     extract(node)
         Extract resource and nested properties from node."""
 
-    def extract_node(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
+    def extract(self, node: Tree) -> PositionLookup[AWSPropertyName]:
         props = []
-        is_res_node = "Properties" in node and "Type" in node
-        if is_res_node and isinstance(node["Properties"], dict):
-            type_ = node["Type"] or ""
-            props = self._extract_recursive(
-                node["Properties"], AWSResourceName(value=type_)
-            )
-        elif (
-            is_res_node
-            and isinstance(node["Properties"], str)
-            and VALUES_POSITION_PREFIX in node
-        ):
-            props = self._extract_unfinished(node)
-        return props
+        if "Resources" in node and isinstance(node["Resources"], dict):
+            for resource in filter(
+                lambda r: isinstance(r, dict), node["Resources"].values()
+            ):
+                is_res_node = "Properties" in resource and "Type" in resource
+                if is_res_node and isinstance(resource["Properties"], dict):
+                    type_ = resource["Type"] or ""
+                    props.extend(
+                        self._extract_recursive(
+                            resource["Properties"],
+                            AWSResourceName(value=type_),
+                        )
+                    )
+                elif (
+                    is_res_node
+                    and isinstance(resource["Properties"], str)
+                    and VALUES_POSITION_PREFIX in resource
+                ):
+                    props.extend(self._extract_unfinished(resource))
+        return PositionLookup.from_iterable(props)
 
     def _extract_recursive(
         self, node: Tree, parent: Union[AWSPropertyName, AWSResourceName]
     ) -> List[Spanning[AWSPropertyName]]:
         props = []
+        if isinstance(node, list):
+            for sub_node in node:
+                if isinstance(sub_node, list) or isinstance(sub_node, dict):
+                    props.extend(self._extract_recursive(sub_node, parent))
+            return props
         for key, value in node.items():
             if key.startswith(POSITION_PREFIX):
                 prop = remove_prefix(key, POSITION_PREFIX)
@@ -112,11 +134,15 @@ class ResourcePropertyExtractor(RecursiveExtractor[AWSPropertyName]):
                         value=aws_prop, line=line, char=char, span=len(prop)
                     )
                 )
+
                 if isinstance(node[prop], dict):
                     props.extend(self._extract_recursive(node[prop], aws_prop))
                 elif isinstance(node[prop], list):
                     for sub_node in filter(lambda p: isinstance(p, dict), node[prop]):
-                        props.extend(self._extract_recursive(sub_node, aws_prop))
+                        if isinstance(sub_node, dict):
+                            props.extend(self._extract_recursive(sub_node, aws_prop))
+                        elif isinstance(sub_node, list):
+                            props.extend(self._extract_recursive(sub_node, parent))
         return props
 
     def _extract_unfinished(self, node: Tree) -> List[Spanning[AWSPropertyName]]:

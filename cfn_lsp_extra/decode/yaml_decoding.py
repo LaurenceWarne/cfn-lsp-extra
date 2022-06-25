@@ -16,6 +16,7 @@ except ImportError:
 from yaml.nodes import MappingNode
 from yaml.nodes import Node
 from yaml.nodes import ScalarNode
+from yaml.nodes import SequenceNode
 
 
 POSITION_PREFIX = "__position__"
@@ -51,7 +52,7 @@ class SafePositionLoader(SafeLoader):
             # Stick positional info on leaf nodes into their own mapping so they
             # aren't confused with others, first we check if value_node is a
             # !Ref
-            obj = self.construct_object(value_node)
+            obj = self.construct_object(value_node)  # type: ignore[no-untyped-call]
             if isinstance(value_node, ScalarNode) and hasattr(obj, "start_mark"):
                 key = key_node.value
                 to_add = []
@@ -67,4 +68,21 @@ class SafePositionLoader(SafeLoader):
                     mapping[VALUES_POSITION_PREFIX] = []
                 value_position = self._value_position(value_node)
                 mapping[VALUES_POSITION_PREFIX].append(value_position)
+        return mapping
+
+    def construct_sequence(self, node: SequenceNode, deep: bool = False) -> Any:
+        mapping = super(  # type: ignore[no-untyped-call]
+            SafePositionLoader, self
+        ).construct_sequence(node, deep)
+
+        for idx, value_node in enumerate(node.value):
+            obj = self.construct_object(value_node)  # type: ignore[no-untyped-call]
+            if isinstance(value_node, ScalarNode) and hasattr(obj, "start_mark"):
+                to_add = []
+                for _, sub_value in obj.items():
+                    line, char = value_node.end_mark.line, value_node.end_mark.column
+                    char -= len(sub_value)
+                    to_add.append({POSITION_PREFIX + value_node.value: [line, char]})
+                mapping[idx][VALUES_POSITION_PREFIX] = to_add
+
         return mapping

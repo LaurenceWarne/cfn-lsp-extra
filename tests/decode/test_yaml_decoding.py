@@ -28,7 +28,10 @@ Resources:
     Properties:
       CidrBlock: 172.31.64.0/20
       VpcId:
-        Ref: DefaultVpcId"""
+        Ref: DefaultVpcId
+      Tags:
+        - Key: MyKey
+          Value: !Join ['', [!Ref DefaultVpcId, VPC]]"""
 
 
 def test_safe_position_loader_data(yaml_string):
@@ -62,4 +65,10 @@ def test_safe_position_loader_ref_positions(yaml_string):
     assert prop2[VALUES_POSITION_PREFIX][0][POSITION_PREFIX + "DefaultVpcId"] == [
         20,
         13,
+    ]
+    tags = data["Resources"]["PrivateSubnet"]["Properties"]["Tags"]
+    tag_val = tags[0]["Value"]["Fn::Join"][1][0]
+    assert tag_val[VALUES_POSITION_PREFIX][0][POSITION_PREFIX + "DefaultVpcId"] == [
+        23,
+        34,
     ]

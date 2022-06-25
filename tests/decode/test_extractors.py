@@ -20,20 +20,59 @@ def document_mapping():
         "Description": "My template",
         "Parameters": {
             "DefaultVpcId": {
-                "Type": "String",
                 "Default": "vpc-1431243213",
+                "Type": "String",
+                "__position__Default": [6, 4],
                 "__position__Type": [5, 4],
                 "__value_positions__": [
                     {"__position__String": [5, 10]},
                     {"__position__vpc-1431243213": [6, 13]},
                 ],
-                "__position__Default": [6, 4],
             },
             "__position__DefaultVpcId": [4, 2],
         },
         "Resources": {
-            "PublicSubnet": {
+            "PrivateSubnet": {
+                "Properties": {
+                    "CidrBlock": "172.31.64.0/20",
+                    "Tags": [
+                        {
+                            "Key": "MyKey",
+                            "Value": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        {
+                                            "Ref": "DefaultVpcId",
+                                            "__value_positions__": [
+                                                {"__position__DefaultVpcId": [23, 34]}
+                                            ],
+                                        },
+                                        "VPC",
+                                    ],
+                                ]
+                            },
+                            "__position__Key": [22, 10],
+                            "__position__Value": [23, 10],
+                            "__value_positions__": [{"__position__MyKey": [22, 15]}],
+                        }
+                    ],
+                    "VpcId": {
+                        "Ref": "DefaultVpcId",
+                        "__position__Ref": [20, 8],
+                        "__value_positions__": [{"__position__DefaultVpcId": [20, 13]}],
+                    },
+                    "__position__CidrBlock": [18, 6],
+                    "__position__Tags": [21, 6],
+                    "__position__VpcId": [19, 6],
+                    "__value_positions__": [{"__position__172.31.64.0/20": [18, 17]}],
+                },
                 "Type": "AWS::EC2::Subnet",
+                "__position__Properties": [17, 4],
+                "__position__Type": [16, 4],
+                "__value_positions__": [{"__position__AWS::EC2::Subnet": [16, 10]}],
+            },
+            "PublicSubnet": {
                 "Properties": {
                     "CidrBlock": "172.31.48.0/20",
                     "MapPublicIpOnLaunch": True,
@@ -42,45 +81,29 @@ def document_mapping():
                         "__value_positions__": [{"__position__DefaultVpcId": [13, 18]}],
                     },
                     "__position__CidrBlock": [11, 6],
+                    "__position__MapPublicIpOnLaunch": [12, 6],
+                    "__position__VpcId": [13, 6],
                     "__value_positions__": [
                         {"__position__172.31.48.0/20": [11, 17]},
                         {"__position__true": [12, 27]},
                     ],
-                    "__position__MapPublicIpOnLaunch": [12, 6],
-                    "__position__VpcId": [13, 6],
                 },
+                "Type": "AWS::EC2::Subnet",
+                "__position__Properties": [10, 4],
                 "__position__Type": [9, 4],
                 "__value_positions__": [{"__position__AWS::EC2::Subnet": [9, 10]}],
-                "__position__Properties": [10, 4],
             },
-            "PrivateSubnet": {
-                "Type": "AWS::EC2::Subnet",
-                "Properties": {
-                    "CidrBlock": "172.31.64.0/20",
-                    "VpcId": {
-                        "Ref": "DefaultVpcId",
-                        "__position__Ref": [20, 8],
-                        "__value_positions__": [{"__position__DefaultVpcId": [20, 13]}],
-                    },
-                    "__position__CidrBlock": [18, 6],
-                    "__value_positions__": [{"__position__172.31.64.0/20": [18, 17]}],
-                    "__position__VpcId": [19, 6],
-                },
-                "__position__Type": [16, 4],
-                "__value_positions__": [{"__position__AWS::EC2::Subnet": [16, 10]}],
-                "__position__Properties": [17, 4],
-            },
-            "__position__PublicSubnet": [8, 2],
             "__position__PrivateSubnet": [15, 2],
+            "__position__PublicSubnet": [8, 2],
         },
         "__position__AWSTemplateFormatVersion": [0, 0],
+        "__position__Description": [2, 0],
+        "__position__Parameters": [3, 0],
+        "__position__Resources": [7, 0],
         "__value_positions__": [
             {"__position__2010-09-09": [0, 26]},
             {"__position__My template": [2, 13]},
         ],
-        "__position__Description": [2, 0],
-        "__position__Parameters": [3, 0],
-        "__position__Resources": [7, 0],
     }
 
 
@@ -362,6 +385,6 @@ def test_composite_extractor(document_mapping):
 def test_key_extractor(document_mapping):
     extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
     positions = extractor.extract(document_mapping)
-    assert [(13, 18, 12), (20, 13, 12)] == sorted(
+    assert [(13, 18, 12), (20, 13, 12), (23, 34, 12)] == sorted(
         positions[AWSRefName(value="DefaultVpcId")]
     )
