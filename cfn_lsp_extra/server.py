@@ -119,6 +119,27 @@ def server(aws_context: AWSContext) -> LanguageServer:
         position_lookup = extractor.extract(template_data)
         span = position_lookup.at(line_at, char_at)
         if not span:
+            ref_extractor = KeyExtractor[AWSRefName](
+                "Ref", lambda s: AWSRefName(value=s)
+            )
+            ref_lookup = ref_extractor.extract(template_data)
+            ref_span = ref_lookup.at(line_at, char_at)
+            if ref_span:
+                src_span = resolve_ref(ref_span.value, template_data)
+                if src_span:
+                    return Hover(
+                        range=Range(
+                            start=Position(line=line_at, character=char_at),
+                            end=Position(
+                                line=line_at,
+                                character=line_at + src_span.span,
+                            ),
+                        ),
+                        contents=MarkupContent(
+                            kind=MarkupKind.Markdown,
+                            value=src_span.value.as_documentation(),
+                        ),
+                    )
             return None
 
         # See if we can get a description from the obj wrapped by the span
@@ -150,15 +171,14 @@ def server(aws_context: AWSContext) -> LanguageServer:
         ref_lookup = ref_extractor.extract(template_data)
         span = ref_lookup.at(line_at, char_at)
         if span:
-            position = resolve_ref(span.value, template_data)
-            if position:
+            src_span = resolve_ref(span.value, template_data)
+            if src_span:
                 return Location(
                     uri=document.uri,
                     range=Range(
-                        start=position,
+                        start=Position(line=src_span.line, character=src_span.char),
                         end=Position(
-                            line=position.line,
-                            character=position.character + len(span.value.value),
+                            line=src_span.line, character=src_span.char + src_span.span
                         ),
                     ),
                 )

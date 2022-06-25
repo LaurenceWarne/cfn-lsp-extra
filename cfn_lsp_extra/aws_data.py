@@ -157,7 +157,7 @@ class AWSParameter(BaseModel, frozen=True):
     default: Optional[str] = None
 
     def as_documentation(self) -> str:
-        return f"""`{self.logical_name}`
-{self.description}
-*type*: {self.type_}
-*default*: {self.default}"""
+        description_str = "\n" + self.description if self.description else ""
+        return f"""`{self.logical_name}`{description_str}
+*Type*: `{self.type_}`
+*Default*: {self.default}"""
