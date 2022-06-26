@@ -1,5 +1,5 @@
 """
-Integration tests for hovers.
+Integration tests for textDocument/Hover.
 """
 import pytest
 from pygls.lsp.types import Position

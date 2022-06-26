@@ -1,5 +1,5 @@
 """
-Integration tests for completions.
+Integration tests for textDocument/completion.
 """
 import pytest
 from pygls.lsp.types.language_features.completion import CompletionItem

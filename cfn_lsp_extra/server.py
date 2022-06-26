@@ -33,7 +33,6 @@ from pygls.server import LanguageServer
 
 from .aws_data import AWSContext
 from .aws_data import AWSPropertyName
-from .aws_data import AWSRefName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .completions import completions_for
@@ -42,7 +41,6 @@ from .decode import CfnDecodingException
 from .decode import decode
 from .decode import decode_unfinished
 from .decode.extractors import CompositeExtractor
-from .decode.extractors import KeyExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
 from .ref import resolve_ref
@@ -118,70 +116,49 @@ def server(aws_context: AWSContext) -> LanguageServer:
             return None
         position_lookup = extractor.extract(template_data)
         span = position_lookup.at(line_at, char_at)
-        if not span:
-            ref_extractor = KeyExtractor[AWSRefName](
-                "Ref", lambda s: AWSRefName(value=s)
-            )
-            ref_lookup = ref_extractor.extract(template_data)
-            ref_span = ref_lookup.at(line_at, char_at)
-            if ref_span:
-                src_span = resolve_ref(ref_span.value, template_data)
-                if src_span:
-                    return Hover(
-                        range=Range(
-                            start=Position(line=line_at, character=char_at),
-                            end=Position(
-                                line=line_at,
-                                character=line_at + src_span.span,
-                            ),
-                        ),
-                        contents=MarkupContent(
-                            kind=MarkupKind.Markdown,
-                            value=src_span.value.as_documentation(),
-                        ),
-                    )
+
+        if span:
+            try:
+                documentation = aws_context.description(span.value)
+                char, length = span.char, span.span
+            except ValueError:  # no description for value, e.g. incomplete
+                return None
+        else:  # Attempt to resolve it as a Ref
+            src_span = resolve_ref(params.position, template_data)
+            if src_span:
+                documentation = src_span.value.as_documentation()
+                char, length = char_at, src_span.span
             return None
 
-        # See if we can get a description from the obj wrapped by the span
-        try:
-            description = aws_context.description(span.value)
-        except ValueError:  # no description for value, e.g. incomplete
-            return None
-        else:
-            return Hover(
-                range=Range(
-                    start=Position(line=line_at, character=span.char),
-                    end=Position(line=line_at, character=span.char + span.span),
-                ),
-                contents=MarkupContent(kind=MarkupKind.Markdown, value=description),
-            )
+        return Hover(
+            range=Range(
+                start=Position(line=line_at, character=char),
+                end=Position(line=line_at, character=char + length),
+            ),
+            contents=MarkupContent(kind=MarkupKind.Markdown, value=documentation),
+        )
 
     @server.feature(DEFINITION)
     def goto_definition(
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:
-        line_at, char_at = params.position.line, params.position.character
         document = server.workspace.get_document(params.text_document.uri)
         try:
             template_data = decode(document.source, document.filename)
         except CfnDecodingException as e:
             logger.debug(f"Failed to decode document: {e}")
             return None
-        ref_extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
-        ref_lookup = ref_extractor.extract(template_data)
-        span = ref_lookup.at(line_at, char_at)
-        if span:
-            src_span = resolve_ref(span.value, template_data)
-            if src_span:
-                return Location(
-                    uri=document.uri,
-                    range=Range(
-                        start=Position(line=src_span.line, character=src_span.char),
-                        end=Position(
-                            line=src_span.line, character=src_span.char + src_span.span
-                        ),
+        src_span = resolve_ref(params.position, template_data)
+        if src_span:
+            return Location(
+                uri=document.uri,
+                range=Range(
+                    start=Position(line=src_span.line, character=src_span.char),
+                    end=Position(
+                        line=src_span.line, character=src_span.char + src_span.span
                     ),
-                )
+                ),
+            )
         return None
 
     return server

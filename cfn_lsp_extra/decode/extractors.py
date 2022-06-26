@@ -227,8 +227,8 @@ class ParameterExtractor(Extractor[AWSParameter]):
                     param = AWSParameter(
                         logical_name=param_name,
                         type_=type_,
-                        description=content_dct.get("description", None),
-                        default=content_dct.get("default", None),
+                        description=content_dct.get("Description", None),
+                        default=content_dct.get("Default", None),
                     )
                     params.append(
                         Spanning[AWSParameter](
