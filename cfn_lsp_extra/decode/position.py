@@ -67,3 +67,21 @@ class PositionLookup(Dict[T, PositionList]):
         for span in iterable:
             lookup[span.value].append((span.line, span.char, span.span))
         return lookup
+
+
+ST = TypeVar("ST")
+TT = TypeVar("TT")
+
+
+class PositionLink(GenericModel, Generic[ST, TT]):
+    """The linking of a source object and a target object in a document.
+
+    Attributes
+    ----------
+    source_span : Spanning[ST]
+        The source object
+    target_span : Spanning[TT]
+        The target object"""
+
+    source_span: Spanning[ST]
+    target_span: Spanning[TT]

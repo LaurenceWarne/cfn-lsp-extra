@@ -124,11 +124,13 @@ def server(aws_context: AWSContext) -> LanguageServer:
             except ValueError:  # no description for value, e.g. incomplete
                 return None
         else:  # Attempt to resolve it as a Ref
-            src_span = resolve_ref(params.position, template_data)
-            if src_span:
-                documentation = src_span.value.as_documentation()
-                char, length = char_at, src_span.span
-            return None
+            link = resolve_ref(params.position, template_data)
+            if link:
+                documentation = link.source_span.value.as_documentation()
+                char, length = link.target_span.char, link.target_span.span
+                logger.info(f"{line_at}, {char}, {length}")
+            else:
+                return None
 
         return Hover(
             range=Range(
@@ -148,14 +150,17 @@ def server(aws_context: AWSContext) -> LanguageServer:
         except CfnDecodingException as e:
             logger.debug(f"Failed to decode document: {e}")
             return None
-        src_span = resolve_ref(params.position, template_data)
-        if src_span:
+        link = resolve_ref(params.position, template_data)
+        if link:
             return Location(
                 uri=document.uri,
                 range=Range(
-                    start=Position(line=src_span.line, character=src_span.char),
+                    start=Position(
+                        line=link.source_span.line, character=link.source_span.char
+                    ),
                     end=Position(
-                        line=src_span.line, character=src_span.char + src_span.span
+                        line=link.source_span.line,
+                        character=link.source_span.char + link.source_span.span,
                     ),
                 ),
             )

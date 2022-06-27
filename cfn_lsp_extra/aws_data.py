@@ -158,6 +158,6 @@ class AWSParameter(BaseModel, frozen=True):
 
     def as_documentation(self) -> str:
         description_str = "\n" + self.description if self.description else ""
-        return f"""`{self.logical_name}`{description_str}
+        return f"""# Parameter: `{self.logical_name}`{description_str}
 *Type*: `{self.type_}`
 *Default*: {self.default}"""

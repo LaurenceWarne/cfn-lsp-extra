@@ -7,12 +7,13 @@ from .aws_data import AWSRefName
 from .aws_data import Tree
 from .decode.extractors import KeyExtractor
 from .decode.extractors import ParameterExtractor
+from .decode.position import PositionLink
 from .decode.position import Spanning
 
 
 def resolve_ref(
     position: Position, template_data: Tree
-) -> Optional[Spanning[AWSParameter]]:
+) -> Optional[PositionLink[AWSParameter, AWSRefName]]:
     """Attempt to resolve the source and documentation of a ref at position.
 
     Parameters
@@ -34,7 +35,10 @@ def resolve_ref(
         for param, position_list in param_lookup.items():
             if param.logical_name == ref_span.value.value and position_list:
                 line, char, _ = position_list[0]
-                return Spanning(
+                src_span = Spanning[AWSParameter](
                     value=param, line=line, char=char, span=len(param.logical_name)
+                )
+                return PositionLink[AWSParameter, AWSRefName](
+                    source_span=src_span, target_span=ref_span
                 )
     return None
