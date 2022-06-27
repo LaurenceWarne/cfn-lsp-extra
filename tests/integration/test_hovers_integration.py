@@ -59,3 +59,20 @@ async def test_nested_property_hover(client, file_name, line, character):
         position=Position(line=line, character=character),
     )
     assert "DestinationBucketName" in result.contents.value
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 83, 36),
+        ("template.json", 123, 44),
+    ],
+)
+@pytest.mark.asyncio
+async def test_parameter_ref_hover(client, file_name, line, character):
+    test_uri = client.root_uri + "/" + file_name
+    result = await client.hover_request(
+        uri=test_uri,
+        position=Position(line=line, character=character),
+    )
+    assert "CertificateArn" in result.contents.value

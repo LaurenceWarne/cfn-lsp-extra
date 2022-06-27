@@ -20,10 +20,12 @@ def resolve_ref(
     ----------
     position : Position
         The position to look at in the template
+    template_data : Tree
+        The decoded template
 
     Returns
     -------
-    Optional[Spanning[AWSParameter]]
+    Optional[PositionLink[AWSParameter, AWSRefName]]
         A spanning object containing the ref source if it was found, else None
     """
     ref_extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
