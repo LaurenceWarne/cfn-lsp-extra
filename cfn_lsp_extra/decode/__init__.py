@@ -37,7 +37,7 @@ def decode(source: str, filename: str) -> Tree:
         if filename.endswith("json"):
             data = json.loads(source, cls=CfnJSONDecoder)
         else:
-            data = yaml.load(source, Loader=SafePositionLoader)
+            data = yaml.load(source, Loader=SafePositionLoader)  # noqa
     except (
         yaml.scanner.ScannerError,
         yaml.parser.ParserError,

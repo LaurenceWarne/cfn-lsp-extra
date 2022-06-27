@@ -104,7 +104,7 @@ class BaseCfnDocParser(ABC):
             async with session.get(
                 url, timeout=ClientTimeout(total=None, sock_connect=5, sock_read=5)
             ) as response:
-                assert response.status == 200
+                response.raise_for_status()
                 raw = await self.parse_response_raw(response.content, url, session)
                 if raw:
                     name, description, properties = raw
