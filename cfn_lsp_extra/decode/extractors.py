@@ -212,8 +212,8 @@ class ParameterExtractor(Extractor[AWSParameter]):
     SECTION = "Parameters"
 
     def extract(self, node: Tree) -> PositionLookup[AWSParameter]:
+        params = []
         if self.SECTION in node and isinstance(node[self.SECTION], dict):
-            params = []
             for param_name, content_dct in node[self.SECTION].items():
                 key = POSITION_PREFIX + param_name
                 add_parameter = (
