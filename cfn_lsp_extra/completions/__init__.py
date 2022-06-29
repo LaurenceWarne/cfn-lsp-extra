@@ -42,7 +42,9 @@ def property_completions(
     document: Document,
     position: Position,
 ) -> CompletionList:
-    add_colon = not re.match(r".*:.*", document.lines[position.line])
+    add_colon = not re.match(
+        r".*:.*", document.lines[position.line]
+    ) and not document.filename.endswith("json")
     return CompletionList(
         is_incomplete=False,
         items=[
