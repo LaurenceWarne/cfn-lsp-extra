@@ -11,6 +11,7 @@ from typing import List
 from typing import TypeVar
 from typing import Union
 
+from cfn_lsp_extra.aws_data import AWSLogicalId
 from cfn_lsp_extra.aws_data import AWSParameter
 
 from ..aws_data import AWSPropertyName
@@ -73,9 +74,7 @@ class RecursiveExtractor(Extractor[E]):
             if isinstance(child, dict):
                 position_lookup.extend_with_appends(self.extract(child))
             elif isinstance(child, list):
-                for sub_child in filter(
-                    lambda c: isinstance(c, dict) or isinstance(c, list), child
-                ):
+                for sub_child in filter(lambda c: isinstance(c, (dict, list)), child):
                     position_lookup.extend_with_appends(self.extract(sub_child))
         return position_lookup
 
@@ -273,6 +272,39 @@ class KeyExtractor(RecursiveExtractor[K]):
                             )
                         )
         return found
+
+
+class LogicalIdExtractor(Extractor[AWSLogicalId]):
+    """Extractor for the logical ids of a template.
+
+    Methods
+    -------
+    extract(node)
+        Extract logical ids from node."""
+
+    SECTION = "Resources"
+
+    def extract(self, node: Tree) -> PositionLookup[AWSLogicalId]:
+        params = []
+        if self.SECTION in node and isinstance(node[self.SECTION], dict):
+            for logical_id, content_dct in node[self.SECTION].items():
+                key = POSITION_PREFIX + logical_id
+                if key in node[self.SECTION]:
+                    if isinstance(content_dct, dict) and "Type" in content_dct:
+                        type_ = content_dct.get("Type", None)
+                    else:
+                        type_ = None
+                    line, char = node[self.SECTION][key]
+                    params.append(
+                        Spanning[K](
+                            value=AWSLogicalId(logical_name=logical_id, type_=type_),
+                            line=line,
+                            char=char,
+                            span=len(logical_id),
+                        )
+                    )
+
+        return PositionLookup.from_iterable(params)
 
 
 T = TypeVar("T", covariant=True)

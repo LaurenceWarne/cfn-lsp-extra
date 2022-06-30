@@ -37,39 +37,7 @@ pipx upgrade cfn-lsp-extra
 
 ### Emacs
 
-You need to install an lsp client like [lsp-mode](https://github.com/emacs-lsp/lsp-mode) and register `cfn-lsp-extra`.  [yaml-mode](https://github.com/yoshiki/yaml-mode) is also highly recommended.
-
-```elisp
-;; After lsp-mode and yaml-mode have been loaded
-(when-let ((exe (executable-find "cfn-lsp-extra")))
-
-  ;; Copied from https://www.emacswiki.org/emacs/CfnLint
-  (define-derived-mode cfn-json-mode js-mode
-    "CFN-JSON"
-    "Simple mode to edit CloudFormation template in JSON format."
-  (setq js-indent-level 2))
-
-  (add-to-list 'magic-mode-alist
-               '("\\({\n *\\)? *[\"']AWSTemplateFormatVersion" . cfn-json-mode))
-  (add-to-list 'lsp-language-id-configuration
-               '(cfn-json-mode . "cloudformation"))
-  (add-hook 'cfn-json-mode-hook #'lsp)
-  
-  (when (featurep 'yaml-mode)
-    (define-derived-mode cfn-yaml-mode yaml-mode
-      "CFN-YAML"
-      "Simple mode to edit CloudFormation template in YAML format.")
-    (add-to-list 'magic-mode-alist
-                 '("\\(---\n\\)?AWSTemplateFormatVersion:" . cfn-yaml-mode))
-    (add-to-list 'lsp-language-id-configuration
-                 '(cfn-yaml-mode . "cloudformation"))
-    (add-hook 'cfn-yaml-mode-hook #'lsp))
-  
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection exe)
-                    :activation-fn (lsp-activate-on "cloudformation")
-                    :server-id 'cfn-lsp-extra)))
-```
+Install the [lsp-cfn.el](https://github.com/LaurenceWarne/lsp-cfn.el) package.
 
 Patches detailing integration steps for other editors are very welcome 🙏
 

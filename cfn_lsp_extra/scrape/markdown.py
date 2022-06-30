@@ -113,7 +113,7 @@ class BaseCfnDocParser(ABC):
                     return None
         except ServerTimeoutError as e:
             if retry:
-                logger.info(f"Timeout for {url}, retrying")
+                logger.info("Timeout for %s, retrying", url)
                 return await self.parse(session, url, False)
             else:
                 raise e
@@ -157,7 +157,7 @@ class BaseCfnDocParser(ABC):
                 desc += line
 
         if prop_name is None:
-            logger.info(f"Skipping {name} since no properties were found")
+            logger.info("Skipping %s since no properties were found", name)
             return None
         properties[prop_name.property_] = {
             "description": self.format_description(desc),
@@ -169,7 +169,7 @@ class BaseCfnDocParser(ABC):
     async def parse_subproperty(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
     ) -> Optional[Tree]:
-        logger.info(f"parsing {property_name}")
+        logger.info("parsing %s", property_name)
         if self.ignore_condition(property_name):
             return None
         else:

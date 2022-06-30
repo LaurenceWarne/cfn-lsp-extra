@@ -1,11 +1,13 @@
 import pytest
 
+from cfn_lsp_extra.aws_data import AWSLogicalId
 from cfn_lsp_extra.aws_data import AWSParameter
 from cfn_lsp_extra.aws_data import AWSRefName
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import Extractor
 from cfn_lsp_extra.decode.extractors import KeyExtractor
+from cfn_lsp_extra.decode.extractors import LogicalIdExtractor
 from cfn_lsp_extra.decode.extractors import ParameterExtractor
 from cfn_lsp_extra.decode.extractors import RecursiveExtractor
 from cfn_lsp_extra.decode.extractors import ResourceExtractor
@@ -104,6 +106,26 @@ def document_mapping():
             {"__position__2010-09-09": [0, 26]},
             {"__position__My template": [2, 13]},
         ],
+    }
+
+
+@pytest.fixture
+def incomplete_logical_id_document_mapping():
+    return {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Resources": {
+            "MyResource": 3,
+            "MyTaskde": None,
+            "__position__MyResource": [2, 2],
+            "__value_positions__": [
+                {"__position__3": [2, 8]},
+                {"__position__": [3, 11]},
+            ],
+            "__position__MyTaskde": [3, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [{"__position__2010-09-09": [0, 26]}],
+        "__position__Resources": [1, 0],
     }
 
 
@@ -340,25 +362,11 @@ def test_resource_extractor_for_empty_resources():
     assert not positions
 
 
-def test_resource_extractor_for_incomplete_logical_id():
-    document_mapping = {
-        "AWSTemplateFormatVersion": "2010-09-09",
-        "Resources": {
-            "MyResource": 3,
-            "MyTaskde": None,
-            "__position__MyResource": [2, 2],
-            "__value_positions__": [
-                {"__position__3": [2, 8]},
-                {"__position__": [3, 11]},
-            ],
-            "__position__MyTaskde": [3, 2],
-        },
-        "__position__AWSTemplateFormatVersion": [0, 0],
-        "__value_positions__": [{"__position__2010-09-09": [0, 26]}],
-        "__position__Resources": [1, 0],
-    }
+def test_resource_extractor_for_incomplete_logical_id(
+    incomplete_logical_id_document_mapping,
+):
     extractor = ResourceExtractor()
-    positions = extractor.extract(document_mapping)
+    positions = extractor.extract(incomplete_logical_id_document_mapping)
     assert not positions
 
 
@@ -374,9 +382,9 @@ def test_composite_extractor(document_mapping):
     assert [(11, 6, 9), (18, 6, 9)] == sorted(
         positions[AWSResourceName(value="AWS::EC2::Subnet") / "CidrBlock"]
     )
-    assert [(12, 6, 19)] == sorted(
-        positions[AWSResourceName(value="AWS::EC2::Subnet") / "MapPublicIpOnLaunch"]
-    )
+    assert [(12, 6, 19)] == positions[
+        AWSResourceName(value="AWS::EC2::Subnet") / "MapPublicIpOnLaunch"
+    ]
     assert [(13, 6, 5), (19, 6, 5)] == sorted(
         positions[AWSResourceName(value="AWS::EC2::Subnet") / "VpcId"]
     )
@@ -388,3 +396,25 @@ def test_key_extractor(document_mapping):
     assert [(13, 18, 12), (20, 13, 12), (23, 34, 12)] == sorted(
         positions[AWSRefName(value="DefaultVpcId")]
     )
+
+
+def test_logical_id_extractor(document_mapping):
+    extractor = LogicalIdExtractor()
+    positions = extractor.extract(document_mapping)
+    assert [(15, 2, 13)] == positions[
+        AWSLogicalId(logical_name="PrivateSubnet", type_="AWS::EC2::Subnet")
+    ]
+    assert [(8, 2, 12)] == positions[
+        AWSLogicalId(logical_name="PublicSubnet", type_="AWS::EC2::Subnet")
+    ]
+
+
+def test_logical_id_extractor_incomplete_logical_id(
+    incomplete_logical_id_document_mapping,
+):
+    extractor = LogicalIdExtractor()
+    positions = extractor.extract(incomplete_logical_id_document_mapping)
+    assert [(3, 2, 8)] == positions[AWSLogicalId(logical_name="MyTaskde", type_=None)]
+    assert [(2, 2, 10)] == positions[
+        AWSLogicalId(logical_name="MyResource", type_=None)
+    ]

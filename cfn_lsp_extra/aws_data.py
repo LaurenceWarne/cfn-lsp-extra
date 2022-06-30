@@ -5,8 +5,11 @@ For reference as of 21/05/2022 there are 186 resource prefixes. and a total
 of 899 resources.  The most properties for a resource is 52 for
 'AWS::RDS::DBInstance' and the average is 6.193548387096774.
 """
+
 from __future__ import annotations
 
+from abc import ABC
+from abc import abstractmethod
 from enum import Enum
 from typing import Any
 from typing import List
@@ -150,7 +153,13 @@ class AWSRefName(BaseModel, frozen=True):
     value: str
 
 
-class AWSParameter(BaseModel, frozen=True):
+class Documented(ABC):
+    @abstractmethod
+    def as_documentation(self) -> str:
+        ...
+
+
+class AWSParameter(BaseModel, Documented, frozen=True):
     logical_name: str
     type_: str
     description: Optional[str] = None
@@ -161,3 +170,12 @@ class AWSParameter(BaseModel, frozen=True):
         return f"""# Parameter: `{self.logical_name}`{description_str}
 *Type*: `{self.type_}`
 *Default*: {self.default}"""
+
+
+class AWSLogicalId(BaseModel, Documented, frozen=True):
+    logical_name: str
+    type_: Optional[str]
+
+    def as_documentation(self) -> str:
+        return f"""# Resource: `{self.logical_name}`
+*Type*: {"`" + self.type_ + "`" if self.type_ else "not given"}"""
