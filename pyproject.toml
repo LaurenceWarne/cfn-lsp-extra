@@ -28,20 +28,21 @@ tqdm = "4.64^"
 black = "^22.3.0"
 coverage = {extras = ["toml"], version = ">=6.2"}
 flakeheaven = "^2.0.0"
+bandit = "1.7.2"  # https://github.com/PyCQA/bandit/issues/837
 flake8 = "^4.0.1"
-# https://github.com/tylerwince/flake8-bandit
-flake8-bandit = ">=2.1.2"
-# https://github.com/PyCQA/flake8-bugbear
-flake8-bugbear = ">=21.9.2"
+flake8-bandit = "^2.1.2"
+flake8-bugbear = "^21.9.2"
+flake8-pie = "^0.15.0"
+flake8-simplify = "^0.19.2"
 isort = "^5.10.1"
-mypy = ">=0.960"
-pep8-naming = ">=0.12.1"
+mypy = "^0.960"
+pep8-naming = "^0.12.1"
 pytest = "^7.1.2"
 pytest-asyncio = "^0.18"
 pytest-mock = "^3.7"
 pytest-lsp = "^0.0.7" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = ">=1.4.1"
-nox = ">=2022.1"
+nox = "^2022.1"
 
 [tool.poetry.scripts]
 cfn-lsp-extra = "cfn_lsp_extra.__main__:main"

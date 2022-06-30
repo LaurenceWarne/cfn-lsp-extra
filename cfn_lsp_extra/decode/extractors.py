@@ -121,7 +121,7 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
         props = []
         if isinstance(node, list):
             for sub_node in node:
-                if isinstance(sub_node, list) or isinstance(sub_node, dict):
+                if isinstance(sub_node, (dict, list)):
                     props.extend(self._extract_recursive(sub_node, parent))
             return props
         for key, value in node.items():

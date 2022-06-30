@@ -89,7 +89,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
                 document.source, document.filename, params.position
             )
         except CfnDecodingException as e:
-            logger.debug(f"Failed to decode document: {e}")
+            logger.debug("Failed to decode document: %s", e)
             return None
         return completions_for(template_data, aws_context, document, params.position)
 
@@ -112,7 +112,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         try:
             template_data = decode(document.source, document.filename)
         except CfnDecodingException as e:
-            logger.debug(f"Failed to decode document: {e}")
+            logger.debug("Failed to decode document: %s", e)
             return None
         position_lookup = extractor.extract(template_data)
         span = position_lookup.at(line_at, char_at)
@@ -128,7 +128,6 @@ def server(aws_context: AWSContext) -> LanguageServer:
             if link:
                 documentation = link.source_span.value.as_documentation()
                 char, length = link.target_span.char, link.target_span.span
-                logger.info(f"{line_at}, {char}, {length}")
             else:
                 return None
 
@@ -148,7 +147,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         try:
             template_data = decode(document.source, document.filename)
         except CfnDecodingException as e:
-            logger.debug(f"Failed to decode document: {e}")
+            logger.debug("Failed to decode document: %s", e)
             return None
         link = resolve_ref(params.position, template_data)
         if link:

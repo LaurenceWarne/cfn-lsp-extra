@@ -24,7 +24,7 @@ def download_context(path: Path = override_ctx_path) -> None:
     # Not using importlib.resources.files is considered legacy but is
     # necessary for python < 3.9
     urls = read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
-    logger.info(f"Downloading documentation from {len(urls)} urls")
+    logger.info("Downloading documentation from %s urls", len(urls))
     ctx = asyncio.run(parse_urls(urls))
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:
@@ -33,11 +33,11 @@ def download_context(path: Path = override_ctx_path) -> None:
 
 def with_custom(context: AWSContext, custom_path: Path = custom_ctx_path) -> AWSContext:
     """Overwrite part of context with custom content."""
-    logger.info(f"Updating context using custom file {custom_path}")
+    logger.info("Updating context using custom file %s", custom_path)
     with open_text("cfn_lsp_extra.resources", "custom.json") as f:
         context.update(AWSContext(**json.load(f)))
     if custom_path.exists():
-        logger.info(f"Updating context using custom file {custom_path}")
+        logger.info("Updating context using custom file %s", custom_path)
         with custom_path.open("r") as f:
             context.update(AWSContext(**json.load(f)))
     return context
@@ -46,7 +46,7 @@ def with_custom(context: AWSContext, custom_path: Path = custom_ctx_path) -> AWS
 def load_context(override_path: Path = override_ctx_path) -> AWSContext:
     """Load AWS context from a cache."""
     if override_path.exists():
-        logger.info(f"Loading custom context from {override_path}")
+        logger.info("Loading custom context from %s", override_path)
         with override_path.open("r") as f:
             return with_custom(AWSContext(**json.load(f)))
     else:
