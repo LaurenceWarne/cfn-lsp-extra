@@ -76,3 +76,21 @@ async def test_parameter_ref_hover(client, file_name, line, character):
         position=Position(line=line, character=character),
     )
     assert "CertificateArn" in result.contents.value
+
+
+@pytest.mark.skip
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 44, 15),
+        ("template.json", 33, 18),
+    ],
+)
+@pytest.mark.asyncio
+async def test_no_hover(client, file_name, line, character):
+    test_uri = client.root_uri + "/" + file_name
+    result = await client.hover_request(
+        uri=test_uri,
+        position=Position(line=line, character=character),
+    )
+    assert result is None

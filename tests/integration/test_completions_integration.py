@@ -36,3 +36,18 @@ async def test_completion_item_resolve_adds_documentation_for_resource(client):
     item = CompletionItem(label=resource)
     result = await client.completion_resolve_request(item)
     assert resource in result.documentation
+
+
+@pytest.mark.skip
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 44, 15),
+        ("template.json", 33, 18),
+    ],
+)
+@pytest.mark.asyncio
+async def test_no_completion(client, file_name, line, character):
+    test_uri = client.root_uri + "/" + file_name
+    result = await client.completion_request(test_uri, line=line, character=character)
+    assert not result.items
