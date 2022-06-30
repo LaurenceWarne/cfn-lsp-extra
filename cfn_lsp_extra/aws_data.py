@@ -153,13 +153,17 @@ class AWSRefName(BaseModel, frozen=True):
     value: str
 
 
-class Documented(ABC):
+class AWSRefSource(BaseModel, ABC):
+    """An object which can be linked to using !Ref, e.g. a parameter."""
+
+    logical_name: str
+
     @abstractmethod
     def as_documentation(self) -> str:
         ...
 
 
-class AWSParameter(BaseModel, Documented, frozen=True):
+class AWSParameter(AWSRefSource, frozen=True):
     logical_name: str
     type_: str
     description: Optional[str] = None
@@ -172,7 +176,7 @@ class AWSParameter(BaseModel, Documented, frozen=True):
 *Default*: {self.default}"""
 
 
-class AWSLogicalId(BaseModel, Documented, frozen=True):
+class AWSLogicalId(AWSRefSource, frozen=True):
     logical_name: str
     type_: Optional[str]
 

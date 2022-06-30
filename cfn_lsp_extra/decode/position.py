@@ -15,7 +15,7 @@ from pydantic.types import NonNegativeInt
 E = TypeVar("E")
 
 
-class Spanning(GenericModel, Generic[E]):
+class Spanning(GenericModel, Generic[E], arbitrary_types_allowed=True):
     """Enrichment of some object with a location span in a document.
 
     Attributes
@@ -73,7 +73,7 @@ ST = TypeVar("ST")
 TT = TypeVar("TT")
 
 
-class PositionLink(GenericModel, Generic[ST, TT]):
+class PositionLink(GenericModel, Generic[ST, TT], arbitrary_types_allowed=True):
     """The linking of a source object and a target object in a document.
 
     Attributes
