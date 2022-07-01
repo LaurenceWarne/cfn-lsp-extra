@@ -8,12 +8,12 @@ https://user-images.githubusercontent.com/17688577/166110762-71058f8f-4cb6-44ae-
 
 ## Features
 
-| Method                            | Status                                                                                                                 |
-|-----------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| `textDocument/hover`              | Done for resources, resource properties, subproperties and parameter `!Ref`s. *TODO* all `!Ref`s, intrinsic functions. |
-| `textDocument/completion`         | Done for resources, resource properties, subproperties and intrinsic functions. *TODO* `!Ref`s, `!GetAtt`.             |
-| `textDocument/definition`         | Done for parameter `!Ref`s.  *TODO* resource `!Ref`s, mappings.                                                        |
-| `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                                |
+| Method                            | Status                                                                                                          |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `textDocument/hover`              | Done for resources, resource properties, subproperties and `!Ref`s. *TODO* `!GetAtt`s, intrinsic functions. |
+| `textDocument/completion`         | Done for resources, resource properties, subproperties, refs and intrinsic functions. *TODO* `!GetAtt`.         |
+| `textDocument/definition`         | Done for `!Ref`s.  *TODO* mappings.                                                                             |
+| `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                         |
 
 ## Installation
 

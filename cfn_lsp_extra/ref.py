@@ -14,6 +14,7 @@ from .decode.position import PositionLink
 from .decode.position import Spanning
 
 
+REF_EXTRACTOR = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
 REF_SRC_EXTRACTOR = CompositeExtractor[AWSRefSource](
     LogicalIdExtractor(), ParameterExtractor()
 )
@@ -22,7 +23,8 @@ REF_SRC_EXTRACTOR = CompositeExtractor[AWSRefSource](
 def resolve_ref(
     position: Position,
     template_data: Tree,
-    extractor: Extractor[AWSRefSource] = REF_SRC_EXTRACTOR,
+    ref_extractor: Extractor[AWSRefName] = REF_EXTRACTOR,
+    ref_src_extractor: Extractor[AWSRefSource] = REF_SRC_EXTRACTOR,
 ) -> Optional[PositionLink[AWSRefSource, AWSRefName]]:
     """Attempt to resolve the source and documentation of a ref at position.
 
@@ -40,16 +42,15 @@ def resolve_ref(
     Optional[PositionLink[AWSRefSource, AWSRefName]]
         A spanning object containing the ref source if it was found, else None
     """
-    ref_extractor = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
     ref_lookup = ref_extractor.extract(template_data)
     ref_span = ref_lookup.at(position.line, position.character)
     if ref_span:
-        lookup = extractor.extract(template_data)
-        for param, position_list in lookup.items():
-            if param.logical_name == ref_span.value.value and position_list:
+        ref_src_lookup = ref_src_extractor.extract(template_data)
+        for ref_src, position_list in ref_src_lookup.items():
+            if ref_src.logical_name == ref_span.value.value and position_list:
                 line, char, _ = position_list[0]
                 src_span = Spanning[AWSRefSource](
-                    value=param, line=line, char=char, span=len(param.logical_name)
+                    value=ref_src, line=line, char=char, span=len(ref_src.logical_name)
                 )
                 return PositionLink[AWSRefSource, AWSRefName](
                     source_span=src_span, target_span=ref_span

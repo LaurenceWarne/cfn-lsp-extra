@@ -77,12 +77,8 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
     source_lst = source.splitlines()
     line, char = position.line, position.character
     if not filename.endswith("json"):
-        if not source_lst[line].strip():  # Empty line for property
-            source_lst[line] = source_lst[line][:char] + "."
-            source = "\n".join(source_lst)
-        elif source_lst[line].strip() == "Type:":  # For resource
-            source_lst[line] = source_lst[line] + "."
-            source = "\n".join(source_lst)
+        source_lst[line] = yaml_line_enricher(source_lst[line], char)
+        source = "\n".join(source_lst)
     try:
         return decode(source, filename)
     except CfnDecodingException:
@@ -92,3 +88,15 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
             source_lst[line] = source_lst[line].rstrip() + ":"
         source = "\n".join(source_lst)
         return decode(source, filename)
+
+
+def yaml_line_enricher(line: str, char: int) -> str:
+    if not line.strip():  # Empty line for property
+        new_line = line[:char] + "."
+    elif line.strip() in ("Type:", "Ref:") or line.rstrip().endswith(
+        "!Ref"
+    ):  # For resource or ref
+        new_line = line + "."
+    else:
+        new_line = line
+    return new_line
