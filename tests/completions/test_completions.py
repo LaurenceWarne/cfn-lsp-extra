@@ -28,6 +28,11 @@ def property_position():
 
 
 @pytest.fixture
+def ref_position():
+    return Position(line=9, character=18)
+
+
+@pytest.fixture
 def document_mapping_incomplete_service_provider(
     aws_resource_string, aws_property_string, resource_position
 ):
@@ -79,6 +84,49 @@ def document_mapping_incomplete_property(
                 ],
             }
         },
+    }
+
+
+@pytest.fixture
+def document_mapping_incomplete_ref():
+    return {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "My template",
+        "Parameters": {
+            "MyVpcId": {
+                "Type": "AWS::EC2::VPC::Id",
+                "__position__Type": [4, 4],
+                "__value_positions__": [{"__position__AWS::EC2::VPC::Id": [4, 10]}],
+            },
+            "__position__MyVpcId": [3, 2],
+        },
+        "Resources": {
+            "PublicSubnet": {
+                "Type": "AWS::EC2::Subnet",
+                "Properties": {
+                    "VpcId": {
+                        "Ref": ".",
+                        "__value_positions__": [{"__position__.": [9, 18]}],
+                    },
+                    "CidrBlock": "192.168.0.0/24",
+                    "__position__VpcId": [9, 6],
+                    "__position__CidrBlock": [10, 6],
+                    "__value_positions__": [{"__position__192.168.0.0/24": [10, 17]}],
+                },
+                "__position__Type": [7, 4],
+                "__value_positions__": [{"__position__AWS::EC2::Subnet": [7, 10]}],
+                "__position__Properties": [8, 4],
+            },
+            "__position__PublicSubnet": [6, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__My template": [1, 13]},
+        ],
+        "__position__Description": [1, 0],
+        "__position__Parameters": [2, 0],
+        "__position__Resources": [5, 0],
     }
 
 
@@ -134,19 +182,32 @@ def test_resource_completions(
     assert result.items[0].label == aws_resource_string
 
 
-def test_intrinsic_function_completion(aws_context):
+def test_ref_completion(
+    document, aws_context, document_mapping_incomplete_ref, ref_position
+):
+    result = completions_for(
+        document_mapping_incomplete_ref,
+        aws_context,
+        document,
+        ref_position,
+    )
+    assert len(result.items) == 2
+    assert sorted(item.label for item in result.items) == ["MyVpcId", "PublicSubnet"]
+
+
+def test_intrinsic_function_completions(aws_context):
     document = Document(
         uri="",
         source="""AWSTemplateFormatVersion: 2010-09-09
-  Description: My template
-  Resources:
-    PublicSubnet:
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId: Fn
-        CidrBlock: 192.168.0.0/24""",
+Description: My template
+Resources:
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: Fn
+      CidrBlock: 192.168.0.0/24""",
     )
-    position = Position(line=6, character=17)
+    position = Position(line=6, character=15)
     result = completions_for({}, aws_context, document, position).items
     assert len(result) > 0
     assert all(c.label.startswith("Fn::") for c in result)

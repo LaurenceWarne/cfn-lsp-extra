@@ -47,6 +47,7 @@ from .ref import resolve_ref
 
 
 logger = logging.getLogger(__name__)
+TRIGGER_CHARACTERS = ["Type: ", "!Ref ", "Ref: ", "!", '"Type": "', '"Ref": "', '"']
 
 
 def server(aws_context: AWSContext) -> LanguageServer:
@@ -76,7 +77,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
 
     @server.feature(
         COMPLETION,
-        CompletionOptions(trigger_characters=["!", '"'], resolve_provider=True),
+        CompletionOptions(trigger_characters=TRIGGER_CHARACTERS, resolve_provider=True),
     )
     def completions(
         ls: LanguageServer, params: CompletionParams
