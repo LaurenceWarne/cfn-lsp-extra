@@ -11,7 +11,6 @@ from pygls.lsp.types import Position
 pytestmark = pytest.mark.integration
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "file_name,ref_line,ref_character,param_line,param_character",
     [

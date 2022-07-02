@@ -38,7 +38,6 @@ async def test_completion_item_resolve_adds_documentation_for_resource(client):
     assert resource in result.documentation
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "file_name,line,character",
     [

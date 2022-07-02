@@ -78,7 +78,6 @@ async def test_parameter_ref_hover(client, file_name, line, character):
     assert "CertificateArn" in result.contents.value
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "file_name,line,character",
     [

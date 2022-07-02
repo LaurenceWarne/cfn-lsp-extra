@@ -48,3 +48,38 @@ Patches detailing integration steps for other editors are very welcome 🙏
 ### [cfn-lint](https://github.com/aws-cloudformation/cfn-lint)
 
 Note this is used by `cfn-lsp-extra` under the hood to generate [diagnostics](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic).  One difference with `cfn-lsp-extra` is that diagnostics will be refreshed every time you make a change to the document, in other words you don't need to save the file.
+
+### [yamlls](https://github.com/redhat-developer/yaml-language-server)
+
+You can use `yamlls` in conjunction with the Cloudformation schema at https://www.schemastore.org/json/ as an alternative.  For Emacs, `lsp-mode` can install `yamlls` for you, from there you could do something like:
+
+```elisp
+(defun my-yamlls-cloudformation-setup ()
+  ;; There's also one for serverless
+  (lsp-yaml-set-buffer-schema "https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json")
+  (setq-local
+   lsp-yaml-custom-tags
+   ["!And"
+    "!Base64"
+    "!Cidr"
+    "!Equals"
+    "!FindInMap sequence"
+    "!GetAZs"
+    "!GetAtt"
+    "!If"
+    "!ImportValue"
+    "!Join sequence"
+    "!Not"
+    "!Or"
+    "!Ref Scalar"
+    "!Ref"
+    "!Select"
+    "!Split"
+    "!Sub"
+    "!fn"]))
+
+;; Using the mode defined by https://www.emacswiki.org/emacs/CfnLint
+(add-hook 'cfn-yaml-mode-hook #'my-yamlls-cloudformation-setup)
+```
+
+This will give you completions (and some support for value completions?), though no hover documentation.
