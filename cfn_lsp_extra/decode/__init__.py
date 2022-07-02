@@ -38,11 +38,7 @@ def decode(source: str, filename: str) -> Tree:
             data = json.loads(source, cls=CfnJSONDecoder)
         else:
             data = yaml.load(source, Loader=SafePositionLoader)  # noqa
-    except (
-        yaml.scanner.ScannerError,
-        yaml.parser.ParserError,
-        json.JSONDecodeError,
-    ) as e:
+    except (json.JSONDecodeError, yaml.YAMLError) as e:
         raise CfnDecodingException(f"Error decoding {filename}") from e
     return data
 
