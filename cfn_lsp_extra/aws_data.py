@@ -112,6 +112,15 @@ class AWSContext(BaseModel):
         except KeyError:
             raise ValueError(f"'{name}' is not a recognised resource or property")
 
+    def __contains__(self, name: AWSName) -> bool:
+        heirarchy = name.split()
+        level = self.resources
+        for name_component in heirarchy:
+            if name_component not in level:
+                return False
+            level = level[name_component]["properties"]
+        return True
+
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
         return self[name]["description"]  # type: ignore[no-any-return]

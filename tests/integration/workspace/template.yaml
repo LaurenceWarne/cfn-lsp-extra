@@ -146,6 +146,10 @@ Resources:
       RetentionInDays: 7
       LogGroupName: !Join [ '-', [ !Ref 'AWS::StackName', 'LogGroup']]
 
+  UnfinishedResource:
+    Type: 
+    Properties:
+      PropertyOne: !Ref 
 
 Conditions:
 

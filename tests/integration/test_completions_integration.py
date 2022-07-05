@@ -10,6 +10,22 @@ from pygls.lsp.types.language_features.completion import CompletionItem
 pytestmark = pytest.mark.integration
 
 
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 149, 10),
+        ("template.json", 275, 21),
+    ],
+)
+@pytest.mark.asyncio
+async def test_resource_completion(client, file_name, line, character):
+    test_uri = client.root_uri + "/" + file_name
+    result = await client.completion_request(test_uri, line=line, character=character)
+
+    labels = [c.label for c in result.items]
+    assert "AWS::ACMPCA::Certificate" in labels
+
+
 @pytest.mark.asyncio
 async def test_property_completion(client):
     test_uri = client.root_uri + "/template.yaml"
@@ -36,6 +52,16 @@ async def test_completion_item_resolve_adds_documentation_for_resource(client):
     item = CompletionItem(label=resource)
     result = await client.completion_resolve_request(item)
     assert resource in result.documentation
+
+
+@pytest.mark.asyncio
+async def test_ref_completion(client):
+    test_uri = client.root_uri + "/template.yaml"
+    result = await client.completion_request(test_uri, line=151, character=24)
+
+    labels = [c.label for c in result.items]
+    assert "CertificateArn" in labels  # A parameter
+    assert "LogBucket" in labels  # A logical id
 
 
 @pytest.mark.parametrize(

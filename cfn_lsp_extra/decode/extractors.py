@@ -146,7 +146,7 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
     def _extract_unfinished(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
         props = []
         unfinished_property = node["Properties"]
-        type_ = node["Type"]
+        type_ = node["Type"] or ""
         for dct in node[VALUES_POSITION_PREFIX]:
             key = POSITION_PREFIX + unfinished_property
             if key in dct:

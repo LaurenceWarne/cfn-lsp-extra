@@ -15,14 +15,15 @@ import cfnlint.runner
 from cfnlint.rules import ParseError
 from cfnlint.rules import RulesCollection
 from cfnlint.rules import TransformError
-from pygls.lsp.types import Position
-from pygls.lsp.types import Range
 from pygls.lsp.types import Diagnostic
 from pygls.lsp.types import DiagnosticSeverity
+from pygls.lsp.types import Position
+from pygls.lsp.types import Range
 
 
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     """Return diagnostics for the template file at file_path."""
+    cfnlint.core.configure_logging(None)
     conf, _, _ = cfnlint.core.get_args_filenames([])
     template, rules, errors = _get_template_rules(yaml_content, file_path, conf)
 

@@ -271,7 +271,10 @@
                     ]
                 }
             }
-        }
+        },
+        "UnfinishedResource": {
+            "Type": ""
+	}
     },
     "Conditions": {
         "NoFQDN": {

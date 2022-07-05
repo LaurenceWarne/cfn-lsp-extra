@@ -80,6 +80,7 @@ You can use `yamlls` in conjunction with the Cloudformation schema at https://ww
 
 ;; Using the mode defined by https://www.emacswiki.org/emacs/CfnLint
 (add-hook 'cfn-yaml-mode-hook #'my-yamlls-cloudformation-setup)
+(add-hook 'cfn-yaml-mode-hook #'lsp-deferred)
 ```
 
 This will give you completions (and some support for value completions?), though no hover documentation.

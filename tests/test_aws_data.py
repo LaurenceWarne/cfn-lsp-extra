@@ -214,3 +214,16 @@ def test_aws_context_update_no_errors_if_key_not_in_ctx(
 
 def test_aws_context_resource_prefixes(aws_context):
     assert aws_context.resource_prefixes() == {"AWS::EC2"}
+
+
+def test_aws_context_contains(aws_context, aws_resource_string, aws_property_string):
+    resource_name = AWSResourceName(value=aws_resource_string)
+    property_name = resource_name / aws_property_string
+    assert resource_name in aws_context
+    assert property_name in aws_context
+
+
+def test_aws_context_contains_negative(aws_context, aws_resource_string):
+    resource_name = AWSResourceName(value=aws_resource_string)
+    assert AWSResourceName(value="notaresource") not in aws_context
+    assert resource_name / "notaproperty" not in aws_context

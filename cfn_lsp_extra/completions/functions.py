@@ -8,9 +8,9 @@ import re
 from typing import List
 
 from pydantic import BaseModel
-from pygls.lsp.types import Position
 from pygls.lsp.types import CompletionItem
 from pygls.lsp.types import CompletionList
+from pygls.lsp.types import Position
 from pygls.workspace import Document
 from pygls.workspace import position_from_utf16
 
@@ -58,13 +58,13 @@ def intrinsic_function_completions(
     word = word_at_position(document.lines, position)
     if word.startswith("Fn") or word.startswith("fn"):
         items = [
-            CompletionItem(label=f.full_name(), insert_text=f.full_name())
+            CompletionItem(label=f.full_name())
             for f in intrinsic_functions
             if f.full_name_prefix == "Fn::"
         ]
     elif word.startswith("!"):
         items = [
-            CompletionItem(label=f.short_form(), insert_text=f.short_form())
+            CompletionItem(label=f.short_form(), insert_text=f.short_form() + " ")
             for f in intrinsic_functions
             if f.short_form_prefix == "!"
         ]

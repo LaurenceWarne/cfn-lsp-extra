@@ -51,20 +51,23 @@ def property_completions(
     document: Document,
     position: Position,
 ) -> CompletionList:
-    add_colon = not re.match(
-        r".*:.*", document.lines[position.line]
-    ) and not document.filename.endswith("json")
-    return CompletionList(
-        is_incomplete=False,
-        items=[
-            CompletionItem(
-                label=s,
-                documentation=aws_context.description(name.parent / s),
-                insert_text=s + (": " if add_colon else ""),
-            )
-            for s in aws_context.same_level(name)
-        ],
-    )
+    if name.parent in aws_context:
+        add_colon = not re.match(
+            r".*:.*", document.lines[position.line]
+        ) and not document.filename.endswith("json")
+        return CompletionList(
+            is_incomplete=False,
+            items=[
+                CompletionItem(
+                    label=s,
+                    documentation=aws_context.description(name.parent / s),
+                    insert_text=s + (": " if add_colon else ""),
+                )
+                for s in aws_context.same_level(name)
+            ],
+        )
+    else:
+        return CompletionList(is_incomplete=False, items=[])
 
 
 def ref_completions(
