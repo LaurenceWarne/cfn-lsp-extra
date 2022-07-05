@@ -23,7 +23,7 @@ from pygls.lsp.types import Range
 
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     """Return diagnostics for the template file at file_path."""
-    cfnlint.core.configure_logging(None)
+    cfnlint.config.configure_logging(None, None)
     conf, _, _ = cfnlint.core.get_args_filenames([])
     template, rules, errors = _get_template_rules(yaml_content, file_path, conf)
 
