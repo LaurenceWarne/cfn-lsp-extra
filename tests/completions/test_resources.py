@@ -24,7 +24,7 @@ def test_resource_completions_start(
         AWSResourceName(value=aws_resource_string),
         aws_context,
         document,
-        resource_position.line,
+        resource_position,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_resource_string
@@ -40,7 +40,7 @@ def test_resource_completions_end(
         AWSResourceName(value=aws_resource_string),
         aws_context,
         document,
-        resource_position.line,
+        resource_position,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_resource_string
@@ -60,10 +60,10 @@ def test_resource_completions_snippet_required(
         AWSResourceName(value=aws_resource_string),
         aws_context,
         document,
-        resource_position.line,
+        resource_position,
     )
     assert len(result.items) == 1
-    assert f"{aws_property_string}: $1" in result.items[0].insert_text
+    assert f"{aws_property_string}: $1" in result.items[0].text_edit.new_text
 
 
 def test_resource_completions_snippet_not_required(
@@ -77,7 +77,7 @@ def test_resource_completions_snippet_not_required(
         AWSResourceName(value=aws_resource_string),
         aws_context,
         document,
-        resource_position.line,
+        resource_position,
     )
     assert len(result.items) == 1
-    assert f"{aws_property_string}: $1" not in result.items[0].insert_text
+    assert f"{aws_property_string}: $1" not in result.items[0].text_edit.new_text

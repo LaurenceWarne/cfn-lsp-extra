@@ -142,7 +142,7 @@ def test_property_completions(
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
-    assert result.items[0].insert_text == aws_property_string + ": "
+    assert result.items[0].text_edit.new_text == aws_property_string + ": "
 
 
 def test_property_completions_with_colon(
@@ -162,7 +162,7 @@ def test_property_completions_with_colon(
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
-    assert result.items[0].insert_text == aws_property_string
+    assert result.items[0].text_edit.new_text == aws_property_string
 
 
 def test_resource_completions(

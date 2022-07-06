@@ -8,35 +8,40 @@ labels and snippets.
 from pygls.lsp.types import CompletionItem
 from pygls.lsp.types import CompletionList
 from pygls.lsp.types import InsertTextFormat
+from pygls.lsp.types import Position
 from pygls.workspace import Document
 
 from ..aws_data import AWSContext
 from ..aws_data import AWSResourceName
+from .cursor import text_edit
+from .cursor import word_before_after_position
 
 
 def resource_completions(
     name: AWSResourceName,
     aws_context: AWSContext,
     document: Document,
-    current_line: int,
+    position: Position,
 ) -> CompletionList:
     """Return a list of all resources, without documentation."""
     use_snippet = not document.filename.endswith("json") and (
-        current_line == len(document.lines) - 1
-        or not document.lines[current_line + 1].strip()
+        position.line == len(document.lines) - 1
+        or not document.lines[position.line + 1].strip()
     )
-    items = [
-        CompletionItem(
-            label=s,
-            insert_text=(
-                s + "\n" + resource_snippet(AWSResourceName(value=s), aws_context)
+    before, after = word_before_after_position(document.lines, position)
+    items = []
+    for r in aws_context.same_level(name):
+        if use_snippet:
+            insert = r + "\n" + resource_snippet(AWSResourceName(value=r), aws_context)
+        else:
+            insert = r
+        items.append(
+            CompletionItem(
+                label=r,
+                text_edit=text_edit(position, before, after, insert),
+                insert_text_format=InsertTextFormat.Snippet if use_snippet else None,
             )
-            if use_snippet
-            else None,
-            insert_text_format=InsertTextFormat.Snippet if use_snippet else None,
         )
-        for s in aws_context.same_level(name)
-    ]
     return CompletionList(is_incomplete=False, items=items)
 
 
