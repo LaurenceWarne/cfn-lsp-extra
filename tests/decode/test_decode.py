@@ -173,7 +173,7 @@ Resources:
     assert "." == result["Resources"][resource_of_partial_property]["Type"]
 
 
-def test_decode_catches_construct_error(yaml_string):
+def test_decode_catches_construct_error():
     doc = """AWSTemplateFormatVersion: "2010-09-09"
 # Pointless comment
 Description: My template
@@ -190,3 +190,21 @@ Resources:
       MapPublicIpOnLaunch: true"""
     with pytest.raises(CfnDecodingException) as e:
         decode(doc, "f.yaml")
+
+
+def test_decode_duplicate_key_with_ref():
+    doc = """AWSTemplateFormatVersion: "2010-09-09"
+# Pointless comment
+Description: My template
+Parameters:
+  DefaultVpcId:
+    Type: String
+    Default: vpc-1431243213
+Resources:
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.31.48.0/20
+      VpcId: !Ref DefaultVpcId
+      VpcId: !"""
+    decode(doc, "f.yaml")

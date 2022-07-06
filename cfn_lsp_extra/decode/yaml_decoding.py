@@ -55,6 +55,8 @@ class SafePositionLoader(SafeLoader):
             obj = self.construct_object(value_node)  # type: ignore[no-untyped-call]
             if isinstance(value_node, ScalarNode) and hasattr(obj, "start_mark"):
                 key = key_node.value
+                if not isinstance(mapping[key], dict):
+                    continue  # This is a duplicate key (ie bad template)
                 to_add = []
                 for _, sub_value in obj.items():
                     line, char = value_node.end_mark.line, value_node.end_mark.column
