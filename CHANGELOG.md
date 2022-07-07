@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.3.1
+- [ed0de4a](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/ed0de4a73be454c382786e0af744d5f3262a9de2)/[e57e9f1](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/ed0de4a73be454c382786e0af744d5f3262a9de2) Switch to using `TextEdits` for `CompletionItems`
+
 ## v0.3.0
 - [0f0155e](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/0f0155ed9f7867ab18260722e983314590bf9a2c) Support `textDocument/completion` for refs
 - [7394fc3](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/7394fc399fa85b7baf431644184e98cb4739dac6)/[9aa81e0](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/9aa81e07ce24a3e3781cda5aef66ad22339fe177) Support `textDocument/hover` for refs
