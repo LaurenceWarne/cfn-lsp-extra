@@ -67,7 +67,7 @@ class BaseCfnDocParser(ABC):
     HEADER_REGEX: Pattern[str] = re.compile(r"^`([a-zA-Z0-9]+)`.*<a*.a>")
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
-    PROPERTY_END_PREFIX = "## Return values"
+    PROPERTY_END_PREFIX = "##"
     TEXT_WRAPPER = MarkdownTextWrapper(
         width=79,
         break_long_words=True,
