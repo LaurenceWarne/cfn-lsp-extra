@@ -12,9 +12,11 @@ from abc import ABC
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
+from typing import Iterator
 from typing import List
+from typing import Mapping
+from typing import MutableMapping
 from typing import Optional
-from typing import Set
 from typing import Union
 
 from pydantic import BaseModel
@@ -53,6 +55,9 @@ class AWSResourceName(BaseModel, frozen=True):
     def split(self) -> List[str]:
         return [self.value]
 
+    def short_form(self) -> str:
+        return self.value
+
 
 class AWSPropertyName(BaseModel, frozen=True):
     """Property of an AWS resource or AWS resource property."""
@@ -80,6 +85,9 @@ class AWSPropertyName(BaseModel, frozen=True):
         else:
             return self.parent.split() + [self.property_]
 
+    def short_form(self) -> str:
+        return self.property_
+
 
 AWSPropertyName.update_forward_refs()
 
@@ -93,69 +101,66 @@ class OverridingKeyNotInContextException(Exception):
         self.path = path
 
 
-class AWSContext(BaseModel):
+class AWSContextMap(MutableMapping[AWSName, Tree]):
+    def __init__(self, resources: Tree):
+        self.resources = resources
+
+    def __iter__(self) -> Iterator[AWSName]:
+        for resource in self.resources.keys():
+            yield AWSResourceName(value=resource)
+
+    def __getitem__(self, name: AWSName) -> Tree:
+        resource, *subprops = name.split()
+        prop = self.resources[resource]
+        for subprop in subprops:
+            prop = prop["properties"][subprop]
+        return prop
+
+    def __len__(self) -> int:
+        return len(self.resources)
+
+    def __repr__(self) -> str:
+        return repr(self.resources)
+
+    # https://github.com/microsoft/pylance-release/issues/2097
+
+    def __delitem__(self, key: AWSName) -> None:
+        pass
+
+    def __setitem__(self, key: AWSName, value: Tree) -> None:
+        pass
+
+
+class AWSContext:
     """A handle on AWS resource data for the lsp server."""
 
-    resources: Tree
-
-    def resource_prefixes(self) -> Set[str]:
-        """Return a set of all 'service-provider::service-name' strings."""
-        return {s.rsplit("::", 1)[0] for s in self.resources.keys()}
+    def __init__(self, resource_map: Mapping[AWSName, Tree]):
+        self.resource_map = resource_map
 
     def __getitem__(self, name: AWSName) -> Tree:
         try:
-            resource, *subprops = name.split()
-            prop = self.resources[resource]
-            for subprop in subprops:
-                prop = prop["properties"][subprop]
-            return prop
+            return self.resource_map[name]
         except KeyError:
-            raise ValueError(f"'{name}' is not a recognised resource or property")
+            raise KeyError(f"'{name}' is not a recognised resource or property")
 
     def __contains__(self, name: AWSName) -> bool:
-        heirarchy = name.split()
-        level = self.resources
-        for name_component in heirarchy:
-            if name_component not in level:
-                return False
-            level = level[name_component]["properties"]
-        return True
+        return name in self.resource_map
 
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
         return self[name]["description"]  # type: ignore[no-any-return]
 
-    def same_level(self, obj: AWSName) -> List[str]:
+    def same_level(self, obj: AWSName) -> List[AWSName]:
         """Return names at the same (property/resource) level as obj."""
         if isinstance(obj, AWSResourceName):
-            return list(self.resources.keys())
+            return list(self.resource_map.keys())
         elif isinstance(obj, AWSPropertyName):
             try:
-                return list(self[obj.parent]["properties"].keys())
+                return [obj.parent / p for p in self[obj.parent]["properties"].keys()]
             except KeyError:
                 return []
         else:
             raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
-
-    def update(self, other: AWSContext, error_if_new: bool = True) -> None:
-        """Add elements from other to this object."""
-
-        def update_dict_recursive(mp1: Tree, mp2: Tree, path: str) -> None:
-            for key, value in mp2.items():
-                if key not in mp1:
-                    if error_if_new:
-                        bad_path = f"{path}/{key}"
-                        raise OverridingKeyNotInContextException(
-                            f"{bad_path} is not in the base context!", bad_path
-                        )
-                    else:
-                        mp1[key] = value
-                if not isinstance(mp1[key], dict) or not isinstance(value, dict):
-                    mp1[key] = value
-                else:
-                    update_dict_recursive(mp1[key], value, f"{path}/{key}")
-
-        return update_dict_recursive(self.resources, other.resources, "resources")
 
 
 class AWSRefName(BaseModel, frozen=True):

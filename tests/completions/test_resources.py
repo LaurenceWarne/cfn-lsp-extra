@@ -8,6 +8,7 @@ from cfn_lsp_extra.completions.resources import resource_completions
 
 from ..test_aws_data import aws_context
 from ..test_aws_data import aws_context_dct
+from ..test_aws_data import aws_context_map
 from ..test_aws_data import aws_property_string
 from ..test_aws_data import aws_resource_string
 from .test_completions import document
@@ -53,9 +54,9 @@ def test_resource_completions_snippet_required(
     aws_resource_string,
     aws_property_string,
 ):
-    aws_context.resources[aws_resource_string]["properties"][aws_property_string][
-        "required"
-    ] = True
+    aws_context.resource_map.resources[aws_resource_string]["properties"][
+        aws_property_string
+    ]["required"] = True
     result = resource_completions(
         AWSResourceName(value=aws_resource_string),
         aws_context,

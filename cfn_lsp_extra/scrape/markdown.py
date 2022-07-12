@@ -50,7 +50,8 @@ from aiohttp.client import ClientTimeout
 from aiohttp.client import ServerTimeoutError
 from tqdm.asyncio import tqdm_asyncio  # type: ignore[import]
 
-from ..aws_data import AWSContext
+from cfn_lsp_extra.aws_data import AWSContextMap
+
 from ..aws_data import AWSName
 from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
@@ -255,14 +256,14 @@ class CfnPropertyDocParser(BaseCfnDocParser):
 BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/"  # noqa
 
 
-async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContext:
+async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContextMap:
     parser = CfnResourceDocParser(base_url)
     async with aiohttp.ClientSession() as session:
         resources = await tqdm_asyncio.gather(
             *[parser.parse(session, url) for url in urls]
         )
-        return AWSContext(
-            resources={
+        return AWSContextMap(
+            {
                 res["name"]: {
                     "description": res["description"],
                     "properties": res["properties"],

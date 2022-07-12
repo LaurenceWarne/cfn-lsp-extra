@@ -30,7 +30,7 @@ def resource_completions(
     )
     before, after = word_before_after_position(document.lines, position)
     items = []
-    for r in aws_context.same_level(name):
+    for r in map(lambda r: r.short_form(), aws_context.same_level(name)):
         if use_snippet:
             insert = r + "\n" + resource_snippet(AWSResourceName(value=r), aws_context)
         else:

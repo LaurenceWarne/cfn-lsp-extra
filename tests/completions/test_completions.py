@@ -8,6 +8,7 @@ from cfn_lsp_extra.completions import completions_for
 
 from ..test_aws_data import aws_context
 from ..test_aws_data import aws_context_dct
+from ..test_aws_data import aws_context_map
 from ..test_aws_data import aws_property_string
 from ..test_aws_data import aws_resource_string
 

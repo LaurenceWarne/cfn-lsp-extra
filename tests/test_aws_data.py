@@ -1,6 +1,7 @@
 import pytest
 
 from cfn_lsp_extra.aws_data import AWSContext
+from cfn_lsp_extra.aws_data import AWSContextMap
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.aws_data import OverridingKeyNotInContextException
 
@@ -63,13 +64,23 @@ def nested_aws_context_dct():
 
 
 @pytest.fixture
-def aws_context(aws_context_dct):
-    return AWSContext(resources=aws_context_dct["resources"])
+def aws_context_map(aws_context_dct):
+    return AWSContextMap(resources=aws_context_dct["resources"])
 
 
 @pytest.fixture
-def nested_aws_context(nested_aws_context_dct):
-    return AWSContext(resources=nested_aws_context_dct["resources"])
+def nested_aws_context_map(nested_aws_context_dct):
+    return AWSContextMap(resources=nested_aws_context_dct["resources"])
+
+
+@pytest.fixture
+def aws_context(aws_context_map):
+    return AWSContext(resource_map=aws_context_map)
+
+
+@pytest.fixture
+def nested_aws_context(nested_aws_context_map):
+    return AWSContext(resource_map=nested_aws_context_map)
 
 
 def test_aws_property_split():
@@ -84,7 +95,10 @@ def test_aws_property_split():
 
 def test_aws_context_getitem_for_resource(aws_context, aws_resource_string):
     resource_name = AWSResourceName(value=aws_resource_string)
-    assert aws_context[resource_name] == aws_context.resources[resource_name.value]
+    assert (
+        aws_context[resource_name]
+        == aws_context.resource_map.resources[resource_name.value]
+    )
 
 
 def test_aws_context_getitem_for_property(
@@ -93,14 +107,14 @@ def test_aws_context_getitem_for_property(
     property_name = AWSResourceName(value=aws_resource_string) / aws_property_string
     assert (
         aws_context[property_name]
-        == aws_context.resources[property_name.parent.value]["properties"][
+        == aws_context.resource_map.resources[property_name.parent.value]["properties"][
             property_name.property_
         ]
     )
 
 
 def test_aws_context_getitem_errors_for_bad_type(aws_context):
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         aws_context["resource_name"]
 
 
@@ -108,7 +122,7 @@ def test_aws_context_description_for_resource(aws_resource_string, aws_context):
     resource_name = AWSResourceName(value=aws_resource_string)
     assert (
         aws_context.description(resource_name)
-        == aws_context.resources[resource_name.value]["description"]
+        == aws_context.resource_map.resources[resource_name.value]["description"]
     )
 
 
@@ -118,7 +132,7 @@ def test_aws_context_description_for_property(
     property_name = AWSResourceName(value=aws_resource_string) / aws_property_string
     assert (
         aws_context.description(property_name)
-        == aws_context.resources[property_name.parent.value]["properties"][
+        == aws_context.resource_map.resources[property_name.parent.value]["properties"][
             property_name.property_
         ]["description"]
     )
@@ -132,7 +146,7 @@ def test_aws_context_description_for_nested_property(nested_aws_context):
     )
     assert (
         nested_aws_context.description(property_name)
-        == nested_aws_context.resources[property_name.parent.parent.value][
+        == nested_aws_context.resource_map.resources[property_name.parent.parent.value][
             "properties"
         ][property_name.parent.property_]["properties"][property_name.property_][
             "description"
@@ -141,20 +155,20 @@ def test_aws_context_description_for_nested_property(nested_aws_context):
 
 
 def test_aws_context_description_errors_for_bad_type(aws_context):
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         aws_context.description("resource_name")
 
 
 def test_aws_context_same_level_for_property(aws_resource_string, aws_context):
     resource_name = AWSResourceName(value=aws_resource_string)
     assert aws_context.same_level(resource_name / "AvailabilityZone") == [
-        "AvailabilityZone"
+        resource_name / "AvailabilityZone"
     ]
 
 
 def test_aws_context_same_level_for_resource(aws_resource_string, aws_context):
     resource_name = AWSResourceName(value=aws_resource_string)
-    assert aws_context.same_level(resource_name) == [aws_resource_string]
+    assert aws_context.same_level(resource_name) == [resource_name]
 
 
 def test_aws_context_same_level_nested_property(nested_aws_context):
@@ -163,57 +177,7 @@ def test_aws_context_same_level_nested_property(nested_aws_context):
         / "ApiPassthrough"
         / "Extensions"
     )
-    assert nested_aws_context.same_level(property_name) == ["Extensions"]
-
-
-def test_aws_context_update(aws_context):
-    new_name = "foobar"
-    new_ctx = AWSContext(
-        resources={"AWS::EC2::CapacityReservation": {"name": new_name}}
-    )
-    aws_context.update(new_ctx)
-    assert aws_context["AWS::EC2::CapacityReservation"]["name"] == new_name
-
-
-def test_aws_context_update_nested(nested_aws_context):
-    new_description = "foobar"
-    new_ctx = AWSContext(
-        resources={
-            "AWS::ACMPCA::Certificate": {
-                "properties": {
-                    "ApiPassthrough": {
-                        "properties": {"Extensions": {"description": new_description}},
-                    }
-                },
-            }
-        }
-    )
-    nested_aws_context.update(new_ctx)
-    assert (
-        nested_aws_context["AWS::ACMPCA::Certificate"]["properties"]["ApiPassthrough"][
-            "properties"
-        ]["Extensions"]["description"]
-        == new_description
-    )
-
-
-def test_aws_context_update_errors_if_key_not_in_ctx(aws_resource_string, aws_context):
-    bad_key = "notakey"
-    new_ctx = AWSContext(resources={aws_resource_string: {bad_key: "new_name"}})
-    with pytest.raises(OverridingKeyNotInContextException) as e:
-        aws_context.update(new_ctx)
-    assert e.value.path == f"resources/{aws_resource_string}/{bad_key}"
-
-
-def test_aws_context_update_no_errors_if_key_not_in_ctx(
-    aws_resource_string, aws_context
-):
-    new_ctx = AWSContext(resources={aws_resource_string: {"notakey": "new_name"}})
-    aws_context.update(new_ctx, error_if_new=False)
-
-
-def test_aws_context_resource_prefixes(aws_context):
-    assert aws_context.resource_prefixes() == {"AWS::EC2"}
+    assert nested_aws_context.same_level(property_name) == [property_name]
 
 
 def test_aws_context_contains(aws_context, aws_resource_string, aws_property_string):

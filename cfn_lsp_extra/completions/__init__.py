@@ -65,9 +65,11 @@ def property_completions(
             is_incomplete=False,
             items=[
                 CompletionItem(
-                    label=s,
-                    documentation=aws_context.description(name.parent / s),
-                    text_edit=text_edit(position, before, after, s + suffix),
+                    label=s.short_form(),
+                    documentation=aws_context.description(s),
+                    text_edit=text_edit(
+                        position, before, after, s.short_form() + suffix
+                    ),
                 )
                 for s in aws_context.same_level(name)
             ],
