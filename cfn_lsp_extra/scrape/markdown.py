@@ -65,7 +65,7 @@ T = TypeVar("T")
 
 class BaseCfnDocParser(ABC):
 
-    HEADER_REGEX: Pattern[str] = re.compile(r"^`([a-zA-Z0-9]+)`.*<a*.a>")
+    HEADER_REGEX: Pattern[str] = re.compile(r"^\s*`([a-zA-Z0-9]+)`.*<a*.a>")
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "##"
@@ -114,7 +114,7 @@ class BaseCfnDocParser(ABC):
                     return None
         except ServerTimeoutError as e:
             if retry:
-                logger.info("Timeout for %s, retrying", url)
+                logger.debug("Timeout for %s, retrying", url)
                 return await self.parse(session, url, False)
             else:
                 raise e
@@ -158,7 +158,7 @@ class BaseCfnDocParser(ABC):
                 desc += line
 
         if prop_name is None:
-            logger.info("Skipping %s since no properties were found", name)
+            logger.debug("Skipping %s since no properties were found", name)
             return None
         properties[prop_name.property_] = {
             "description": self.format_description(desc),
@@ -170,7 +170,7 @@ class BaseCfnDocParser(ABC):
     async def parse_subproperty(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
     ) -> Optional[Tree]:
-        logger.info("parsing %s", property_name)
+        logger.debug("parsing %s", property_name)
         if self.ignore_condition(property_name):
             return None
         else:
@@ -253,7 +253,8 @@ class CfnPropertyDocParser(BaseCfnDocParser):
         return {"description": description, "properties": properties}
 
 
-BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/"  # noqa
+BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source"  # noqa
+SAM_BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-sam-developer-guide/main/doc_source"  # noqa
 
 
 async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContextMap:
