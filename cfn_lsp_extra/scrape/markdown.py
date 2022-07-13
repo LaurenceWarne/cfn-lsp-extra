@@ -188,6 +188,7 @@ class BaseCfnDocParser(ABC):
         return description
 
     def format_description(self, description: str) -> str:
+        description = re.sub(r"`\[(.*?)\]\((\S+)\)`", r"[`\1`](\2)", description)
         first_line, *rest = description.splitlines()
         body = ""
         for line in filter(lambda l: l.strip(), rest):
