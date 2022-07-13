@@ -6,7 +6,8 @@ import click
 from click import Context
 
 from .context import download_context
-from .context import load_context
+from .context import load_cfn_context
+from .context import load_sam_context
 from .server import server
 
 
@@ -23,9 +24,12 @@ def cli(ctx: Context, verbose: int) -> None:
     logging.basicConfig(level=level)
     # This fn is called regardless, so we have to check if a subcommand should be run
     if ctx.invoked_subcommand is None:
-        aws_context = load_context()
+        cfn_aws_context = load_cfn_context()
+        sam_aws_context = load_sam_context(cfn_aws_context)
         logger.info("Starting cfn-lsp-extra server")
-        server(aws_context).start_io()  # type: ignore[no-untyped-call]
+        server(  # type: ignore[no-untyped-call]
+            cfn_aws_context, sam_aws_context
+        ).start_io()
     return None
 
 

@@ -30,6 +30,7 @@ from pygls.lsp.types import MarkupKind
 from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 from pygls.server import LanguageServer
+from pygls.workspace import Document
 
 from .aws_data import AWSContext
 from .aws_data import AWSPropertyName
@@ -50,7 +51,7 @@ logger = logging.getLogger(__name__)
 TRIGGER_CHARACTERS = ["Type: ", "!Ref ", "Ref: ", "!", '"Type": "', '"Ref": "', '"']
 
 
-def server(aws_context: AWSContext) -> LanguageServer:
+def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer()
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
         ResourcePropertyExtractor(), ResourceExtractor()
@@ -61,6 +62,10 @@ def server(aws_context: AWSContext) -> LanguageServer:
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
         ls.show_message("Text Document Did Open")
+        ls.show_message(
+            "Is SAM:"
+            f" {is_document_sam(server.workspace.get_document(params.text_document.uri))}"
+        )
         text_doc = ls.workspace.get_document(params.text_document.uri)
         file_path = text_doc.path
         ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
@@ -85,6 +90,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         """Returns completion items."""
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
+        aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode_unfinished(
                 document.source, document.filename, params.position
@@ -100,7 +106,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
     ) -> CompletionItem:
         """Resolves a completion item."""
         if re.match(r"^.+::.+::.+$", completion_item.label):
-            return resolve_resource_completion_item(completion_item, aws_context)
+            return resolve_resource_completion_item(completion_item, sam_aws_context)
         else:
             return completion_item  # Not a resource
 
@@ -110,6 +116,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
         line_at, char_at = params.position.line, params.position.character
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
+        aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode(document.source, document.filename)
         except CfnDecodingException as e:
@@ -122,7 +129,7 @@ def server(aws_context: AWSContext) -> LanguageServer:
             try:
                 documentation = aws_context.description(span.value)
                 char, length = span.char, span.span
-            except ValueError:  # no description for value, e.g. incomplete
+            except KeyError:  # no description for value, e.g. incomplete
                 return None
         else:  # Attempt to resolve it as a Ref
             link = resolve_ref(params.position, template_data)
@@ -167,3 +174,10 @@ def server(aws_context: AWSContext) -> LanguageServer:
         return None
 
     return server
+
+
+def is_document_sam(document: Document) -> bool:
+    for line in document.lines:
+        if not line.lstrip().startswith("#"):
+            return line.rstrip() == "Transform: AWS::Serverless-2016-10-31"
+    return False

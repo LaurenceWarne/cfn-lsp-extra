@@ -53,14 +53,14 @@ def mocker_custom_file(mocker):
 
 
 def test_load_context_reads_override_file(mocker, mocker_cache_file, aws_context_dct):
-    result = load_context(mocker_cache_file)
+    result = load_context("context.json", mocker_cache_file)
     assert [r.value for r in result.resource_map.keys()] == list(
         aws_context_dct["resources"].keys()
     )
 
 
 def test_load_context_reads_package_file(mocker_inexistant_cache_file):
-    load_context(mocker_inexistant_cache_file)
+    load_context("context.json", mocker_inexistant_cache_file)
 
 
 def test_with_custom(aws_context, mocker_custom_file):

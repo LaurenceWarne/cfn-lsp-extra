@@ -14,7 +14,6 @@ from enum import Enum
 from typing import Any
 from typing import Iterator
 from typing import List
-from typing import Mapping
 from typing import MutableMapping
 from typing import Optional
 from typing import Union
@@ -134,7 +133,7 @@ class AWSContextMap(MutableMapping[AWSName, Tree]):
 class AWSContext:
     """A handle on AWS resource data for the lsp server."""
 
-    def __init__(self, resource_map: Mapping[AWSName, Tree]):
+    def __init__(self, resource_map: MutableMapping[AWSName, Tree]):
         self.resource_map = resource_map
 
     def __getitem__(self, name: AWSName) -> Tree:
