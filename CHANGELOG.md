@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1
+- [b5ffc84](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/b5ffc8411eb258bfa051b026070e59c7b2092cc3) SAM template Support
+- [8e80c6d](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/8e80c6daa0aaf41e717b3619c01c14c62138a194) Fix warning and informational diagnostics shown as warnings
+
 ## v0.3.1
 - [ed0de4a](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/ed0de4a73be454c382786e0af744d5f3262a9de2)/[e57e9f1](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/ed0de4a73be454c382786e0af744d5f3262a9de2) Switch to using `TextEdits` for `CompletionItems`
 

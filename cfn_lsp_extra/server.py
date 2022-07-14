@@ -62,11 +62,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
         ls.show_message("Text Document Did Open")
-        ls.show_message(
-            "Is SAM:"
-            f" {is_document_sam(server.workspace.get_document(params.text_document.uri))}"
-        )
         text_doc = ls.workspace.get_document(params.text_document.uri)
+        logger.debug("Is template SAM: %s", is_document_sam(text_doc))
         file_path = text_doc.path
         ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
 
@@ -76,9 +73,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         """Text document did change notification."""
         text_doc = ls.workspace.get_document(params.text_document.uri)
         file_path = text_doc.path
-        diags = diagnostics(text_doc.source, file_path)
         # Publishing diagnostics removes old ones
-        ls.publish_diagnostics(text_doc.uri, diags)
+        ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
 
     @server.feature(
         COMPLETION,
