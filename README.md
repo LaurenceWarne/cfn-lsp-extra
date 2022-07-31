@@ -41,6 +41,42 @@ Install the [lsp-cfn.el](https://github.com/LaurenceWarne/lsp-cfn.el) package.
 
 Patches detailing integration steps for other editors are very welcome 🙏
 
+### Neovim
+
+Make sure you're running at least `0.8`, then add the following in `~/.config/nvim/filetype.lua`:
+
+```lua
+vim.filetype.add {
+  pattern = {
+    ['.*'] = {
+      priority = math.huge,
+      function(path, bufnr)
+        local line1 = vim.filetype.getlines(bufnr, 1)
+        local line2 = vim.filetype.getlines(bufnr, 2)
+        if vim.filetype.matchregex(line1, [[^AWSTemplateFormatVersion]] ) then
+          return 'yaml.cloudformation'
+        elseif vim.filetype.matchregex(line1, [[["']AWSTemplateFormatVersion]] ) or
+		   vim.filetype.matchregex(line2, [[["']AWSTemplateFormatVersion]] ) then
+          return 'json.cloudformation'
+        end
+      end,
+    },
+  },
+}
+```
+
+Then you can use [LanguageClient-neovim](https://github.com/autozimu/LanguageClient-neovim) to start the server on those file types:
+
+```vim
+let g:LanguageClient_serverCommands = {
+    \ 'yaml.cloudformation': ['~/.local/bin/cfn-lsp-extra'],
+    \ 'json.cloudformation': ['~/.local/bin/cfn-lsp-extra']
+    \ }
+```
+
+
+Patches documenting integration for other editors are very welcome!
+
 ## Alternatives
 
 ### [vscode-cfn-lint](https://github.com/aws-cloudformation/cfn-lint-visual-studio-code)

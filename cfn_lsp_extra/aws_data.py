@@ -184,7 +184,7 @@ class AWSParameter(AWSRefSource, frozen=True):
 
     def as_documentation(self) -> str:
         description_str = "\n" + self.description if self.description else ""
-        return f"""# Parameter: `{self.logical_name}`{description_str}
+        return f"""### Parameter: `{self.logical_name}`{description_str}
 *Type*: `{self.type_}`
 *Default*: {self.default}"""
 
@@ -194,5 +194,5 @@ class AWSLogicalId(AWSRefSource, frozen=True):
     type_: Optional[str]
 
     def as_documentation(self) -> str:
-        return f"""# Resource: `{self.logical_name}`
+        return f"""### Resource: `{self.logical_name}`
 *Type*: {"`" + self.type_ + "`" if self.type_ else "not given"}"""
