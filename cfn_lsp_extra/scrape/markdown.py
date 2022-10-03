@@ -44,6 +44,7 @@ from itertools import dropwhile
 from itertools import takewhile
 from typing import Awaitable
 from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Pattern
@@ -78,7 +79,9 @@ class PropertyIterator:
         sub_prop_regex: Pattern[str],
         end_line_prefix: str,
         name: AWSName,
-        recurse_fn: Callable[[str, str], Awaitable[Tree]],
+        recurse_fn: Optional[
+            Callable[[Optional[AWSName], str], Awaitable[Tree]]
+        ] = None,
     ):
         self.content = content
         self.property_start_regex = property_start_regex
@@ -87,15 +90,16 @@ class PropertyIterator:
         self.name = name
         self.recurse_fn = recurse_fn
         self._exhausted = False
-        self._prop_name = None
+        self._prop_name: AWSPropertyName = None  # type: ignore[assignment]
         self._desc = ""
 
-    def __aiter__(self):
+    def __aiter__(self) -> PropertyIterator:
         return self
 
-    async def __anext__(self):
+    async def __anext__(self) -> Tuple[AWSPropertyName, str, bool, Tree]:
         if self._exhausted:
             raise StopAsyncIteration
+        sub_prop: Tree
         sub_prop, required = {}, False
         async for line_b in self.content:
             line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
@@ -115,7 +119,7 @@ class PropertyIterator:
                 break
             else:
                 sub_prop_match = re.match(self.sub_prop_regex, line)
-                if sub_prop_match:
+                if sub_prop_match and self.recurse_fn:
                     sub_prop_name = sub_prop_match.group(2)
                     sub_prop = await self.recurse_fn(self._prop_name, sub_prop_name)
                 required |= line.startswith("*Required*: Yes")
@@ -196,7 +200,8 @@ class BaseCfnDocParser(ABC):
 
     async def parse_response_raw(
         self, content: StreamReader, url: str, session: ClientSession
-    ) -> Optional[Tuple[AWSName, str, Tree]]:
+    ) -> Optional[Tuple[AWSName, str, Tree, Dict[str, str]]]:
+        # TODO parse result of intrinsic !Ref
         name = await self.parse_name(content)
         if not name:
             return None
@@ -212,7 +217,9 @@ class BaseCfnDocParser(ABC):
             self.PROPERTY_END_PREFIX,
             name,
             lambda prop_name, sub_prop_name: self.parse_sub_property(
-                session, prop_name, f"{self.base_url}/{sub_prop_name}"
+                session,
+                prop_name,  # type: ignore[arg-type]
+                f"{self.base_url}/{sub_prop_name}",
             ),
         )
         properties = {}
@@ -232,7 +239,6 @@ class BaseCfnDocParser(ABC):
             re.compile("(?!)"),
             self.PROPERTY_END_PREFIX,
             name,
-            None,
         )
         return_values = {}
         async for prop_name, desc, required, _ in attr_it:
@@ -270,11 +276,6 @@ class BaseCfnDocParser(ABC):
                 line += "`" if line.count("`") == 1 else ""
             body += "\n".join(self.TEXT_WRAPPER.wrap(line)) + "\n"
         return f"{first_line}\n{body}\n"
-
-    async def parse_outputs(self, content: StreamReader) -> str:
-        async for line in content:
-            if line.startswith(self.GETATT_LINE_PREFIX):
-                break
 
 
 class CfnResourceDocParser(BaseCfnDocParser):

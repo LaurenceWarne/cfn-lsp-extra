@@ -86,7 +86,7 @@ markers = ["integration: mark the test as an integration test"]
 
 [tool.flakeheaven]
 max-line-length = 88
-per-file-ignores = "tests/*"
+exclude = ["tests/*"]
 
 [tool.flakeheaven.plugins]
 # include everything in pyflakes
