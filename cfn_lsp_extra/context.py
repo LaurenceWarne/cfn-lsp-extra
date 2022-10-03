@@ -42,10 +42,10 @@ def download_context(
     cfn_path.parent.mkdir(parents=True, exist_ok=True)
     with cfn_path.open("w") as f:
         json.dump({"resources": cfn_ctx_map.resources}, f, indent=2, sort_keys=True)
-    logger.info("Wrote CFN conetext to %s", cfn_path)
+    logger.info("Wrote CFN context to %s", cfn_path)
     with sam_path.open("w") as f:
         json.dump({"resources": sam_ctx_map.resources}, f, indent=2, sort_keys=True)
-    logger.info("Wrote SAM conetext to %s", sam_path)
+    logger.info("Wrote SAM context to %s", sam_path)
 
 
 def with_custom(

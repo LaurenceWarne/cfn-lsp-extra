@@ -135,12 +135,12 @@ class PropertyIterator:
 
 class BaseCfnDocParser(ABC):
 
-    HEADER_REGEX: Pattern[str] = re.compile(r"^\s*`([a-zA-Z0-9]+)`.*<a*.a>")
+    HEADER_REGEX: Pattern[str] = re.compile(r"^\s*`([a-zA-Z0-9\.]+)`.*<a*.a>")
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "##"
     REF_LINE_PREFIX = "### Ref"
-    GETATT_LINE_PREFIX = "#### "
+    GETATT_LINE_PREFIX = '#### <a name="aws-properties'
     TEXT_WRAPPER = MarkdownTextWrapper(
         width=79,
         break_long_words=True,
@@ -167,6 +167,7 @@ class BaseCfnDocParser(ABC):
         name: AWSName,
         description: str,
         properties: Tree,
+        return_values: Dict[str, str],
     ) -> Optional[Tree]:
         ...
 
@@ -180,8 +181,10 @@ class BaseCfnDocParser(ABC):
                 response.raise_for_status()
                 raw = await self.parse_response_raw(response.content, url, session)
                 if raw:
-                    name, description, properties = raw
-                    return self.build_object(name, description, properties)
+                    name, description, properties, return_values = raw
+                    return self.build_object(
+                        name, description, properties, return_values
+                    )
                 else:
                     return None
         except ServerTimeoutError as e:
@@ -219,7 +222,23 @@ class BaseCfnDocParser(ABC):
                 "required": required,
                 "properties": sub_props,
             }
-        return name, self.format_description(description), properties
+
+        async for line_b in content:
+            if line_b.decode("utf-8").startswith(self.GETATT_LINE_PREFIX):
+                break
+        attr_it = PropertyIterator(
+            content,
+            self.HEADER_REGEX,
+            re.compile("(?!)"),
+            self.PROPERTY_END_PREFIX,
+            name,
+            None,
+        )
+        return_values = {}
+        async for prop_name, desc, required, _ in attr_it:
+            return_values[prop_name.property_] = self.format_description(desc)
+
+        return name, self.format_description(description), properties, return_values
 
     async def parse_sub_property(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
@@ -259,7 +278,7 @@ class BaseCfnDocParser(ABC):
 
 
 class CfnResourceDocParser(BaseCfnDocParser):
-    """Class for parsing cfn github content."""
+    """Class for parsing cfn resources from Github content."""
 
     def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         return CfnPropertyDocParser(base_url, name)
@@ -277,12 +296,18 @@ class CfnResourceDocParser(BaseCfnDocParser):
         name: AWSName,
         description: str,
         properties: Tree,
+        return_values: Dict[str, str],
     ) -> Optional[Tree]:
-        return {"name": str(name), "description": description, "properties": properties}
+        return {
+            "name": str(name),
+            "description": description,
+            "properties": properties,
+            "return_values": return_values,
+        }
 
 
 class CfnPropertyDocParser(BaseCfnDocParser):
-    """Class for parsing cfn github content."""
+    """Class for parsing cfn properties from Github content."""
 
     def __init__(self, base_url: str, name: AWSName, max_depth: int = 8):
         super().__init__(base_url)
@@ -309,6 +334,7 @@ class CfnPropertyDocParser(BaseCfnDocParser):
         name: AWSName,
         description: str,
         properties: Tree,
+        return_values: Dict[str, str],
     ) -> Optional[Tree]:
         return {"description": description, "properties": properties}
 
@@ -328,6 +354,7 @@ async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContextMap
                 res["name"]: {
                     "description": res["description"],
                     "properties": res["properties"],
+                    "return_values": res["return_values"],
                 }
                 for res in resources
                 if res
