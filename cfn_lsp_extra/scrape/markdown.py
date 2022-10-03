@@ -2,7 +2,13 @@
 Utilities for parsing Github markdown files, specifically files from
 https://github.com/awsdocs/aws-cloudformation-user-guide.
 
-Example: https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-ec2-instance.md
+Examples (raw):
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-ec2-instance.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-rds-database-instance.md
+
+Examples (rendered):
+https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/aws-properties-ec2-instance.md
+https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/aws-properties-rds-database-instance.md
 
 Markdown files for a resource are expected to be in the format:
 
@@ -36,6 +42,7 @@ from abc import ABC
 from abc import abstractmethod
 from itertools import dropwhile
 from itertools import takewhile
+from typing import Awaitable
 from typing import Callable
 from typing import List
 from typing import Optional
@@ -63,12 +70,77 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
+class PropertyIterator:
+    def __init__(
+        self,
+        content: StreamReader,
+        property_start_regex: Pattern[str],
+        sub_prop_regex: Pattern[str],
+        end_line_prefix: str,
+        name: AWSName,
+        recurse_fn: Callable[[str, str], Awaitable[Tree]],
+    ):
+        self.content = content
+        self.property_start_regex = property_start_regex
+        self.sub_prop_regex = sub_prop_regex
+        self.end_line_prefix = end_line_prefix
+        self.name = name
+        self.recurse_fn = recurse_fn
+        self._exhausted = False
+        self._prop_name = None
+        self._desc = ""
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if self._exhausted:
+            raise StopAsyncIteration
+        sub_prop, required = {}, False
+        async for line_b in self.content:
+            line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
+            match = re.match(self.property_start_regex, line)
+            if match:
+                finished_prop, finished_desc = self._prop_name, self._desc
+                self._prop_name = self.name / match.group(1)
+                self._desc = f"`{match.group(1)}`\n"
+                if finished_prop:
+                    return (
+                        finished_prop,
+                        finished_desc,
+                        required,
+                        sub_prop["properties"] if sub_prop else {},
+                    )
+            elif line.startswith(self.end_line_prefix):
+                break
+            else:
+                sub_prop_match = re.match(self.sub_prop_regex, line)
+                if sub_prop_match:
+                    sub_prop_name = sub_prop_match.group(2)
+                    sub_prop = await self.recurse_fn(self._prop_name, sub_prop_name)
+                required |= line.startswith("*Required*: Yes")
+                self._desc += line
+
+        self._exhausted = True
+        if self._prop_name:
+            return (
+                self._prop_name,
+                self._desc,
+                required,
+                sub_prop["properties"] if sub_prop else {},
+            )
+        else:
+            raise StopAsyncIteration
+
+
 class BaseCfnDocParser(ABC):
 
     HEADER_REGEX: Pattern[str] = re.compile(r"^\s*`([a-zA-Z0-9]+)`.*<a*.a>")
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "##"
+    REF_LINE_PREFIX = "### Ref"
+    GETATT_LINE_PREFIX = "#### "
     TEXT_WRAPPER = MarkdownTextWrapper(
         width=79,
         break_long_words=True,
@@ -82,7 +154,7 @@ class BaseCfnDocParser(ABC):
         )
 
     @abstractmethod
-    def subproperty_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
+    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         ...
 
     @abstractmethod
@@ -130,51 +202,33 @@ class BaseCfnDocParser(ABC):
             if line_b.decode("utf-8").startswith(self.PROPERTY_LINE_PREFIX):
                 break
 
-        # Parse all properties
-        subprop: Tree
-        properties, prop_name, desc, subprop, required = {}, None, "", {}, False
-        async for line_b in content:
-            line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
-            match = re.match(self.HEADER_REGEX, line)
-            if match:
-                if prop_name:
-                    properties[prop_name.property_] = {  # type: ignore[unreachable]
-                        "description": self.format_description(desc),
-                        "required": required,
-                        "properties": subprop["properties"] if subprop else {},
-                    }
-                prop_name, desc = name / match.group(1), f"`{match.group(1)}`\n"
-                subprop, required = {}, False
-            elif line.startswith(self.PROPERTY_END_PREFIX):
-                break
-            else:
-                subprop_match = re.match(self.SUB_PROP_REGEX, line)
-                if subprop_match:
-                    sub_url = f"{self.base_url}/{subprop_match.group(2)}"
-                    subprop = await self.parse_subproperty(
-                        session, prop_name, sub_url  # type: ignore[arg-type]
-                    )
-                required |= line.startswith("*Required*: Yes")
-                desc += line
-
-        if prop_name is None:
-            logger.debug("Skipping %s since no properties were found", name)
-            return None
-        properties[prop_name.property_] = {
-            "description": self.format_description(desc),
-            "required": required,
-            "properties": subprop["properties"] if subprop else {},
-        }
+        prop_it = PropertyIterator(
+            content,
+            self.HEADER_REGEX,
+            self.SUB_PROP_REGEX,
+            self.PROPERTY_END_PREFIX,
+            name,
+            lambda prop_name, sub_prop_name: self.parse_sub_property(
+                session, prop_name, f"{self.base_url}/{sub_prop_name}"
+            ),
+        )
+        properties = {}
+        async for prop_name, desc, required, sub_props in prop_it:
+            properties[prop_name.property_] = {
+                "description": self.format_description(desc),
+                "required": required,
+                "properties": sub_props,
+            }
         return name, self.format_description(description), properties
 
-    async def parse_subproperty(
+    async def parse_sub_property(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
     ) -> Optional[Tree]:
         logger.debug("parsing %s", property_name)
         if self.ignore_condition(property_name):
             return None
         else:
-            parser = self.subproperty_parser(self.base_url, property_name)
+            parser = self.sub_property_parser(self.base_url, property_name)
             return await parser.parse(session, url)
 
     async def parse_description(self, content: StreamReader, name: AWSName) -> str:
@@ -198,11 +252,16 @@ class BaseCfnDocParser(ABC):
             body += "\n".join(self.TEXT_WRAPPER.wrap(line)) + "\n"
         return f"{first_line}\n{body}\n"
 
+    async def parse_outputs(self, content: StreamReader) -> str:
+        async for line in content:
+            if line.startswith(self.GETATT_LINE_PREFIX):
+                break
+
 
 class CfnResourceDocParser(BaseCfnDocParser):
     """Class for parsing cfn github content."""
 
-    def subproperty_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
+    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         return CfnPropertyDocParser(base_url, name)
 
     async def parse_name(self, content: StreamReader) -> Optional[AWSName]:
@@ -230,18 +289,18 @@ class CfnPropertyDocParser(BaseCfnDocParser):
         self.name = name
         self.max_depth = max_depth
 
-    def subproperty_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
+    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
         return CfnPropertyDocParser(base_url, name, self.max_depth - 1)
 
     async def parse_name(self, content: StreamReader) -> Optional[AWSName]:
         await content.readline()
         return self.name
 
-    async def parse_subproperty(
+    async def parse_sub_property(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
     ) -> Optional[Tree]:
         if self.max_depth > 0:
-            return await super().parse_subproperty(session, property_name, url)
+            return await super().parse_sub_property(session, property_name, url)
         else:
             return None
 

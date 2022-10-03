@@ -20,9 +20,9 @@ pygls = "^0.11"  # pygls = { path = "../pygls/", develop = false }
 PyYAML = "^6.0"
 types-PyYAML = "^6.0"
 aiohttp = {extras = ["speedups"], version = "^3.8"}
-platformdirs = "2.5^"
-pydantic = "1.8^"
-tqdm = "4.64^"
+platformdirs = "^2.5"
+pydantic = "^1.8"
+tqdm = "^4.64"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
