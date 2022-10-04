@@ -87,10 +87,13 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
 
 
 def yaml_line_enricher(line: str, char: int) -> str:
-    if not line.strip():  # Empty line for property
+    stripped = line.strip()
+    if not stripped:  # Empty line for property
         new_line = line[:char] + "."
-    elif line.strip() in ("Type:", "Ref:") or line.rstrip().endswith(
-        "!Ref"
+    elif (
+        stripped in ("Type:", "Ref:", "Fn::GetAtt:")
+        or stripped.endswith("!Ref")
+        or stripped.endswith("!GetAtt")
     ):  # For resource or ref
         new_line = line + "."
     else:

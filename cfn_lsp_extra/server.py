@@ -48,7 +48,19 @@ from .ref import resolve_ref
 
 
 logger = logging.getLogger(__name__)
-TRIGGER_CHARACTERS = ["Type: ", "!Ref ", "Ref: ", "!", '"Type": "', '"Ref": "', '"']
+TRIGGER_CHARACTERS = [
+    ".",
+    "Type: ",
+    "!Ref ",
+    "Ref: ",
+    "!GetAtt ",
+    "GetAtt: ",
+    "!",
+    '"Type": "',
+    '"Ref": "',
+    '"GetAtt": "',
+    '"',
+]
 
 
 def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> LanguageServer:

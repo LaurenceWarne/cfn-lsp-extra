@@ -15,13 +15,17 @@ from ..aws_data import AWSRefName
 from ..aws_data import AWSRefSource
 from ..aws_data import Tree
 from ..decode.extractors import Extractor
+from ..decode.extractors import KeyExtractor
+from ..decode.extractors import LogicalIdExtractor
 from ..decode.extractors import ResourceExtractor
 from ..decode.extractors import ResourcePropertyExtractor
 from ..ref import REF_EXTRACTOR
 from ..ref import REF_SRC_EXTRACTOR
+from .attributes import attribute_completions
 from .cursor import text_edit
 from .cursor import word_before_after_position
 from .functions import intrinsic_function_completions
+from .ref import ref_completions
 from .resources import resource_completions
 
 
@@ -44,6 +48,11 @@ def completions_for(
     ref_completions_result = ref_completions(template_data, document, position)
     if ref_completions_result:
         return ref_completions_result
+    att_completions_result = attribute_completions(
+        template_data, aws_context, document, position
+    )
+    if att_completions_result:
+        return att_completions_result
     return intrinsic_function_completions(document, position)
 
 
@@ -76,27 +85,3 @@ def property_completions(
         )
     else:
         return CompletionList(is_incomplete=False, items=[])
-
-
-def ref_completions(
-    template_data: Tree,
-    document: Document,
-    position: Position,
-    ref_extractor: Extractor[AWSRefName] = REF_EXTRACTOR,
-    ref_src_extractor: Extractor[AWSRefSource] = REF_SRC_EXTRACTOR,
-) -> Optional[CompletionList]:
-    ref_lookup = ref_extractor.extract(template_data)
-    ref_span = ref_lookup.at(position.line, position.character)
-    if ref_span:
-        before, after = word_before_after_position(document.lines, position)
-        ref_src_lookup = ref_src_extractor.extract(template_data)
-        items = [
-            CompletionItem(
-                label=ref_src.logical_name,
-                documentation=ref_src.as_documentation(),
-                text_edit=text_edit(position, before, after, ref_src.logical_name),
-            )
-            for ref_src, _ in ref_src_lookup.items()
-        ]
-        return CompletionList(is_incomplete=False, items=items)
-    return None

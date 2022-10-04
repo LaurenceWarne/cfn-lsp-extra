@@ -60,6 +60,11 @@ class SafePositionLoader(SafeLoader):
                 to_add = []
                 for _, sub_value in obj.items():
                     line, char = value_node.end_mark.line, value_node.end_mark.column
+                    sub_value = (
+                        ".".join(sub_value)
+                        if isinstance(sub_value, list)
+                        else sub_value
+                    )
                     char -= len(sub_value)
                     to_add.append({POSITION_PREFIX + value_node.value: [line, char]})
                 mapping[key][VALUES_POSITION_PREFIX] = to_add

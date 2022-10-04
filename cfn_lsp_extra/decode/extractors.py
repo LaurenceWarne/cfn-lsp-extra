@@ -273,6 +273,36 @@ class KeyExtractor(RecursiveExtractor[K]):
         return found
 
 
+class GetAttExtractor(RecursiveExtractor[str]):
+    """Extractor for GetAtts.
+
+    Methods
+    -------
+    extract(node)
+        Extract GetAtts from node."""
+
+    KEY = "Fn::GetAtt"
+
+    def extract_node(self, node: Tree) -> List[Spanning[K]]:
+        found = []
+        for key, value in node.items():
+            if key == self.KEY and VALUES_POSITION_PREFIX in node:
+                expr = ".".join(value)
+                for val_pos_dct in node[VALUES_POSITION_PREFIX]:
+                    p_key = POSITION_PREFIX + expr
+                    if p_key in val_pos_dct:
+                        line, char = val_pos_dct[p_key]
+                        found.append(
+                            Spanning[K](
+                                value=expr,
+                                line=line,
+                                char=char,
+                                span=len(expr),
+                            )
+                        )
+        return found
+
+
 class LogicalIdExtractor(Extractor[AWSLogicalId]):
     """Extractor for the logical ids of a template.
 
