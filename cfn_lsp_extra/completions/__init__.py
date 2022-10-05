@@ -2,7 +2,6 @@
 Completion logic.
 """
 import re
-from typing import Optional
 
 from pygls.lsp.types import CompletionItem
 from pygls.lsp.types import CompletionList
@@ -11,16 +10,9 @@ from pygls.workspace import Document
 
 from ..aws_data import AWSContext
 from ..aws_data import AWSPropertyName
-from ..aws_data import AWSRefName
-from ..aws_data import AWSRefSource
 from ..aws_data import Tree
-from ..decode.extractors import Extractor
-from ..decode.extractors import KeyExtractor
-from ..decode.extractors import LogicalIdExtractor
 from ..decode.extractors import ResourceExtractor
 from ..decode.extractors import ResourcePropertyExtractor
-from ..ref import REF_EXTRACTOR
-from ..ref import REF_SRC_EXTRACTOR
 from .attributes import attribute_completions
 from .cursor import text_edit
 from .cursor import word_before_after_position

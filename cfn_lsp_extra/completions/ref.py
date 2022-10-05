@@ -1,7 +1,6 @@
 """
 Completions for !Refs
 """
-import re
 from typing import Optional
 
 from pygls.lsp.types import CompletionItem
@@ -13,14 +12,10 @@ from ..aws_data import AWSRefName
 from ..aws_data import AWSRefSource
 from ..aws_data import Tree
 from ..decode.extractors import Extractor
-from ..decode.extractors import KeyExtractor
-from ..decode.extractors import LogicalIdExtractor
 from ..ref import REF_EXTRACTOR
 from ..ref import REF_SRC_EXTRACTOR
 from .cursor import text_edit
 from .cursor import word_before_after_position
-from .functions import intrinsic_function_completions
-from .resources import resource_completions
 
 
 def ref_completions(

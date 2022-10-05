@@ -12,6 +12,7 @@ from abc import ABC
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
+from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import MutableMapping
@@ -149,8 +150,8 @@ class AWSContext:
         """Get the description of obj."""
         return self[name]["description"]  # type: ignore[no-any-return]
 
-    def return_values(self, resource: AWSRefSource) -> Dict[str, str]:
-        return self[resource]["return_values"]
+    def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
+        return self[resource]["return_values"]  # type: ignore[no-any-return]
 
     def same_level(self, obj: AWSName) -> List[AWSName]:
         """Return names at the same (property/resource) level as obj."""
