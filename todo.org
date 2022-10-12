@@ -12,7 +12,11 @@
 ** DONE Search for customisation file in ~~/.config~ instead of ~~/.cache~
 ** TODO add flag which allows for custom resources and parameters in custom files
 ** TODO add descriptions to intrinsic function completions
+** TODO implement "fn::GetAtt" completions
+** TODO parse the meaning of !Ref for resources, and insert this in hovers and documentation over !Ref arguments
 
 * Bugs
 ** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load
 ** DONE HTML appears in the hover of ~AWS::S3:Bucket/LogFilePrefix~ after ~Update Requries~. Also the case for ~AWS::S3::BucketPolicy/PolicyDocument~
+** TODO !GetAtt completion after "." does not appear to work in lists
+** TODO return_values are not parsed for some resources, for example [[https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/aws-resource-dynamodb-table.md]]
