@@ -418,7 +418,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AWS::Serverless::Application": {
       "description": "# AWS::Serverless::Application\nEmbeds a serverless application from the [AWS Serverless Application Repository](https://serverlessrepo.aws.amazon.com/applications)\nor from an Amazon S3 bucket as a nested application\\. Nested applications are\ndeployed as nested [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGu\nide/aws-resource-cloudformation-stack.html](https://docs.aws.amazon.com/AWSClou\ndFormation/latest/UserGuide/aws-resource-cloudformation-stack.html) resources,\nwhich can contain multiple other resources including other\n[AWS::Serverless::Application](#sam-resource-application) resources\\.\n\n",
@@ -459,7 +460,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AWS::Serverless::Function": {
       "description": "# AWS::Serverless::Function\nCreates an AWS Lambda function, an AWS Identity and Access Management \\(IAM\\)\nexecution role, and event source mappings that trigger the function\\.\nThe [AWS::Serverless::Function](#sam-resource-function) resource also supports the `Metadata` resource\nattribute, so you can instruct AWS SAM to build custom runtimes that your\napplication requires\\. For more information about building custom runtimes, see\n[Building custom runtimes](building-custom-runtimes.md)\\.\n\n",
@@ -810,7 +812,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AWS::Serverless::HttpApi": {
       "description": "# AWS::Serverless::HttpApi\nCreates an Amazon API Gateway HTTP API, which enables you to create RESTful\nAPIs with lower latency and lower costs than REST APIs\\. For more information,\nsee [Working with HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) in the *API Gateway Developer Guide*\\.\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify\nthat API Gateway resources have authorizers attached to them to control access\nto them\\.\nFor more information about using AWS CloudFormation hooks, see\n[Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and the\n[apigw\\-enforce\\-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository\\.\nFor more information about using IAM policies, see\n[Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer\nGuide*\\.\n\n",
@@ -1067,7 +1070,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AWS::Serverless::LayerVersion": {
       "description": "# AWS::Serverless::LayerVersion\nCreates a Lambda LayerVersion that contains library or runtime code needed by a\nLambda Function\\.\nThe [AWS::Serverless::LayerVersion](#sam-resource-layerversion) resource also supports the `Metadata`\nresource attribute, so you can instruct AWS SAM to build layers included in\nyour application\\. For more information about building layers, see\n[Building layers](building-layers.md)\\.\n**Important Note**: Since the release of the [UpdateReplacePolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) resource\nattribute in AWS CloudFormation, [https://docs.aws.amazon.com/AWSCloudFormation\n/latest/UserGuide/aws-resource-lambda-layerversion.html](https://docs.aws.amazo\nn.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversion.html)\n\\(recommended\\) offers the same benefits as [AWS::Serverless::LayerVersion](#sam-resource-layerversion)\\.\nWhen a Serverless LayerVersion is transformed, SAM also transforms the logical\nid of the resource so that old LayerVersions are not automatically deleted by\nCloudFormation when the resource is updated\\.\n\n",
@@ -1123,7 +1127,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AWS::Serverless::SimpleTable": {
       "description": "# AWS::Serverless::SimpleTable\nCreates a DynamoDB table with a single attribute primary key\\. It is useful\nwhen data only needs to be accessed via a primary key\\.\nTo use the more advanced functionality of DynamoDB, use an [https://docs.aws.am\nazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html](h\nttps://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dyna\nmodb-table.html) resource instead\\.\n\n",
@@ -1164,7 +1169,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AWS::Serverless::StateMachine": {
       "description": "# AWS::Serverless::StateMachine\nCreates an AWS Step Functions state machine, which you can use to orchestrate\nAWS Lambda functions and other AWS resources to form complex and robust\nworkflows\\.\nFor more information about Step Functions, see the\n[AWS Step Functions Developer Guide](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html)\\.\n**Note**: To manage AWS SAM templates that contain Step Functions state\nmachines, you must use version 0\\.52\\.0 or later of the AWS SAM CLI\\. To check\nwhich version you have, run the command `sam --version`\\.\n\n",
@@ -1338,7 +1344,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "AlexaSkill": {
       "description": "# AlexaSkill\nThe object describing an `AlexaSkill` event source type\\.\n\n",
@@ -1348,7 +1355,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "Api": {
       "description": "# Api\nThe object describing an `Api` event source type\\. If an [AWS::Serverless::Api](sam-resource-api.md)\nresource is defined, the path and method values must correspond to an operation\nin the OpenAPI definition of the API\\.\n\n",
@@ -1450,7 +1458,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ApiAuth": {
       "description": "# ApiAuth\nConfigure authorization to control access to your API Gateway API\\.\nFor more information and examples for configuring access using AWS SAM see\n[Controlling access to API Gateway APIs](serverless-controlling-access-to-apis.md)\\.\n\n",
@@ -1629,7 +1638,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ApiDefinition": {
       "description": "# ApiDefinition\nAn OpenAPI document defining the API\\.\n\n",
@@ -1649,7 +1659,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ApiFunctionAuth": {
       "description": "# ApiFunctionAuth\nConfigures authorization at the event level, for a specific API, path, and\nmethod\\.\n\n",
@@ -1735,7 +1746,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ApiStateMachineAuth": {
       "description": "# ApiStateMachineAuth\nConfigures authorization at the event level, for a specific API, path, and\nmethod\\.\n\n",
@@ -1816,7 +1828,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ApiUsagePlan": {
       "description": "# ApiUsagePlan\nConfigures a usage plan for an API Gateway API\\. For more information about\nusage plans, see [Create and Use Usage Plans with API Keys](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html) in the *API Gateway\nDeveloper Guide*\\.\n\n",
@@ -1851,7 +1864,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ApplicationLocationObject": {
       "description": "# ApplicationLocationObject\nAn application that has been published to the\n[AWS Serverless Application Repository](https://docs.aws.amazon.com/serverlessrepo/latest/devguide/what-is-serverlessrepo.html)\\.\n\n",
@@ -1866,7 +1880,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "CloudWatchEvent": {
       "description": "# CloudWatchEvent\nThe object describing a `CloudWatchEvent` event source type\\.\nAWS Serverless Application Model \\(AWS SAM\\) generates an [https://docs.aws.ama\nzon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html](https\n://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-r\nule.html) resource when this event type is set\\.\n**Important Note**: [EventBridgeRule](sam-property-statemachine-statemachineeventbridgerule.md) is the preferred event source type to use,\ninstead of `CloudWatchEvent`\\. `EventBridgeRule` and `CloudWatchEvent` use the\nsame underlying service, API, and AWS CloudFormation resources\\. However, AWS\nSAM will add support for new features only to `EventBridgeRule`\\.\n\n",
@@ -1891,7 +1906,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "CloudWatchLogs": {
       "description": "# CloudWatchLogs\nThe object describing a `CloudWatchLogs` event source type\\.\nThis event generates a [https://docs.aws.amazon.com/AWSCloudFormation/latest/Us\nerGuide/aws-resource-logs-subscriptionfilter.html](https://docs.aws.amazon.com/\nAWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html)\nresource and specifies a subscription filter and associates it with the\nspecified log group\\.\n\n",
@@ -1906,7 +1922,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "Cognito": {
       "description": "# Cognito\nThe object describing a `Cognito` event source type\\.\n\n",
@@ -1921,7 +1938,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "CognitoAuthorizationIdentity": {
       "description": "# CognitoAuthorizationIdentity\nThis property can be used to specify an IdentitySource in an incoming request\nfor an authorizer\\. For more information about IdentitySource see the\n[ApiGateway Authorizer OpenApi extension](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-authorizer.html)\\.\n\n",
@@ -1941,7 +1959,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "CognitoAuthorizer": {
       "description": "# CognitoAuthorizer\nDefine a Amazon Cognito User Pool authorizer\\.\nFor more information and examples, see [Controlling access to API Gateway APIs](serverless-controlling-access-to-apis.md)\\.\n\n",
@@ -1977,7 +1996,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "CorsConfiguration": {
       "description": "# CorsConfiguration\nManage cross\\-origin resource sharing \\(CORS\\) for your API Gateway APIs\\.\nSpecify the domain to allow as a string or specify a dictionary with additional\nCors configuration\\. NOTE: Cors requires SAM to modify your OpenAPI definition,\nso it only works with inline OpenApi defined in the `DefinitionBody` property\\.\nFor more information about CORS, see\n[Enable CORS for an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer\nGuide*\\.\nNote: If CorsConfiguration is set both in OpenAPI and at the property level,\nAWS SAM merges them, with the properties taking precedence\\.\n\n",
@@ -2007,7 +2027,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "DeadLetterConfig": {
       "description": "# DeadLetterConfig\nThe object used to specify the Amazon Simple Queue Service \\(Amazon SQS\\) queue\nwhere EventBridge sends events after a failed target invocation\\. Invocation\ncan fail, for example, when sending an event to a state machine that doesn\u2019t\nexist, or insufficient permissions to invoke the state machine\\. For more\ninformation, see [Event retry policy and using dead\\-letter queues](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html) in the\n*Amazon EventBridge User Guide*\\.\n\n",
@@ -2027,7 +2048,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "DeadLetterQueue": {
       "description": "# DeadLetterQueue\nSpecifies an SQS queue or SNS topic that AWS Lambda \\(Lambda\\) sends events to\nwhen it can't process them\\. For more information about dead letter queue\nfunctionality, see [AWS Lambda Function Dead Letter Queues](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#dlq)\\.\nSAM will automatically add appropriate permission to your Lambda function\nexecution role to give Lambda service access to the resource\\. sqs:SendMessage\nwill be added for SQS queues and sns:Publish for SNS topics\\.\n\n",
@@ -2042,7 +2064,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "DeploymentPreference": {
       "description": "# DeploymentPreference\nSpecifies the configurations to enable gradual Lambda deployments\\. For more\ninformation about configuring gradual Lambda deployments, see\n[Deploying serverless applications gradually](automating-updates-to-serverless-apps.md)\\.\n**Note**: You must specify an `AutoPublishAlias` in your\n[AWS::Serverless::Function](sam-resource-function.md) to use a `DeploymentPreference` object, otherwise an\nerror will result\\.\n\n",
@@ -2093,7 +2116,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "DomainConfiguration": {
       "description": "# DomainConfiguration\nConfigures a custom domain for an API\\.\n\n",
@@ -2164,7 +2188,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "DynamoDB": {
       "description": "# DynamoDB\nThe object describing a `DynamoDB` event source type\\. For more information,\nsee [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) in the *AWS Lambda Developer Guide*\\.\nAWS SAM generates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/User\nGuide/aws-resource-lambda-eventsourcemapping.html](https://docs.aws.amazon.com/\nAWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html)\nresource when this event type is set\\.\n\n",
@@ -2234,7 +2259,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "EndpointConfiguration": {
       "description": "# EndpointConfiguration\nThe endpoint type of a REST API\\.\n\n",
@@ -2249,7 +2275,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "EventBridgeRule": {
       "description": "# EventBridgeRule\nThe object describing an `EventBridgeRule` event source type, which sets your\nstate machine as the target for an Amazon EventBridge rule\\. For more\ninformation, see [What Is Amazon EventBridge?](https://docs.aws.amazon.com/eventbridge/latest/userguide/what-is-amazon-eventbridge.html) in the *Amazon EventBridge User\nGuide*\\.\nAWS SAM generates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/User\nGuide/aws-resource-events-rule.html](https://docs.aws.amazon.com/AWSCloudFormat\nion/latest/UserGuide/aws-resource-events-rule.html) resource when this event\ntype is set\\.\n\n",
@@ -2300,7 +2327,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "EventInvokeConfiguration": {
       "description": "# EventInvokeConfiguration\nConfiguration options for [asynchronous](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html) Lambda Alias or Version invocations\\.\n\n",
@@ -2353,7 +2381,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "EventInvokeDestinationConfiguration": {
       "description": "# EventInvokeDestinationConfiguration\nA configuration object that specifies the destination of an event after Lambda\nprocesses it\\.\n\n",
@@ -2390,7 +2419,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "EventSource": {
       "description": "# EventSource\nThe object describing the source of events which trigger the state machine\\.\nEach event consists of a type and a set of properties that depend on that\ntype\\. For more information about the properties of each event source, see the\nsubtopic corresponding to that type\\.\n\n",
@@ -2503,7 +2533,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "FunctionCode": {
       "description": "# FunctionCode\nThe [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/deployment-package-v2.html) for a Lambda function\\.\n\n",
@@ -2523,7 +2554,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "FunctionUrlConfig": {
       "description": "# FunctionUrlConfig\nCreates a function URL with the specified configuration parameters\\. A function\nURL is an HTTPS endpoint that you can use to invoke your function\\.\nBy default, the function URL uses the `$LATEST` version of your Lambda\nfunction\\. If you specify an `AutoPublishAlias` for your Lambda function, the\nendpoint connects to the specified function alias\\.\nFor more information, see [Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) in the *AWS Lambda Developer Guide*\\.\n\n",
@@ -2538,7 +2570,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "Hooks": {
       "description": "# Hooks\nValidation Lambda functions that are run before and after traffic shifting\\.\n**Note**: The Lambda functions referenced in this property configure the\n`CodeDeployLambdaAliasUpdate` object of the resulting [https://docs.aws.amazon.\ncom/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-alias.html](https://\ndocs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-alia\ns.html) resource\\. For more information, see [CodeDeployLambdaAliasUpdate Policy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-codedeploylambdaaliasupdate)\nin the *AWS CloudFormation User Guide*\\.\n\n",
@@ -2553,7 +2586,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "HttpApi": {
       "description": "# HttpApi\nThe object describing an event source with type HttpApi\\.\nIf an OpenApi definition for the specified path and method exists on the API,\nSAM will add the Lambda integration and security section \\(if applicable\\) for\nyou\\.\nIf no OpenApi definition for the specified path and method exists on the API,\nSAM will create this definition for you\\.\n\n",
@@ -2604,7 +2638,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "HttpApiAuth": {
       "description": "# HttpApiAuth\nConfigure authorization to control access to your Amazon API Gateway HTTP API\\.\nFor more information about configuring access to HTTP APIs, see\n[Controlling and managing access to an HTTP API in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) in the *API\nGateway Developer Guide*\\.\n\n",
@@ -2676,7 +2711,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "HttpApiCorsConfiguration": {
       "description": "# HttpApiCorsConfiguration\nManage cross\\-origin resource sharing \\(CORS\\) for your HTTP APIs\\. Specify the\ndomain to allow as a string or specify a dictionary with additional Cors\nconfiguration\\. NOTE: Cors requires SAM to modify your OpenAPI definition, so\nit only works with inline OpenApi defined in the `DefinitionBody` property\\.\nFor more information about CORS, see [Configuring CORS for an HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html) in the\n*API Gateway Developer Guide*\\.\nNote: If HttpApiCorsConfiguration is set both in OpenAPI and at the property\nlevel, AWS SAM merges them with the properties taking precedence\\.\n\n",
@@ -2711,7 +2747,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "HttpApiDefinition": {
       "description": "# HttpApiDefinition\nAn OpenAPI document defining the API\\.\n\n",
@@ -2731,7 +2768,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "HttpApiDomainConfiguration": {
       "description": "# HttpApiDomainConfiguration\nConfigures a custom domain for an API\\.\n\n",
@@ -2802,7 +2840,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "HttpApiFunctionAuth": {
       "description": "# HttpApiFunctionAuth\nConfigures authorization at the event level\\.\nConfigure Auth for a specific API \\+ Path \\+ Method\n\n",
@@ -2817,7 +2856,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "IoTRule": {
       "description": "# IoTRule\nThe object describing an `IoTRule` event source type\\.\nCreates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-\nresource-iot-topicrule.html](https://docs.aws.amazon.com/AWSCloudFormation/late\nst/UserGuide/aws-resource-iot-topicrule.html) resource to declare an AWS IoT\nrule\\. For more information see [AWS CloudFormation documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot-topicrule.html)\n\n",
@@ -2832,7 +2872,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "Kinesis": {
       "description": "# Kinesis\nThe object describing a `Kinesis` event source type\\. For more information, see\n[Using AWS Lambda with Amazon Kinesis](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html) in the *AWS Lambda Developer Guide*\\.\nAWS SAM generates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/User\nGuide/aws-resource-lambda-eventsourcemapping.html](https://docs.aws.amazon.com/\nAWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html)\nresource when this event type is set\\.\n\n",
@@ -2902,7 +2943,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LambdaAuthorizationIdentity": {
       "description": "# LambdaAuthorizationIdentity\nUse property can be used to specify an IdentitySource in an incoming request\nfor a Lambda authorizer\\. For more information about identity sources, see\n[Identity sources](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.identity-sources) in the *API Gateway Developer Guide*\\.\n\n",
@@ -2932,7 +2974,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LambdaAuthorizer": {
       "description": "# LambdaAuthorizer\nConfigure a Lambda authorizer to control access to your Amazon API Gateway HTTP\nAPI with an AWS Lambda function\\.\nFor more information and examples, see\n[Working with AWS Lambda authorizers for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html) in the *API Gateway Developer\nGuide*\\.\n\n",
@@ -2988,7 +3031,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LambdaRequestAuthorizationIdentity": {
       "description": "# LambdaRequestAuthorizationIdentity\nThis property can be used to specify an IdentitySource in an incoming request\nfor an authorizer\\. For more information about IdentitySource see the\n[ApiGateway Authorizer OpenApi extension](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-authorizer.html)\\.\n\n",
@@ -3018,7 +3062,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LambdaRequestAuthorizer": {
       "description": "# LambdaRequestAuthorizer\nConfigure a Lambda Authorizer to control access to your API with a Lambda\nfunction\\.\nFor more information and examples, see [Controlling access to API Gateway APIs](serverless-controlling-access-to-apis.md)\\.\n\n",
@@ -3074,7 +3119,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LambdaTokenAuthorizationIdentity": {
       "description": "# LambdaTokenAuthorizationIdentity\nThis property can be used to specify an IdentitySource in an incoming request\nfor an authorizer\\. For more information about IdentitySource see the\n[ApiGateway Authorizer OpenApi extension](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-authorizer.html)\\.\n\n",
@@ -3089,7 +3135,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LambdaTokenAuthorizer": {
       "description": "# LambdaTokenAuthorizer\nConfigure a Lambda Authorizer to control access to your API with a Lambda\nfunction\\.\nFor more information and examples, see [Controlling access to API Gateway APIs](serverless-controlling-access-to-apis.md)\\.\n\n",
@@ -3130,7 +3177,8 @@
           },
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "LayerContent": {
       "description": "# LayerContent\nA ZIP archive that contains the contents of an [Lambda layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html)\\.\n\n",
@@ -3150,7 +3198,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "MQ": {
       "description": "# MQ\nThe object describing an `MQ` event source type\\. For more information, see\n[Using Lambda with Amazon MQ](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html) in the *AWS Lambda Developer Guide*\\.\nAWS SAM generates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/User\nGuide/aws-resource-lambda-eventsourcemapping.html](https://docs.aws.amazon.com/\nAWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html)\nresource when this event type is set\\.\n**Note:** To have an Amazon MQ queue in a virtual private cloud \\(VPC\\) but\nyour Lambda function in a public network, your function's execution role must\ninclude the following permissions: `ec2:CreateNetworkInterface`,\n`ec2:DeleteNetworkInterface`, `ec2:DescribeNetworkInterfaces`,\n`ec2:DescribeSecurityGroups`, `ec2:DescribeSubnets`, `ec2:DescribeVpcs`\\. For\nmore information, see [Execution role permissions](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#events-mq-permissions) in the *AWS Lambda Developer\nGuide*\\.\n\n",
@@ -3190,7 +3239,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "MSK": {
       "description": "# MSK\nThe object describing an `MSK` event source type\\. For more information, see\n[Using AWS Lambda with Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) in the *AWS Lambda Developer Guide*\\.\nAWS SAM generates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/User\nGuide/aws-resource-lambda-eventsourcemapping.html](https://docs.aws.amazon.com/\nAWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html)\nresource when this event type is set\\.\n\n",
@@ -3215,7 +3265,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "OAuth2Authorizer": {
       "description": "# OAuth2Authorizer\nDefinition for an OAuth 2\\.0 authorizer, also known to as a JSON Web Token\n\\(JWT\\) authorizer\\.\nFor more information, see [Controlling access to HTTP APIs with JWT authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)\nin the *API Gateway Developer Guide*\\.\n\n",
@@ -3235,7 +3286,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "OnFailure": {
       "description": "# OnFailure\nA destination for events that failed processing\\.\n\n",
@@ -3250,7 +3302,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "OnSuccess": {
       "description": "# OnSuccess\nA destination for events that were processed successfully\\.\n\n",
@@ -3265,7 +3318,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "PrimaryKeyObject": {
       "description": "# PrimaryKeyObject\nThe object describing the properties of a primary key\\.\n\n",
@@ -3280,7 +3334,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "RequestModel": {
       "description": "# RequestModel\nConfigures a Request Model for a specific Api\\+Path\\+Method\\.\n\n",
@@ -3305,7 +3360,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "RequestParameter": {
       "description": "# RequestParameter\nConfigure Request Parameter for a specific Api\\+Path\\+Method\\.\nEither `Required` or `Caching` property needs to be specified for request\nparameter\n\n",
@@ -3320,7 +3376,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "ResourcePolicyStatement": {
       "description": "# ResourcePolicyStatement\nConfigures a resource policy for all methods and paths of an API\\. For more\ninformation about resource policies, see\n[Controlling access to an API with API Gateway resource policies](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies.html) in the *API\nGateway Developer Guide*\\.\n\n",
@@ -3380,7 +3437,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "Route53Configuration": {
       "description": "# Route53Configuration\nConfigures the Route53 record sets for an API\\.\n\n",
@@ -3410,7 +3468,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "S3": {
       "description": "# S3\nThe object describing an `S3` event source type\\.\n\n",
@@ -3430,7 +3489,8 @@
           "properties": {},
           "required": false
         }
-      }
+      },
+      "return_values": {}
     },
     "SNS": {
       "description": "# SNS\nThe object describing an `SNS` event source type\\.\nSAM generates [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/a\nws-resource-sns-subscription.html](https://docs.aws.amazon.com/AWSCloudFormatio\nn/latest/UserGuide/aws-resource-sns-subscription.html) resource when this event\ntype is set\n\n",
@@ -3481,7 +3541,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "SQS": {
       "description": "# SQS\nThe object describing an `SQS` event source type\\. For more information, see\n[Using AWS Lambda with Amazon SQS](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html) in the *AWS Lambda Developer Guide*\\.\nSAM generates [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/a\nws-resource-lambda-eventsourcemapping.html](https://docs.aws.amazon.com/AWSClou\ndFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html)\nresource when this event type is set\n\n",
@@ -3511,7 +3572,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "Schedule": {
       "description": "# Schedule\nThe object describing a `Schedule` event source type, which sets your state\nmachine as the target of an EventBridge rule that triggers on a schedule\\. For\nmore information, see [What Is Amazon EventBridge?](https://docs.aws.amazon.com/eventbridge/latest/userguide/what-is-amazon-eventbridge.html) in the *Amazon EventBridge\nUser Guide*\\.\nAWS Serverless Application Model \\(AWS SAM\\) generates an [https://docs.aws.ama\nzon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html](https\n://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-r\nule.html) resource when this event type is set\\.\n\n",
@@ -3567,7 +3629,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "SelfManagedKafka": {
       "description": "# SelfManagedKafka\nThe object describing a `SelfManagedKafka` event source type\\. For more\ninformation, see [Using AWS Lambda with with self\\-managed Apache Kafka](https://docs.aws.amazon.com/lambda/latest/dg/with-kafka.html) in the\n*AWS Lambda Developer Guide*\\.\nAWS SAM generates an [https://docs.aws.amazon.com/AWSCloudFormation/latest/User\nGuide/aws-resource-lambda-eventsourcemapping.html](https://docs.aws.amazon.com/\nAWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html)\nresource when this event type is set\\.\n\n",
@@ -3597,7 +3660,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "SqsSubscriptionObject": {
       "description": "# SqsSubscriptionObject\nSpecify an existing SQS queue option to SNS event\n\n",
@@ -3627,7 +3691,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     },
     "Target": {
       "description": "# Target\nConfigures the AWS resource that EventBridge invokes when a rule is triggered\\.\n\n",
@@ -3637,7 +3702,8 @@
           "properties": {},
           "required": true
         }
-      }
+      },
+      "return_values": {}
     }
   }
 }
