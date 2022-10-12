@@ -152,10 +152,10 @@ def test_resource_property_extractor(document_mapping):
     assert [(13, 6, 5), (19, 6, 5)] == sorted(
         positions[AWSResourceName(value="AWS::EC2::Subnet") / "VpcId"]
     )
-    assert len(positions) == 3
+    assert len(positions) == 7
 
 
-def test_resource_property_extractor(document_mapping):
+def test_resource_property_extractor_nested(document_mapping):
     document_mapping = {
         "AWSTemplateFormatVersion": "2010-09-09",
         "Description": "My template",
@@ -312,6 +312,42 @@ def test_resource_property_extractor_for_resource_with_one_incomplete_property()
     assert [(7, 6, 9)] == positions[
         AWSResourceName(value="AWS::EC2::Subnet") / "CidrBlock"
     ]
+
+
+def test_resource_property_extractor_unfinished_subproperty():
+    extractor = ResourcePropertyExtractor()
+    template_data = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Resources": {
+            "__position__DDB": [10, 2],
+            "DDB": {
+                "Properties": {
+                    "KeySchema": ["foo"],
+                    "StreamSpecification": ".",
+                    "__position__KeySchema": [13, 6],
+                    "__position__StreamSpecification": [15, 6],
+                    "__value_positions__": [{"__position__.": [16, 8]}],
+                },
+                "Type": "AWS::DynamoDB::Table",
+                "__position__Properties": [12, 4],
+                "__position__Type": [11, 4],
+                "__value_positions__": [{"__position__AWS::DynamoDB::Table": [11, 10]}],
+            },
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__position__Description": [1, 0],
+        "__position__Resources": [2, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__An example CloudFormation template for Fargate.": [1, 13]},
+        ],
+    }
+
+    positions = extractor.extract(template_data)
+    assert (
+        AWSResourceName(value="AWS::DynamoDB::Table") / "StreamSpecification" / "."
+        in positions
+    )
 
 
 def test_resource_extractor(document_mapping):

@@ -8,6 +8,9 @@ from .json_decoding import CfnJSONDecoder  # type: ignore[attr-defined]
 from .yaml_decoding import SafePositionLoader
 
 
+DEBUG_CHAR = "."
+
+
 class CfnDecodingException(Exception):
     pass
 
@@ -89,13 +92,13 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
 def yaml_line_enricher(line: str, char: int) -> str:
     stripped = line.strip()
     if not stripped:  # Empty line for property
-        new_line = line[:char] + "."
+        new_line = line[:char] + DEBUG_CHAR
     elif (
         stripped in ("Type:", "Ref:", "Fn::GetAtt:")
         or stripped.endswith("!Ref")
         or stripped.endswith("!GetAtt")
     ):  # For resource or ref
-        new_line = line + "."
+        new_line = line + DEBUG_CHAR
     else:
         new_line = line
     return new_line

@@ -16,6 +16,7 @@ from ..aws_data import AWSParameter
 from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
 from ..aws_data import Tree
+from . import DEBUG_CHAR
 from .position import PositionLookup
 from .position import Spanning
 from .yaml_decoding import POSITION_PREFIX
@@ -110,7 +111,13 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
                     and isinstance(resource["Properties"], str)
                     and VALUES_POSITION_PREFIX in resource
                 ):
-                    props.extend(self._extract_unfinished(resource))
+                    props.extend(
+                        self._extract_unfinished(
+                            resource,
+                            resource["Properties"],
+                            AWSResourceName(value=resource.get("Type", "")),
+                        )
+                    )
         return PositionLookup.from_iterable(props)
 
     def _extract_recursive(
@@ -141,17 +148,24 @@ class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
                             props.extend(self._extract_recursive(sub_node, aws_prop))
                         elif isinstance(sub_node, list):
                             props.extend(self._extract_recursive(sub_node, parent))
+                elif node[prop] == DEBUG_CHAR and VALUES_POSITION_PREFIX in node:
+                    props.extend(
+                        self._extract_unfinished(node, node[prop], parent / prop)
+                    )
         return props
 
-    def _extract_unfinished(self, node: Tree) -> List[Spanning[AWSPropertyName]]:
+    def _extract_unfinished(
+        self,
+        node: Tree,
+        unfinished_property: Tree,
+        parent: Union[AWSPropertyName, AWSResourceName],
+    ) -> List[Spanning[AWSPropertyName]]:
         props = []
-        unfinished_property = node["Properties"]
-        type_ = node["Type"] or ""
         for dct in node[VALUES_POSITION_PREFIX]:
             key = POSITION_PREFIX + unfinished_property
             if key in dct:
                 line, char = dct[key]
-                aws_prop = AWSResourceName(value=type_) / unfinished_property
+                aws_prop = parent / unfinished_property
                 props.append(
                     Spanning[AWSPropertyName](
                         value=aws_prop,
