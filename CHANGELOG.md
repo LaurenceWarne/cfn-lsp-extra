@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.2
+- [f7e4198](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/f7e4198044b5c23601a1cb33cfa3ab4afe27be05) Use `us-east-1` by default for all diagnostics so diagnostics are not duplicated in some circumstances
+- [91b217f](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/91b217ffdbf8a3afd7411510e7f6e55f371fb395) Partial support for `!GetAtt` completions
+
 ## v0.4.1
 - [b5ffc84](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/b5ffc8411eb258bfa051b026070e59c7b2092cc3) SAM template Support
 - [8e80c6d](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/8e80c6daa0aaf41e717b3619c01c14c62138a194) Fix warning and informational diagnostics shown as warnings
@@ -12,9 +16,7 @@
 - [7394fc3](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/7394fc399fa85b7baf431644184e98cb4739dac6)/[9aa81e0](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/9aa81e07ce24a3e3781cda5aef66ad22339fe177) Support `textDocument/hover` for refs
 - [6a9be31](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/6a9be317f7594b623c03b272012c52917c1efbe3)/[7394fc3](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/7394fc399fa85b7baf431644184e98cb4739dac6) Support `textDocument/definition` for refs
 
-
 ## v0.2.0
-
 - [3e7479f](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/3e7479fbd0b447bdba6422afff6ddb53e4bb74b4) Support for snippet expansion (autogen of required properties) after resource completion 
 - [98c060e](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/98c060e12381dfd28da912c32f0cf5ba74a813c2) (Some) support for intrinsic function completions
 - [261f1e7](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/261f1e7018f854d14eb91b95b11eae83dc9b63d8) Hover support for JSON resources
