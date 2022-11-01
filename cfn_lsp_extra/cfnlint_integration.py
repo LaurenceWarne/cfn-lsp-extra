@@ -23,15 +23,17 @@ from pygls.lsp.types import Position
 from pygls.lsp.types import Range
 
 
+# TODO make use of https://github.com/aws-cloudformation/cfn-lint/blob/main/docs/getting_started/integration.md
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     """Return diagnostics for the template file at file_path."""
     cfnlint.config.configure_logging(None, None)
     rules = get_rules([], [], ["I", "W", "E"], include_experimental=True)
     template, errors = _decode(yaml_content, file_path)
+    regions = ["us-east-1"]
 
     if not errors:
         runner = cfnlint.runner.Runner(
-            rules, file_path, template, regions=REGIONS, mandatory_rules=None
+            rules, file_path, template, regions=regions, mandatory_rules=None
         )
         errors: List[cfnlint.rules.Match] = runner.run()
 
