@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.3
+- [fbc8a90](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/fbc8a906621bf7dfd2a52f3f8df1519f24c779a0) Fix for [#3](https://github.com/LaurenceWarne/cfn-lsp-extra/issues/3) - SAM templates being treated as Cloudformation templates by `cfn-lint`.
+
 ## v0.4.2
 - [f7e4198](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/f7e4198044b5c23601a1cb33cfa3ab4afe27be05) Use `us-east-1` by default for all diagnostics so diagnostics are not duplicated in some circumstances
 - [91b217f](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/91b217ffdbf8a3afd7411510e7f6e55f371fb395) Partial support for `!GetAtt` completions
