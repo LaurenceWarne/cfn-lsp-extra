@@ -35,6 +35,7 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
         runner = cfnlint.runner.Runner(
             rules, file_path, template, regions=regions, mandatory_rules=None
         )
+        runner.transform()
         errors: List[cfnlint.rules.Match] = runner.run()
 
     severity_mapping: Dict[str, DiagnosticSeverity] = {

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cfn-lsp-extra"
-version = "0.4.2"
+version = "0.4.3"
 description = "Cfn Lsp Extra"
 authors = ["Laurence Warne <laurencewarne@gmail.com>"]
 license = "MIT"
@@ -15,7 +15,7 @@ Changelog = "https://github.com/laurencewarne/cfn-lsp-extra/releases"
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "^8.1.3"
-cfn-lint = "^0.61"
+cfn-lint = "^0.75"
 pygls = "^0.11"  # pygls = { path = "../pygls/", develop = false }
 PyYAML = "^6.0"
 types-PyYAML = "^6.0"

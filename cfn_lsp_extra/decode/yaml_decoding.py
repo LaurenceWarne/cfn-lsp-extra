@@ -41,9 +41,7 @@ class SafePositionLoader(SafeLoader):
         return {position_key: position_value}
 
     def construct_mapping(self, node: MappingNode, deep: bool = False) -> Any:
-        mapping = super(  # type: ignore[no-untyped-call]
-            SafePositionLoader, self
-        ).construct_mapping(node, deep=deep)
+        mapping = super(SafePositionLoader, self).construct_mapping(node, deep=deep)
 
         for key_node, value_node in node.value:
             position_key, position_value = self._positional_key_value(key_node)
@@ -78,9 +76,7 @@ class SafePositionLoader(SafeLoader):
         return mapping
 
     def construct_sequence(self, node: SequenceNode, deep: bool = False) -> Any:
-        mapping = super(  # type: ignore[no-untyped-call]
-            SafePositionLoader, self
-        ).construct_sequence(node, deep)
+        mapping = super(SafePositionLoader, self).construct_sequence(node, deep)
 
         for idx, value_node in enumerate(node.value):
             obj = self.construct_object(value_node)  # type: ignore[no-untyped-call]

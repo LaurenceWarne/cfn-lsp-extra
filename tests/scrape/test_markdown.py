@@ -17,7 +17,7 @@ async def test_github_parse():
 
 
 async def test_property_parse():
-    url = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-dynamodb-keyschema.md"
+    url = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-dynamodb-table-keyschema.md"
     gh_parser = CfnPropertyDocParser(
         base_url=BASE_URL,
         name=AWSResourceName(value="AWS::DynamoDB::Table") / "KeySchema",
