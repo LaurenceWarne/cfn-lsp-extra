@@ -27,9 +27,7 @@ def cli(ctx: Context, verbose: int) -> None:
         cfn_aws_context = load_cfn_context()
         sam_aws_context = load_sam_context(cfn_aws_context)
         logger.info("Starting cfn-lsp-extra server")
-        server(  # type: ignore[no-untyped-call]
-            cfn_aws_context, sam_aws_context
-        ).start_io()
+        server(cfn_aws_context, sam_aws_context).start_io()
     return None
 
 

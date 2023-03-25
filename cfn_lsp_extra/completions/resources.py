@@ -5,10 +5,10 @@ There are 899 resources in total, which empircally is ok to send to a
 client as long as we don't send send the documentation along with the
 labels and snippets.
 """
-from pygls.lsp.types import CompletionItem
-from pygls.lsp.types import CompletionList
-from pygls.lsp.types import InsertTextFormat
-from pygls.lsp.types import Position
+from lsprotocol.types import CompletionItem
+from lsprotocol.types import CompletionList
+from lsprotocol.types import InsertTextFormat
+from lsprotocol.types import Position
 from pygls.workspace import Document
 
 from ..aws_data import AWSContext

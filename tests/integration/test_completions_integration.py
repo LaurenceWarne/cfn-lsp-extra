@@ -2,7 +2,8 @@
 Integration tests for textDocument/completion.
 """
 import pytest
-from pygls.lsp.types.language_features.completion import CompletionItem
+from lsprotocol.types import COMPLETION_ITEM_RESOLVE
+from lsprotocol.types import CompletionItem
 
 
 # See
@@ -50,7 +51,9 @@ async def test_nested_property_completion(client):
 async def test_completion_item_resolve_adds_documentation_for_resource(client):
     resource = "AWS::S3::Bucket"
     item = CompletionItem(label=resource)
-    result = await client.completion_resolve_request(item)
+
+    # TODO ask upstream to add this as a client method
+    result = await client.lsp.send_request_async(COMPLETION_ITEM_RESOLVE, item)
     assert resource in result.documentation
 
 

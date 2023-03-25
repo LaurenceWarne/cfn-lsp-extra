@@ -14,6 +14,7 @@
 ** TODO add descriptions to intrinsic function completions
 ** TODO implement "fn::GetAtt" completions
 ** TODO parse the meaning of !Ref for resources, and insert this in hovers and documentation over !Ref arguments
+** TODO Switch from Pydantic to [[https://www.attrs.org/en/stable/index.html][attrs]]
 
 * Bugs
 ** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load

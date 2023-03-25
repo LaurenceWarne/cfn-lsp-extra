@@ -5,7 +5,6 @@ import sys
 import pygls.uris as uri
 import pytest
 import pytest_lsp
-from pytest_lsp import Client
 from pytest_lsp import ClientServerConfig
 from pytest_lsp import make_test_client
 

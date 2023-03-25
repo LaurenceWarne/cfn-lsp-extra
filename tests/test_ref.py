@@ -1,5 +1,5 @@
 import pytest
-from pygls.lsp.types import Position
+from lsprotocol.types import Position
 
 from cfn_lsp_extra.aws_data import AWSLogicalId
 from cfn_lsp_extra.aws_data import AWSRefName

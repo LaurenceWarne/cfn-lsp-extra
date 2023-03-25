@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pygls.lsp.types import Position
+from lsprotocol.types import Position
 
 from .aws_data import AWSRefName
 from .aws_data import AWSRefSource

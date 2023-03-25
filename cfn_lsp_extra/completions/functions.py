@@ -3,13 +3,13 @@ Intrinsic function completions, see:
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 For more information.
 """
+from typing import Callable
 from typing import List
 
+from lsprotocol.types import CompletionItem
+from lsprotocol.types import CompletionList
+from lsprotocol.types import Position
 from pydantic import BaseModel
-from pydantic.typing import Callable
-from pygls.lsp.types import CompletionItem
-from pygls.lsp.types import CompletionList
-from pygls.lsp.types import Position
 from pygls.workspace import Document
 from pygls.workspace import position_from_utf16
 
@@ -90,7 +90,8 @@ def word_at_position(lines: List[str], position: Position) -> str:
     if position.line >= len(lines):
         return ""
 
-    row, col = position_from_utf16(lines, position)
+    pos = position_from_utf16(lines, position)
+    row, col = pos.line, pos.character
     line = lines[row]
     # Split word in two
     start = line[:col]

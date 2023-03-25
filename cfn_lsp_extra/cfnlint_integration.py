@@ -17,10 +17,10 @@ from cfnlint.helpers import REGIONS
 from cfnlint.rules import ParseError
 from cfnlint.rules import RulesCollection
 from cfnlint.rules import TransformError
-from pygls.lsp.types import Diagnostic
-from pygls.lsp.types import DiagnosticSeverity
-from pygls.lsp.types import Position
-from pygls.lsp.types import Range
+from lsprotocol.types import Diagnostic
+from lsprotocol.types import DiagnosticSeverity
+from lsprotocol.types import Position
+from lsprotocol.types import Range
 
 
 # TODO make use of https://github.com/aws-cloudformation/cfn-lint/blob/main/docs/getting_started/integration.md

@@ -3,9 +3,9 @@ Completions for !Refs
 """
 from typing import Optional
 
-from pygls.lsp.types import CompletionItem
-from pygls.lsp.types import CompletionList
-from pygls.lsp.types import Position
+from lsprotocol.types import CompletionItem
+from lsprotocol.types import CompletionList
+from lsprotocol.types import Position
 from pygls.workspace import Document
 
 from ..aws_data import AWSRefName

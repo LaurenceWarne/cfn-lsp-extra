@@ -1,5 +1,5 @@
 import pytest
-from pygls.lsp.types import Position
+from lsprotocol.types import Position
 from pygls.workspace import Document
 
 from cfn_lsp_extra.aws_data import AWSPropertyName

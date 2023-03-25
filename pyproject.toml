@@ -16,12 +16,12 @@ Changelog = "https://github.com/laurencewarne/cfn-lsp-extra/releases"
 python = "^3.7"
 click = "^8.1.3"
 cfn-lint = "^0.75"
-pygls = "^0.11"  # pygls = { path = "../pygls/", develop = false }
+pygls = "^1.0"  # pygls = { path = "../pygls/", develop = false }
 PyYAML = "^6.0"
 types-PyYAML = "^6.0"
 aiohttp = {extras = ["speedups"], version = "^3.8"}
 platformdirs = "^2.5"
-pydantic = "^1.8"
+pydantic = "^1.10"
 tqdm = "^4.64"
 
 [tool.poetry.dev-dependencies]
@@ -40,7 +40,7 @@ pep8-naming = "^0.12.1"
 pytest = "^7.1.2"
 pytest-asyncio = "^0.18"
 pytest-mock = "^3.7"
-pytest-lsp = "^0.1.0" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
+pytest-lsp = "^0.2" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = ">=1.4.1"
 nox = "^2022.1"
 

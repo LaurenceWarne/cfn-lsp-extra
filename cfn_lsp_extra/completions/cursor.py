@@ -3,9 +3,9 @@ from typing import List
 from typing import Pattern
 from typing import Tuple
 
-from pygls.lsp.types.basic_structures import Position
-from pygls.lsp.types.basic_structures import Range
-from pygls.lsp.types.basic_structures import TextEdit
+from lsprotocol.types import Position
+from lsprotocol.types import Range
+from lsprotocol.types import TextEdit
 from pygls.workspace import position_from_utf16
 
 
@@ -29,7 +29,8 @@ def word_before_after_position(
     if position.line >= len(lines):
         return "", ""
 
-    row, col = position_from_utf16(lines, position)
+    pos = position_from_utf16(lines, position)
+    row, col = pos.line, pos.character
     line = lines[row]
     # Split word in two
     start = line[:col]

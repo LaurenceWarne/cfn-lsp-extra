@@ -9,26 +9,26 @@ import re
 from typing import Optional
 from typing import Union
 
-from pygls.lsp.methods import COMPLETION
-from pygls.lsp.methods import COMPLETION_ITEM_RESOLVE
-from pygls.lsp.methods import DEFINITION
-from pygls.lsp.methods import HOVER
-from pygls.lsp.methods import TEXT_DOCUMENT_DID_CHANGE
-from pygls.lsp.methods import TEXT_DOCUMENT_DID_OPEN
-from pygls.lsp.types import CompletionItem
-from pygls.lsp.types import CompletionList
-from pygls.lsp.types import CompletionOptions
-from pygls.lsp.types import CompletionParams
-from pygls.lsp.types import DefinitionParams
-from pygls.lsp.types import DidChangeTextDocumentParams
-from pygls.lsp.types import DidOpenTextDocumentParams
-from pygls.lsp.types import Hover
-from pygls.lsp.types import HoverParams
-from pygls.lsp.types import Location
-from pygls.lsp.types import MarkupContent
-from pygls.lsp.types import MarkupKind
-from pygls.lsp.types import Position
-from pygls.lsp.types import Range
+from lsprotocol.types import COMPLETION_ITEM_RESOLVE
+from lsprotocol.types import TEXT_DOCUMENT_COMPLETION
+from lsprotocol.types import TEXT_DOCUMENT_DEFINITION
+from lsprotocol.types import TEXT_DOCUMENT_DID_CHANGE
+from lsprotocol.types import TEXT_DOCUMENT_DID_OPEN
+from lsprotocol.types import TEXT_DOCUMENT_HOVER
+from lsprotocol.types import CompletionItem
+from lsprotocol.types import CompletionList
+from lsprotocol.types import CompletionOptions
+from lsprotocol.types import CompletionParams
+from lsprotocol.types import DefinitionParams
+from lsprotocol.types import DidChangeTextDocumentParams
+from lsprotocol.types import DidOpenTextDocumentParams
+from lsprotocol.types import Hover
+from lsprotocol.types import HoverParams
+from lsprotocol.types import Location
+from lsprotocol.types import MarkupContent
+from lsprotocol.types import MarkupKind
+from lsprotocol.types import Position
+from lsprotocol.types import Range
 from pygls.server import LanguageServer
 from pygls.workspace import Document
 
@@ -64,7 +64,7 @@ TRIGGER_CHARACTERS = [
 
 
 def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> LanguageServer:
-    server = LanguageServer()
+    server = LanguageServer("cfn-lsp-extra", "")  # TODO get real version here
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
         ResourcePropertyExtractor(), ResourceExtractor()
     )
@@ -89,7 +89,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
 
     @server.feature(
-        COMPLETION,
+        TEXT_DOCUMENT_COMPLETION,
         CompletionOptions(trigger_characters=TRIGGER_CHARACTERS, resolve_provider=True),
     )
     def completions(
@@ -118,7 +118,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         else:
             return completion_item  # Not a resource
 
-    @server.feature(HOVER)
+    @server.feature(TEXT_DOCUMENT_HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Text document did hover notification."""
         line_at, char_at = params.position.line, params.position.character
@@ -155,7 +155,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
             contents=MarkupContent(kind=MarkupKind.Markdown, value=documentation),
         )
 
-    @server.feature(DEFINITION)
+    @server.feature(TEXT_DOCUMENT_DEFINITION)
     def goto_definition(
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:

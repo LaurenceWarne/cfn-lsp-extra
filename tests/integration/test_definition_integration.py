@@ -3,7 +3,7 @@ Integration tests for textDocument/definition.
 """
 
 import pytest
-from pygls.lsp.types import Position
+from lsprotocol.types import Position
 
 
 # See
@@ -24,8 +24,7 @@ async def test_parameter_definition(
 ):
     test_uri = client.root_uri + "/" + file_name
     result = await client.definition_request(
-        uri=test_uri,
-        position=Position(line=ref_line, character=ref_character),
+        uri=test_uri, line=ref_line, character=ref_character
     )
     assert result.range.start.line == param_line
     assert result.range.start.character == param_character
