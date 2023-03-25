@@ -32,6 +32,21 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     regions = ["us-east-1"]
 
     if not errors:
+        try:
+            (config, _, _) = cfnlint.core.get_args_filenames(file_path)
+            # override rules with config-specific rules
+            rules = cfnlint.core.get_rules(
+                config.append_rules,
+                config.ignore_checks,
+                config.include_checks,
+                config.configure_rules,
+                config.include_experimental,
+                config.mandatory_checks,
+                config.custom_rules,
+            )
+        except Exception:
+            # ignore errors, use all rules as defined above instead
+            pass
         runner = cfnlint.runner.Runner(
             rules, file_path, template, regions=regions, mandatory_rules=None
         )
