@@ -15,6 +15,8 @@ https://user-images.githubusercontent.com/17688577/176939586-df1d9ed8-5ec6-46d5-
 | `textDocument/definition`         | Done for `!Ref`s.  *TODO* mappings.                                                                                  |
 | `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                              |
 
+Also checkout the [changelog](/CHANGELOG.md).
+
 ## Installation
 
 First install the executable, [`pipx`](https://pypa.github.io/pipx/) is recommended, but you can use `pip` instead if you like to live dangerously:

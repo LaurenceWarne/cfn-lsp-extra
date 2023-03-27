@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.4
+- [#5](https://github.com/LaurenceWarne/cfn-lsp-extra/pull/5) Respect `cfn-lint` config if it exists, thanks to [@mbarneyjr](https://github.com/mbarneyjr)
+- [445a824](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/445a8248cd03b87c5292a361a6b17fc446cb797c) Fix for [#4](https://github.com/LaurenceWarne/cfn-lsp-extra/issues/4) - error with Python 3.11
+
 ## v0.4.3
 - [fbc8a90](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/fbc8a906621bf7dfd2a52f3f8df1519f24c779a0) Fix for [#3](https://github.com/LaurenceWarne/cfn-lsp-extra/issues/3) - SAM templates being treated as Cloudformation templates by `cfn-lint`.
 
