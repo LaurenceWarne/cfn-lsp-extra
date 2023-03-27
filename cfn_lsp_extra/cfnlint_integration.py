@@ -33,7 +33,7 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
 
     if not errors:
         try:
-            (config, _, _) = cfnlint.core.get_args_filenames(file_path)
+            config = cfnlint.config.ConfigMixIn(file_path)
             # override rules with config-specific rules
             rules = cfnlint.core.get_rules(
                 config.append_rules,
@@ -45,7 +45,7 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
                 config.custom_rules,
             )
         except Exception:
-            # ignore errors, use all rules as defined above instead
+            # ignore errors, use all rules as defined above in the first get_rules instead
             pass
         runner = cfnlint.runner.Runner(
             rules, file_path, template, regions=regions, mandatory_rules=None
