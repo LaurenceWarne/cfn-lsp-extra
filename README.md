@@ -8,12 +8,12 @@ https://user-images.githubusercontent.com/17688577/176939586-df1d9ed8-5ec6-46d5-
 
 ## Features
 
-| Method                            | Status                                                                                                               |
-|-----------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `textDocument/hover`              | Done for resources, resource properties, subproperties and `!Ref`s. *TODO* `!GetAtt`s, intrinsic functions.          |
-| `textDocument/completion`         | Done for resources, resource properties, subproperties, refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`. |
-| `textDocument/definition`         | Done for `!Ref`s.  *TODO* mappings.                                                                                  |
-| `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                              |
+| Method                            | Status                                                                                                                                                                             |
+|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `textDocument/hover`              | Done for resources (in particular, required properties for a resource will be auto-expanded), resource properties, subproperties and `!Ref`s. *TODO* `!GetAtt`s, intrinsic functions. |
+| `textDocument/completion`         | Done for resources, resource properties, subproperties, refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`.                                                               |
+| `textDocument/definition`         | Done for `!Ref`s.  *TODO* mappings.                                                                                                                                                |
+| `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                                                                                            |
 
 Also checkout the [changelog](/CHANGELOG.md).
 
@@ -76,6 +76,24 @@ let g:LanguageClient_serverCommands = {
 
 
 Patches documenting integration for other editors are very welcome!
+
+## Development
+
+`cfn-lsp-extra` uses [nox](https://github.com/wntrblm/nox) for virtualenv management and [poetry](https://github.com/python-poetry/poetry) for dependency management.  You can install both of them using:
+
+```bash
+pipx install nox
+pipx install poetry
+```
+
+And then run tests, linting, etc (switching `3.9` for whichever Python version):
+
+```bash
+nox --session tests-3.9              # unit tests
+nox --session integration-tests-3.9  # integration tests
+nox --session lint-3.9               # flake8 lints
+nox --session mypy-3.9               # mypy checks
+```
 
 ## Alternatives
 

@@ -95,7 +95,12 @@ pyflakes = ["+*"]
 "flake8-*" = ["+*"]
 # explicitly disable plugin
 flake8-docstrings = ["-*"]  # TODO why is this needed?
-pycodestyle = ["+*", "-W503", "-E203", "-E731"]
+pycodestyle = [
+    "+*",
+    "-W503",  # line break before binary operator
+    "-E203",  # whitespace before ':'
+    "-E731"   # do not assign a lambda expression, use a def
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
