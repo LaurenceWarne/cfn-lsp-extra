@@ -99,6 +99,8 @@ def yaml_line_enricher(line: str, char: int) -> str:
         or stripped.endswith("!GetAtt")
     ):  # For resource or ref
         new_line = line + DEBUG_CHAR
+    elif stripped.startswith("-"):  # First element in a list
+        new_line = line + DEBUG_CHAR + ": "
     else:
         new_line = line
     return new_line
