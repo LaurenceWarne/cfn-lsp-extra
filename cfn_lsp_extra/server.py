@@ -10,20 +10,26 @@ from typing import Optional
 from typing import Union
 
 from lsprotocol.types import COMPLETION_ITEM_RESOLVE
+from lsprotocol.types import INITIALIZED
 from lsprotocol.types import TEXT_DOCUMENT_COMPLETION
 from lsprotocol.types import TEXT_DOCUMENT_DEFINITION
 from lsprotocol.types import TEXT_DOCUMENT_DID_CHANGE
 from lsprotocol.types import TEXT_DOCUMENT_DID_OPEN
+from lsprotocol.types import TEXT_DOCUMENT_DID_SAVE
 from lsprotocol.types import TEXT_DOCUMENT_HOVER
+from lsprotocol.types import WORKSPACE_DID_CHANGE_CONFIGURATION
 from lsprotocol.types import CompletionItem
 from lsprotocol.types import CompletionList
 from lsprotocol.types import CompletionOptions
 from lsprotocol.types import CompletionParams
 from lsprotocol.types import DefinitionParams
+from lsprotocol.types import DidChangeConfigurationParams
 from lsprotocol.types import DidChangeTextDocumentParams
 from lsprotocol.types import DidOpenTextDocumentParams
+from lsprotocol.types import DidSaveTextDocumentParams
 from lsprotocol.types import Hover
 from lsprotocol.types import HoverParams
+from lsprotocol.types import InitializedParams
 from lsprotocol.types import Location
 from lsprotocol.types import MarkupContent
 from lsprotocol.types import MarkupKind
@@ -38,6 +44,11 @@ from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
 from .completions import completions_for
 from .completions.resources import resolve_resource_completion_item
+from .config.user_configuration import DiagnosticPublishingMethod
+from .config.user_configuration import UserConfiguration
+from .config.user_configuration import configuration_params
+from .config.user_configuration import from_did_change_config
+from .config.user_configuration import from_get_configuration_response
 from .decode import CfnDecodingException
 from .decode import decode
 from .decode import decode_unfinished
@@ -68,13 +79,33 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
         ResourcePropertyExtractor(), ResourceExtractor()
     )
+    config = UserConfiguration()
+
+    @server.thread()
+    @server.feature(INITIALIZED)
+    def intialiazed(ls: LanguageServer, params: InitializedParams) -> None:
+        """client initialized notification"""
+        workspace_capabilities = ls.client_capabilities.workspace
+        if workspace_capabilities and workspace_capabilities.configuration:
+            logger.info("Obtaining user config")
+            try:
+                config_response = ls.get_configuration(
+                    params=configuration_params()
+                ).result(timeout=1)
+            except TimeoutError:
+                logger.error("Timeout retrieving config")
+            else:
+                nonlocal config
+                config = from_get_configuration_response(config_response)
+                logger.info("Obtained user config: %s", config)
 
     @server.thread()
     @server.feature(TEXT_DOCUMENT_DID_OPEN)
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
+        uri = params.text_document.uri
         ls.show_message("Text Document Did Open")
-        text_doc = ls.workspace.get_document(params.text_document.uri)
+        text_doc = ls.workspace.get_document(uri)
         logger.debug("Is template SAM: %s", is_document_sam(text_doc))
         file_path = text_doc.path
         ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
@@ -83,10 +114,32 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     @server.feature(TEXT_DOCUMENT_DID_CHANGE)
     def did_change(ls: LanguageServer, params: DidChangeTextDocumentParams) -> None:
         """Text document did change notification."""
-        text_doc = ls.workspace.get_document(params.text_document.uri)
+        uri = params.text_document.uri
+        text_doc = ls.workspace.get_document(uri)
         file_path = text_doc.path
-        # Publishing diagnostics removes old ones
-        ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
+        if (
+            config.diagnostic_publishing_method
+            == DiagnosticPublishingMethod.ON_DID_CHANGE
+        ):
+            # Publishing diagnostics removes old ones
+            ls.publish_diagnostics(
+                text_doc.uri, diagnostics(text_doc.source, file_path)
+            )
+
+    @server.thread()
+    @server.feature(TEXT_DOCUMENT_DID_SAVE)
+    def did_save(ls: LanguageServer, params: DidSaveTextDocumentParams) -> None:
+        """Text document did save notification."""
+        uri = params.text_document.uri
+        text_doc = ls.workspace.get_document(uri)
+        file_path = text_doc.path
+        if (
+            config.diagnostic_publishing_method
+            == DiagnosticPublishingMethod.ON_DID_SAVE
+        ):
+            ls.publish_diagnostics(
+                text_doc.uri, diagnostics(text_doc.source, file_path)
+            )
 
     @server.feature(
         TEXT_DOCUMENT_COMPLETION,
@@ -180,6 +233,15 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
                 ),
             )
         return None
+
+    @server.feature(WORKSPACE_DID_CHANGE_CONFIGURATION)
+    def did_change_configuration(
+        ls: LanguageServer, params: DidChangeConfigurationParams
+    ) -> None:
+        """Workspace did change configuration notification."""
+        logger.info("Received user configuration: %s", params)
+        nonlocal config
+        config = from_did_change_config(params)
 
     return server
 

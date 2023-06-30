@@ -4,6 +4,11 @@ Integration tests for textDocument/completion.
 import pytest
 from lsprotocol.types import COMPLETION_ITEM_RESOLVE
 from lsprotocol.types import CompletionItem
+from lsprotocol.types import CompletionParams
+from lsprotocol.types import Position
+from lsprotocol.types import TextDocumentIdentifier
+
+from .conftest import root_path
 
 
 # See
@@ -20,8 +25,11 @@ pytestmark = pytest.mark.integration
 )
 @pytest.mark.asyncio
 async def test_resource_completion(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.completion_request(test_uri, line=line, character=character)
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
 
     labels = [c.label for c in result.items]
     assert "AWS::ACMPCA::Certificate" in labels
@@ -29,8 +37,10 @@ async def test_resource_completion(client, file_name, line, character):
 
 @pytest.mark.asyncio
 async def test_property_completion(client):
-    test_uri = client.root_uri + "/template.yaml"
-    result = await client.completion_request(test_uri, line=57, character=6)
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=57, character=6))
+    )
 
     labels = [c.label for c in result.items]
     assert "Bucket" in labels
@@ -39,8 +49,10 @@ async def test_property_completion(client):
 
 @pytest.mark.asyncio
 async def test_nested_property_completion(client):
-    test_uri = client.root_uri + "/template.yaml"
-    result = await client.completion_request(test_uri, line=51, character=8)
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=51, character=8))
+    )
 
     labels = [c.label for c in result.items]
     assert "LogFilePrefix" in labels
@@ -59,8 +71,10 @@ async def test_completion_item_resolve_adds_documentation_for_resource(client):
 
 @pytest.mark.asyncio
 async def test_ref_completion(client):
-    test_uri = client.root_uri + "/template.yaml"
-    result = await client.completion_request(test_uri, line=151, character=24)
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=151, character=24))
+    )
 
     labels = [c.label for c in result.items]
     assert "CertificateArn" in labels  # A parameter
@@ -76,6 +90,9 @@ async def test_ref_completion(client):
 )
 @pytest.mark.asyncio
 async def test_no_completion(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.completion_request(test_uri, line=line, character=character)
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
     assert not result.items

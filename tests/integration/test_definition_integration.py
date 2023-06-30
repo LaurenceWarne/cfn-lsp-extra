@@ -3,7 +3,11 @@ Integration tests for textDocument/definition.
 """
 
 import pytest
+from lsprotocol.types import DefinitionParams
 from lsprotocol.types import Position
+from lsprotocol.types import TextDocumentIdentifier
+
+from .conftest import root_path
 
 
 # See
@@ -22,9 +26,12 @@ pytestmark = pytest.mark.integration
 async def test_parameter_definition(
     client, file_name, ref_line, ref_character, param_line, param_character
 ):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.definition_request(
-        uri=test_uri, line=ref_line, character=ref_character
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_definition_async(
+        DefinitionParams(
+            text_document=text_document,
+            position=Position(line=ref_line, character=ref_character),
+        )
     )
     assert result.range.start.line == param_line
     assert result.range.start.character == param_character

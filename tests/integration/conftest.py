@@ -5,7 +5,13 @@ import sys
 import pygls.uris as uri
 import pytest
 import pytest_lsp
+from lsprotocol.types import CompletionParams
+from lsprotocol.types import InitializeParams
+from lsprotocol.types import Position
+from lsprotocol.types import TextDocumentIdentifier
 from pytest_lsp import ClientServerConfig
+from pytest_lsp import LanguageClient
+from pytest_lsp import client_capabilities
 from pytest_lsp import make_test_client
 
 
@@ -25,12 +31,20 @@ def event_loop():
 
 
 @pytest_lsp.fixture(
-    scope="session",
     config=ClientServerConfig(
-        client="neovim",
         server_command=["cfn-lsp-extra"],
-        root_uri=uri.from_fs_path(str(root_path)),
     ),
 )
-async def client():
-    pass
+async def client(lsp_client: LanguageClient):
+    # Setup
+    response = await lsp_client.initialize_session(
+        InitializeParams(
+            capabilities=client_capabilities("neovim"),
+            root_uri=uri.from_fs_path(str(root_path)),
+        )
+    )
+
+    yield
+
+    # Teardown
+    await lsp_client.shutdown_session()

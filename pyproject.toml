@@ -40,7 +40,8 @@ pep8-naming = "^0.12.1"
 pytest = "^7.1.2"
 pytest-asyncio = "^0.18"
 pytest-mock = "^3.7"
-pytest-lsp = "^0.2" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
+# https://github.com/swyddfa/lsp-devtools
+pytest-lsp = "^0.3" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = ">=1.4.1"
 nox = "^2022.1"
 
@@ -99,6 +100,7 @@ pycodestyle = [
     "+*",
     "-W503",  # line break before binary operator
     "-E203",  # whitespace before ':'
+    "-E501",  # line too long
     "-E731"   # do not assign a lambda expression, use a def
 ]
 

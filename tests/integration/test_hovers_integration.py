@@ -2,7 +2,11 @@
 Integration tests for textDocument/Hover.
 """
 import pytest
+from lsprotocol.types import HoverParams
 from lsprotocol.types import Position
+from lsprotocol.types import TextDocumentIdentifier
+
+from .conftest import root_path
 
 
 # See
@@ -19,11 +23,12 @@ pytestmark = pytest.mark.integration
 )
 @pytest.mark.asyncio
 async def test_property_hover(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.hover_request(
-        uri=test_uri,
-        line=line,
-        character=character,
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_hover_async(
+        HoverParams(
+            text_document=text_document,
+            position=Position(line=line, character=character),
+        )
     )
     assert "Bucket" in result.contents.value
 
@@ -37,11 +42,12 @@ async def test_property_hover(client, file_name, line, character):
 )
 @pytest.mark.asyncio
 async def test_resource_hover(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.hover_request(
-        uri=test_uri,
-        line=line,
-        character=character,
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_hover_async(
+        HoverParams(
+            text_document=text_document,
+            position=Position(line=line, character=character),
+        )
     )
     assert "AWS::S3::BucketPolicy" in result.contents.value
 
@@ -55,11 +61,12 @@ async def test_resource_hover(client, file_name, line, character):
 )
 @pytest.mark.asyncio
 async def test_nested_property_hover(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.hover_request(
-        uri=test_uri,
-        line=line,
-        character=character,
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_hover_async(
+        HoverParams(
+            text_document=text_document,
+            position=Position(line=line, character=character),
+        )
     )
     assert "DestinationBucketName" in result.contents.value
 
@@ -73,11 +80,12 @@ async def test_nested_property_hover(client, file_name, line, character):
 )
 @pytest.mark.asyncio
 async def test_parameter_ref_hover(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.hover_request(
-        uri=test_uri,
-        line=line,
-        character=character,
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_hover_async(
+        HoverParams(
+            text_document=text_document,
+            position=Position(line=line, character=character),
+        )
     )
     assert "CertificateArn" in result.contents.value
 
@@ -91,10 +99,11 @@ async def test_parameter_ref_hover(client, file_name, line, character):
 )
 @pytest.mark.asyncio
 async def test_no_hover(client, file_name, line, character):
-    test_uri = client.root_uri + "/" + file_name
-    result = await client.hover_request(
-        uri=test_uri,
-        line=line,
-        character=character,
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_hover_async(
+        HoverParams(
+            text_document=text_document,
+            position=Position(line=line, character=character),
+        )
     )
     assert result is None
