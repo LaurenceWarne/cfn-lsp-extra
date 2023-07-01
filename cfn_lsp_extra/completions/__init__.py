@@ -21,6 +21,21 @@ from .ref import ref_completions
 from .resources import resource_completions
 
 
+TRIGGER_CHARACTERS = [
+    ".",
+    "Type: ",
+    "!Ref ",
+    "Ref: ",
+    "!GetAtt ",
+    "GetAtt: ",
+    "!",
+    '"Type": "',
+    '"Ref": "',
+    '"GetAtt": "',
+    '"',
+]
+
+
 def completions_for(
     template_data: Tree,
     aws_context: AWSContext,

@@ -42,6 +42,7 @@ from .aws_data import AWSContext
 from .aws_data import AWSPropertyName
 from .aws_data import AWSResourceName
 from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
+from .completions import TRIGGER_CHARACTERS
 from .completions import completions_for
 from .completions.resources import resolve_resource_completion_item
 from .config.user_configuration import DiagnosticPublishingMethod
@@ -59,19 +60,6 @@ from .ref import resolve_ref
 
 
 logger = logging.getLogger(__name__)
-TRIGGER_CHARACTERS = [
-    ".",
-    "Type: ",
-    "!Ref ",
-    "Ref: ",
-    "!GetAtt ",
-    "GetAtt: ",
-    "!",
-    '"Type": "',
-    '"Ref": "',
-    '"GetAtt": "',
-    '"',
-]
 
 
 def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> LanguageServer:
