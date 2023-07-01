@@ -30,21 +30,22 @@ def event_loop():
     loop.close()
 
 
+# https://github.com/swyddfa/lsp-devtools/blob/develop/lib/pytest-lsp/README.md
 @pytest_lsp.fixture(
     config=ClientServerConfig(
         server_command=["cfn-lsp-extra"],
     ),
 )
 async def client(lsp_client: LanguageClient):
-    # Setup
+    capabilities = client_capabilities("neovim")
+    # pygls' LspClient blows up otherwise:
+    capabilities.workspace.configuration = False
     response = await lsp_client.initialize_session(
         InitializeParams(
-            capabilities=client_capabilities("neovim"),
+            capabilities=capabilities,
             root_uri=uri.from_fs_path(str(root_path)),
         )
     )
-
     yield
 
-    # Teardown
     await lsp_client.shutdown_session()
