@@ -151,6 +151,37 @@ Resources:
     Properties:
       PropertyOne: !Ref 
 
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'ecs-tasks.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.A
+      ContainerDefinitions:
+        - Name: openroute
+          Image: openrouteservice/openrouteservice:latest
+          PortMappings:
+            - 
+          MountPoints:
+            - ContainerPath: /mount
+              SourceVolume: "my-volume"
+              ReadOnly: false
+            - 
+
 Conditions:
 
   NoFQDN: !Equals

@@ -16,6 +16,15 @@ async def test_github_parse():
     assert resource["name"] == "AWS::EC2::Instance"
 
 
+async def test_github_return_value_parse():
+    url = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-iam-role.md"
+    gh_parser = CfnResourceDocParser(BASE_URL)
+    async with aiohttp.ClientSession() as session:
+        resource = await gh_parser.parse(session, url)
+    assert resource["name"] == "AWS::IAM::Role"
+    assert "Arn" in resource["return_values"]
+
+
 async def test_property_parse():
     url = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-dynamodb-table-keyschema.md"
     gh_parser = CfnPropertyDocParser(

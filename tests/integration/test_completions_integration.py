@@ -60,6 +60,28 @@ async def test_nested_property_completion(client):
 
 
 @pytest.mark.asyncio
+async def test_start_of_list_property_completion(client):
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=177, character=14))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "AppProtocol" in labels
+
+
+@pytest.mark.asyncio
+async def test_start_of_item_property_completion(client):
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=182, character=14))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "ContainerPath" in labels
+
+
+@pytest.mark.asyncio
 async def test_completion_item_resolve_adds_documentation_for_resource(client):
     resource = "AWS::S3::Bucket"
     item = CompletionItem(label=resource)
@@ -79,6 +101,28 @@ async def test_ref_completion(client):
     labels = [c.label for c in result.items]
     assert "CertificateArn" in labels  # A parameter
     assert "LogBucket" in labels  # A logical id
+
+
+@pytest.mark.asyncio
+async def test_getatt_ref_completion(client):
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=172, character=52))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "ECSTaskExecutionRole" in labels
+
+
+@pytest.mark.asyncio
+async def test_getatt_attribute_completion(client):
+    text_document = TextDocumentIdentifier(uri=str(root_path / "template.yaml"))
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=172, character=54))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "Arn" in labels
 
 
 @pytest.mark.parametrize(

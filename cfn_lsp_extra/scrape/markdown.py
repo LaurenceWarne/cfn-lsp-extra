@@ -144,18 +144,19 @@ class BaseCfnDocParser(ABC):
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "##"
     REF_LINE_PREFIX = "### Ref"
-    GETATT_LINE_PREFIX = '#### <a name="aws-properties'
+    GETATT_LINE_PREFIX = '#### <a name="aws-'
     TEXT_WRAPPER = MarkdownTextWrapper(
         width=79,
         break_long_words=True,
         replace_whitespace=False,
     )
+    IGNORE_PROP_SET = {"Condition", "Rules", "ComponentProperty", "Sheets"}
 
     def __init__(self, base_url: str):
         self.base_url = base_url
-        self.ignore_condition: Callable[[AWSPropertyName], bool] = (
-            lambda prop_name: "Condition" in prop_name or "Rules" in prop_name
-        )
+        self.ignore_condition: Callable[
+            [AWSPropertyName], bool
+        ] = lambda prop_name: any(p in prop_name for p in self.IGNORE_PROP_SET)
 
     @abstractmethod
     def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
