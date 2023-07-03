@@ -13,7 +13,7 @@
 ** TODO add flag which allows for custom resources and parameters in custom files
 ** TODO add descriptions to intrinsic function completions
 ** TODO implement "fn::GetAtt" completions
-** TODO parse the meaning of !Ref for resources, and insert this in hovers and documentation over !Ref arguments
+** DONE parse the meaning of !Ref for resources, and insert this in hovers and documentation over !Ref arguments
 ** TODO switch from Pydantic to [[https://www.attrs.org/en/stable/index.html][attrs]]
 ** TODO integration tests for diagnostics
 ** TODO completion for property values, this could be gleaned from https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json

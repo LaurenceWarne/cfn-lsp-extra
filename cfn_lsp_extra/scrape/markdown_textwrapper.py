@@ -33,3 +33,10 @@ class MarkdownTextWrapper(TextWrapper):
             else:
                 chunks.extend(super()._split(item))
         return chunks
+
+
+TEXT_WRAPPER = MarkdownTextWrapper(
+    width=79,
+    break_long_words=True,
+    replace_whitespace=False,
+)

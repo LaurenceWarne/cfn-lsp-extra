@@ -21,6 +21,8 @@ from typing import Union
 
 from pydantic import BaseModel
 
+from .scrape.markdown_textwrapper import TEXT_WRAPPER
+
 
 # A Tree type representing a recursive nested structure such as yaml or json
 # https://github.com/python/mypy/issues/731
@@ -153,6 +155,9 @@ class AWSContext:
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
         return self[resource]["return_values"]  # type: ignore[no-any-return]
 
+    def ref_return_value(self, resource: AWSResourceName) -> str:
+        return self[resource]["ref_return_value"]  # type: ignore[no-any-return]
+
     def same_level(self, obj: AWSName) -> List[AWSName]:
         """Return names at the same (property/resource) level as obj."""
         if isinstance(obj, AWSResourceName):
@@ -176,7 +181,7 @@ class AWSRefSource(BaseModel, ABC):
     logical_name: str
 
     @abstractmethod
-    def as_documentation(self) -> str:
+    def as_documentation(self, aws_context: AWSContext) -> str:
         ...
 
 
@@ -186,7 +191,7 @@ class AWSParameter(AWSRefSource, frozen=True):
     description: Optional[str] = None
     default: Optional[str] = None
 
-    def as_documentation(self) -> str:
+    def as_documentation(self, aws_context: AWSContext) -> str:
         description_str = "\n" + self.description if self.description else ""
         return f"""### Parameter: `{self.logical_name}`{description_str}
 *Type*: `{self.type_}`
@@ -197,6 +202,18 @@ class AWSLogicalId(AWSRefSource, frozen=True):
     logical_name: str
     type_: Optional[str]
 
-    def as_documentation(self) -> str:
-        return f"""### Resource: `{self.logical_name}`
-*Type*: {"`" + self.type_ + "`" if self.type_ else "not given"}"""
+    def as_documentation(self, aws_context: AWSContext) -> str:
+        ref_return_value = ""
+        if self.type_:
+            res_name = AWSResourceName(value=self.type_)
+            if res_name in aws_context:
+                ref_return_value = (
+                    f"\n*Return Value*: {aws_context.ref_return_value(res_name)}"
+                )
+        type_str = "`" + self.type_ + "`" if self.type_ else "not given"
+        full_str = f"""### Resource: `{self.logical_name}`
+*Type*: {type_str}{ref_return_value}"""
+        content = ""
+        for line in full_str.splitlines():
+            content += "\n".join(TEXT_WRAPPER.wrap(line)) + "\n"
+        return content

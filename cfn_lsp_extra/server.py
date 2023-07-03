@@ -183,7 +183,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         else:  # Attempt to resolve it as a Ref
             link = resolve_ref(params.position, template_data)
             if link:
-                documentation = link.source_span.value.as_documentation()
+                documentation = link.source_span.value.as_documentation(aws_context)
                 char, length = link.target_span.char, link.target_span.span
             else:
                 return None

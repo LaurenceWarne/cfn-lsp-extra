@@ -64,7 +64,7 @@ from ..aws_data import AWSName
 from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
 from ..aws_data import Tree
-from .markdown_textwrapper import MarkdownTextWrapper
+from .markdown_textwrapper import TEXT_WRAPPER
 
 
 logger = logging.getLogger(__name__)
@@ -144,12 +144,8 @@ class BaseCfnDocParser(ABC):
     PROPERTY_LINE_PREFIX = "## Properties"
     PROPERTY_END_PREFIX = "##"
     REF_LINE_PREFIX = "### Ref"
+    REF_RETURN_LINE_PREFIX = "### Ref"
     GETATT_LINE_PREFIX = '#### <a name="aws-'
-    TEXT_WRAPPER = MarkdownTextWrapper(
-        width=79,
-        break_long_words=True,
-        replace_whitespace=False,
-    )
     IGNORE_PROP_SET = {"Condition", "Rules", "ComponentProperty", "Sheets"}
 
     def __init__(self, base_url: str):
@@ -172,6 +168,7 @@ class BaseCfnDocParser(ABC):
         name: AWSName,
         description: str,
         properties: Tree,
+        ref_return_value: str,
         return_values: Dict[str, str],
     ) -> Optional[Tree]:
         ...
@@ -186,9 +183,9 @@ class BaseCfnDocParser(ABC):
                 response.raise_for_status()
                 raw = await self.parse_response_raw(response.content, url, session)
                 if raw:
-                    name, description, properties, return_values = raw
+                    name, description, properties, ref_return_value, return_values = raw
                     return self.build_object(
-                        name, description, properties, return_values
+                        name, description, properties, ref_return_value, return_values
                     )
                 else:
                     return None
@@ -201,7 +198,7 @@ class BaseCfnDocParser(ABC):
 
     async def parse_response_raw(
         self, content: StreamReader, url: str, session: ClientSession
-    ) -> Optional[Tuple[AWSName, str, Tree, Dict[str, str]]]:
+    ) -> Optional[Tuple[AWSName, str, Tree, str, Dict[str, str]]]:
         # TODO parse result of intrinsic !Ref
         name = await self.parse_name(content)
         if not name:
@@ -231,9 +228,22 @@ class BaseCfnDocParser(ABC):
                 "properties": sub_props,
             }
 
+        found_getatt = False
         async for line_b in content:
-            if line_b.decode("utf-8").startswith(self.GETATT_LINE_PREFIX):
+            line = line_b.decode("utf-8")
+            if line.startswith(self.REF_RETURN_LINE_PREFIX):
                 break
+            elif line.startswith(self.GETATT_LINE_PREFIX):
+                found_getatt = True
+                break
+        ref_return_value = (  # Some pages skip it: https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/49c4f75dfb9ac791369eda412ab15127c15e44d6/doc_source/aws-resource-amplify-app.md
+            "" if found_getatt else await self.parse_ref_return_value(content)
+        )
+
+        if not found_getatt:
+            async for line_b in content:
+                if line_b.decode("utf-8").startswith(self.GETATT_LINE_PREFIX):
+                    break
         attr_it = PropertyIterator(
             content,
             self.HEADER_REGEX,
@@ -245,7 +255,13 @@ class BaseCfnDocParser(ABC):
         async for prop_name, desc, required, _ in attr_it:
             return_values[prop_name.property_] = self.format_description(desc)
 
-        return name, self.format_description(description), properties, return_values
+        return (
+            name,
+            self.format_description(description),
+            properties,
+            self.format_description_full(ref_return_value).strip(),
+            return_values,
+        )
 
     async def parse_sub_property(
         self, session: ClientSession, property_name: AWSPropertyName, url: str
@@ -267,6 +283,17 @@ class BaseCfnDocParser(ABC):
                 description += line
         return description
 
+    async def parse_ref_return_value(self, content: StreamReader) -> str:
+        description = ""
+        async for line_b in content:
+            line = line_b.decode("utf-8")
+            if line.startswith("##"):
+                break
+            else:
+                description += line
+        description = re.sub(r"`Ref`(\S)", r"`Ref` \1", description)
+        return description.strip()
+
     def format_description(self, description: str) -> str:
         description = re.sub(r"`\[(.*?)\]\((\S+)\)`", r"[`\1`](\2)", description)
         first_line, *rest = description.splitlines()
@@ -275,8 +302,12 @@ class BaseCfnDocParser(ABC):
             if line.startswith("*Allowed"):
                 line = textwrap.shorten(line, width=200)
                 line += "`" if line.count("`") == 1 else ""
-            body += "\n".join(self.TEXT_WRAPPER.wrap(line)) + "\n"
+            body += "\n".join(TEXT_WRAPPER.wrap(line)) + "\n"
         return f"{first_line}\n{body}\n"
+
+    def format_description_full(self, description: str) -> str:
+        description = re.sub(r"`\[(.*?)\]\((\S+)\)`", r"[`\1`](\2)", description)
+        return f"{description}\n"
 
 
 class CfnResourceDocParser(BaseCfnDocParser):
@@ -298,12 +329,14 @@ class CfnResourceDocParser(BaseCfnDocParser):
         name: AWSName,
         description: str,
         properties: Tree,
+        ref_return_value: str,
         return_values: Dict[str, str],
     ) -> Optional[Tree]:
         return {
             "name": str(name),
             "description": description,
             "properties": properties,
+            "ref_return_value": ref_return_value,
             "return_values": return_values,
         }
 
@@ -336,6 +369,7 @@ class CfnPropertyDocParser(BaseCfnDocParser):
         name: AWSName,
         description: str,
         properties: Tree,
+        ref_return_value: str,
         return_values: Dict[str, str],
     ) -> Optional[Tree]:
         return {"description": description, "properties": properties}
@@ -356,6 +390,7 @@ async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContextMap
                 res["name"]: {
                     "description": res["description"],
                     "properties": res["properties"],
+                    "ref_return_value": res["ref_return_value"],
                     "return_values": res["return_values"],
                 }
                 for res in resources

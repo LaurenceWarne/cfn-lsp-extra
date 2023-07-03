@@ -52,7 +52,9 @@ def completions_for(
     prop_span = prop_lookup.at(line, char)
     if prop_span:
         return property_completions(prop_span.value, aws_context, document, position)
-    ref_completions_result = ref_completions(template_data, document, position)
+    ref_completions_result = ref_completions(
+        template_data, document, position, aws_context
+    )
     if ref_completions_result:
         return ref_completions_result
     att_completions_result = attribute_completions(

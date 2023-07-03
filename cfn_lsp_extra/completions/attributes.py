@@ -44,7 +44,7 @@ def attribute_completions(
             items = [
                 CompletionItem(
                     label=get_att_src.logical_name,
-                    documentation=get_att_src.as_documentation(),
+                    documentation=get_att_src.as_documentation(aws_context),
                     text_edit=text_edit(
                         position, before, after, get_att_src.logical_name
                     ),
