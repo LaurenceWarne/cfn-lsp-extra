@@ -31,8 +31,6 @@ from lsprotocol.types import Hover
 from lsprotocol.types import HoverParams
 from lsprotocol.types import InitializedParams
 from lsprotocol.types import Location
-from lsprotocol.types import MarkupContent
-from lsprotocol.types import MarkupKind
 from lsprotocol.types import Position
 from lsprotocol.types import Range
 from pygls.server import LanguageServer
@@ -56,6 +54,7 @@ from .decode import decode_unfinished
 from .decode.extractors import CompositeExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
+from .hover import hover
 from .ref import resolve_ref
 
 
@@ -162,7 +161,6 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     @server.feature(TEXT_DOCUMENT_HOVER)
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Text document did hover notification."""
-        line_at, char_at = params.position.line, params.position.character
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
@@ -172,29 +170,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
             logger.debug("Failed to decode document: %s", e)
             return None
         position_lookup = extractor.extract(template_data)
-        span = position_lookup.at(line_at, char_at)
-
-        if span:
-            try:
-                documentation = aws_context.description(span.value)
-                char, length = span.char, span.span
-            except KeyError:  # no description for value, e.g. incomplete
-                return None
-        else:  # Attempt to resolve it as a Ref
-            link = resolve_ref(params.position, template_data)
-            if link:
-                documentation = link.source_span.value.as_documentation(aws_context)
-                char, length = link.target_span.char, link.target_span.span
-            else:
-                return None
-
-        return Hover(
-            range=Range(
-                start=Position(line=line_at, character=char),
-                end=Position(line=line_at, character=char + length),
-            ),
-            contents=MarkupContent(kind=MarkupKind.Markdown, value=documentation),
-        )
+        return hover(template_data, params.position, aws_context, position_lookup)
 
     @server.feature(TEXT_DOCUMENT_DEFINITION)
     def goto_definition(
