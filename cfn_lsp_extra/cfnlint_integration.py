@@ -28,10 +28,10 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     """Return diagnostics for the template file at file_path."""
     cfnlint.config.configure_logging(None, None)
     rules = get_rules([], [], ["I", "W", "E"], include_experimental=True)
-    template, errors = _decode(yaml_content, file_path)
+    template, matches = _decode(yaml_content, file_path)
     regions = ["us-east-1"]
 
-    if not errors:
+    if not matches:
         try:
             config = cfnlint.config.ConfigMixIn(file_path)
             # override rules with config-specific rules
@@ -51,7 +51,7 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
             rules, file_path, template, regions=regions, mandatory_rules=None
         )
         runner.transform()
-        errors: List[cfnlint.rules.Match] = runner.run()
+        matches: List[cfnlint.rules.Match] = runner.run()
 
     severity_mapping: Dict[str, DiagnosticSeverity] = {
         "informational": DiagnosticSeverity.Information,
@@ -70,8 +70,15 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
                 m.rule.severity.lower(), DiagnosticSeverity.Error
             ),
         )
-        for m in errors
+        for m in filter(match_filter, matches)
     ]
+
+
+def match_filter(rule_match: cfnlint.rules.Match) -> bool:
+    # TODO we should probably log this
+    return not rule_match.message.lower().startswith(
+        "unknown exception while processing rule"
+    )
 
 
 """
