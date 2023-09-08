@@ -10,7 +10,7 @@ https://user-images.githubusercontent.com/17688577/176939586-df1d9ed8-5ec6-46d5-
 
 | Method                            | Status                                                                                                                                                                             |
 |-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `textDocument/hover`              | Done for resources (in particular, required properties for a resource will be auto-expanded), resource properties, subproperties and `!Ref`s. *TODO* `!GetAtt`s, intrinsic functions. |
+| `textDocument/hover`              | Done for resources (in particular, required properties for a resource will be auto-expanded), resource properties, subproperties and `!Ref`s. *TODO* intrinsic functions. |
 | `textDocument/completion`         | Done for resources, resource properties, subproperties, refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`.                                                               |
 | `textDocument/definition`         | Done for `!Ref`s.  *TODO* mappings.                                                                                                                                                |
 | `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                                                                                            |

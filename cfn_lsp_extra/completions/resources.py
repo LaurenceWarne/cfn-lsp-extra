@@ -1,7 +1,7 @@
 """
 Logic for handling resource completions.
 
-There are 899 resources in total, which empircally is ok to send to a
+There are 899+ resources in total, which empircally is ok to send to a
 client as long as we don't send send the documentation along with the
 labels and snippets.
 """
@@ -13,8 +13,8 @@ from pygls.workspace import Document
 
 from ..aws_data import AWSContext
 from ..aws_data import AWSResourceName
-from .cursor import text_edit
-from .cursor import word_before_after_position
+from ..cursor import text_edit
+from ..cursor import word_before_after_position
 
 
 def resource_completions(

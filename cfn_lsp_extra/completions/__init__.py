@@ -11,11 +11,11 @@ from pygls.workspace import Document
 from ..aws_data import AWSContext
 from ..aws_data import AWSPropertyName
 from ..aws_data import Tree
+from ..cursor import text_edit
+from ..cursor import word_before_after_position
 from ..decode.extractors import ResourceExtractor
 from ..decode.extractors import ResourcePropertyExtractor
 from .attributes import attribute_completions
-from .cursor import text_edit
-from .cursor import word_before_after_position
 from .functions import intrinsic_function_completions
 from .ref import ref_completions
 from .resources import resource_completions

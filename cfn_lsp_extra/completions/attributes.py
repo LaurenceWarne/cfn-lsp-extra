@@ -12,11 +12,11 @@ from ..aws_data import AWSContext
 from ..aws_data import AWSLogicalId
 from ..aws_data import AWSResourceName
 from ..aws_data import Tree
+from ..cursor import text_edit
+from ..cursor import word_before_after_position
 from ..decode.extractors import Extractor
 from ..decode.extractors import GetAttExtractor
 from ..decode.extractors import LogicalIdExtractor
-from .cursor import text_edit
-from .cursor import word_before_after_position
 
 
 GET_ATT_EXTRACTOR = GetAttExtractor()

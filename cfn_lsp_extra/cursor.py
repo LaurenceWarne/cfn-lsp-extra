@@ -42,3 +42,16 @@ def word_before_after_position(
     m_end = re_end_word.findall(end)
 
     return m_start[0], m_end[-1]
+
+
+def word_at_position_char_bounds(
+    lines: List[str],
+    position: Position,
+    re_start_word: Pattern[str] = RE_START_WORD,
+    re_end_word: Pattern[str] = RE_END_WORD,
+) -> Tuple[int, int]:
+    before, after = word_before_after_position(
+        lines, position, re_start_word, re_end_word
+    )
+    char = position.character
+    return char - len(before), char + len(after)

@@ -12,11 +12,11 @@ from ..aws_data import AWSContext
 from ..aws_data import AWSRefName
 from ..aws_data import AWSRefSource
 from ..aws_data import Tree
+from ..cursor import text_edit
+from ..cursor import word_before_after_position
 from ..decode.extractors import Extractor
 from ..ref import REF_EXTRACTOR
 from ..ref import REF_SRC_EXTRACTOR
-from .cursor import text_edit
-from .cursor import word_before_after_position
 
 
 def ref_completions(

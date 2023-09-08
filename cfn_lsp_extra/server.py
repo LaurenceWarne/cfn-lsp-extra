@@ -170,7 +170,9 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
             logger.debug("Failed to decode document: %s", e)
             return None
         position_lookup = extractor.extract(template_data)
-        return hover(template_data, params.position, aws_context, position_lookup)
+        return hover(
+            template_data, params.position, aws_context, document, position_lookup
+        )
 
     @server.feature(TEXT_DOCUMENT_DEFINITION)
     def goto_definition(

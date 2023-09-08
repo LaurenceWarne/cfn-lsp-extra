@@ -13,10 +13,10 @@ from pydantic import BaseModel
 from pygls.workspace import Document
 from pygls.workspace import position_from_utf16
 
-from .cursor import RE_END_WORD
-from .cursor import RE_START_WORD
-from .cursor import text_edit
-from .cursor import word_before_after_position
+from ..cursor import RE_END_WORD
+from ..cursor import RE_START_WORD
+from ..cursor import text_edit
+from ..cursor import word_before_after_position
 
 
 class IntrinsicFunction(BaseModel, frozen=True):
