@@ -54,7 +54,7 @@ from .decode import decode_unfinished
 from .decode.extractors import CompositeExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
-from .hover import hover
+from .hovers import hover
 from .ref import resolve_ref
 
 

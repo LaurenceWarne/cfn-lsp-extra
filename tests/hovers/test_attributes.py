@@ -7,7 +7,7 @@ from pygls.workspace import Document
 
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode import decode
-from cfn_lsp_extra.hover.attributes import attribute_hover
+from cfn_lsp_extra.hovers.attributes import attribute_hover
 
 from ..test_aws_data import full_aws_context
 
