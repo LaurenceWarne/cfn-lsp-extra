@@ -17,8 +17,8 @@ from ..aws_data import AWSPropertyName
 from ..aws_data import AWSResourceName
 from ..aws_data import Tree
 from ..decode.position import PositionLookup
-from ..ref import resolve_ref
 from .attributes import attribute_hover
+from .refs import ref_hover
 
 
 logger = logging.getLogger(__name__)
@@ -48,20 +48,13 @@ def hover(
                 ),
                 contents=MarkupContent(kind=MarkupKind.Markdown, value=documentation),
             )
-    # Attempt to resolve it as a Ref
-    link = resolve_ref(position, template_data)
-    if link:
-        documentation = link.source_span.value.as_documentation(aws_context)
-        char, length = link.target_span.char, link.target_span.span
-        return Hover(
-            range=Range(
-                start=Position(line=line_at, character=char),
-                end=Position(line=line_at, character=char + length),
-            ),
-            contents=MarkupContent(kind=MarkupKind.Markdown, value=documentation),
-        )
-    attribute = attribute_hover(template_data, aws_context, document, position)
-    if attribute:
-        return attribute
+
+    for_ref = ref_hover(template_data, position, aws_context, position_lookup)
+    if for_ref:
+        return for_ref
+
+    for_attribute = attribute_hover(template_data, aws_context, document, position)
+    if for_attribute:
+        return for_attribute
 
     return None
