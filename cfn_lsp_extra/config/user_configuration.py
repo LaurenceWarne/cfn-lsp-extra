@@ -65,7 +65,9 @@ def from_get_configuration_response(config: List[Any]) -> UserConfiguration:
     user_config = UserConfiguration()
     if config and isinstance(config, list) and len(config) > 0:
         diagnostic_publishing_method, *_ = config
-        if diagnostic_publishing_method:
+        if diagnostic_publishing_method and isinstance(
+            diagnostic_publishing_method, str
+        ):
             user_config.diagnostic_publishing_method = (
                 diagnostic_publishing_method_from_string(diagnostic_publishing_method)
             )
