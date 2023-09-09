@@ -4,6 +4,7 @@ from cfn_lsp_extra.aws_data import AWSContext
 from cfn_lsp_extra.aws_data import AWSContextMap
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.aws_data import OverridingKeyNotInContextException
+from cfn_lsp_extra.context import load_cfn_context
 
 
 @pytest.fixture
@@ -76,6 +77,11 @@ def nested_aws_context_map(nested_aws_context_dct):
 @pytest.fixture
 def aws_context(aws_context_map):
     return AWSContext(resource_map=aws_context_map)
+
+
+@pytest.fixture
+def full_aws_context():
+    return load_cfn_context()
 
 
 @pytest.fixture
