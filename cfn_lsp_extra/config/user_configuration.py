@@ -11,11 +11,11 @@ from enum import unique
 from typing import Any
 from typing import List
 
+from attrs import define
 from lsprotocol.types import ConfigurationItem
 from lsprotocol.types import ConfigurationParams
 from lsprotocol.types import DidChangeConfigurationParams
 from lsprotocol.types import WorkspaceConfigurationParams
-from pydantic import BaseModel
 
 
 SECTION = "cfn"
@@ -31,7 +31,8 @@ DIAGNOSTIC_PUBLISHING_METHOD_KEY = "diagnosticPublishingMethod"
 DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT = DiagnosticPublishingMethod.ON_DID_CHANGE
 
 
-class UserConfiguration(BaseModel):
+@define
+class UserConfiguration:
     diagnostic_publishing_method: DiagnosticPublishingMethod = (
         DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT
     )

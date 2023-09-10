@@ -6,10 +6,10 @@ For more information.
 from typing import Callable
 from typing import List
 
+from attrs import frozen
 from lsprotocol.types import CompletionItem
 from lsprotocol.types import CompletionList
 from lsprotocol.types import Position
-from pydantic import BaseModel
 from pygls.workspace import Document
 from pygls.workspace import position_from_utf16
 
@@ -19,7 +19,8 @@ from ..cursor import text_edit
 from ..cursor import word_before_after_position
 
 
-class IntrinsicFunction(BaseModel, frozen=True):
+@frozen
+class IntrinsicFunction:
     function: str
     full_name_prefix: str = "Fn::"
     short_form_prefix: str = "!"

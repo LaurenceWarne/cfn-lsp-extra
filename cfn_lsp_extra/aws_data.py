@@ -19,7 +19,7 @@ from typing import MutableMapping
 from typing import Optional
 from typing import Union
 
-from pydantic import BaseModel
+from attrs import frozen
 
 from .scrape.markdown_textwrapper import TEXT_WRAPPER
 
@@ -44,7 +44,8 @@ class AWSRoot(Enum):
         return AWSResourceName(value=resource)
 
 
-class AWSResourceName(BaseModel, frozen=True):
+@frozen
+class AWSResourceName:
     value: str
     parent: AWSRoot = AWSRoot.root
 
@@ -61,7 +62,8 @@ class AWSResourceName(BaseModel, frozen=True):
         return self.value
 
 
-class AWSPropertyName(BaseModel, frozen=True):
+@frozen
+class AWSPropertyName:
     """Property of an AWS resource or AWS resource property."""
 
     parent: Union[AWSPropertyName, AWSResourceName]
@@ -89,9 +91,6 @@ class AWSPropertyName(BaseModel, frozen=True):
 
     def short_form(self) -> str:
         return self.property_
-
-
-AWSPropertyName.update_forward_refs()
 
 
 AWSName = Union[AWSResourceName, AWSPropertyName]
@@ -187,11 +186,13 @@ class AWSContext:
             raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
 
 
-class AWSRefName(BaseModel, frozen=True):
+@frozen
+class AWSRefName:
     value: str
 
 
-class AWSRefSource(BaseModel, ABC):
+@frozen
+class AWSRefSource(ABC):
     """An object which can be linked to using !Ref, e.g. a parameter."""
 
     logical_name: str
@@ -201,7 +202,8 @@ class AWSRefSource(BaseModel, ABC):
         ...
 
 
-class AWSParameter(AWSRefSource, frozen=True):
+@frozen
+class AWSParameter(AWSRefSource):
     logical_name: str
     type_: str
     description: Optional[str] = None
@@ -214,7 +216,8 @@ class AWSParameter(AWSRefSource, frozen=True):
 *Default*: {self.default}"""
 
 
-class AWSLogicalId(AWSRefSource, frozen=True):
+@frozen
+class AWSLogicalId(AWSRefSource):
     logical_name: str
     type_: Optional[str]
 

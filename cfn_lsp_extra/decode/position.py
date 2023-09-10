@@ -8,31 +8,31 @@ from typing import Optional
 from typing import Tuple
 from typing import TypeVar
 
-from pydantic.generics import GenericModel
-from pydantic.types import NonNegativeInt
+from attrs import frozen
 
 
 E = TypeVar("E")
 
 
-class Spanning(GenericModel, Generic[E], arbitrary_types_allowed=True):
+@frozen
+class Spanning(Generic[E]):
     """Enrichment of some object with a location span in a document.
 
     Attributes
     ----------
     value : E
         The value this span wraps
-    line : NonNegativeInt
+    line : int
         Line position marking the start of the span.
-    char : NonNegativeInt
+    char : int
         Character position marking the start of the span.
-    span : NonNegativeInt
+    span : int
         The length of the span"""
 
     value: E
-    line: NonNegativeInt
-    char: NonNegativeInt
-    span: NonNegativeInt
+    line: int
+    char: int
+    span: int
 
 
 T = TypeVar("T")
@@ -73,7 +73,8 @@ ST = TypeVar("ST")
 TT = TypeVar("TT")
 
 
-class PositionLink(GenericModel, Generic[ST, TT], arbitrary_types_allowed=True):
+@frozen
+class PositionLink(Generic[ST, TT]):
     """The linking of a source object and a target object in a document.
 
     Attributes
