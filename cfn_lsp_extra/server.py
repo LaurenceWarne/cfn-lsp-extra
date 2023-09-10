@@ -52,6 +52,7 @@ from .decode import CfnDecodingException
 from .decode import decode
 from .decode import decode_unfinished
 from .decode.extractors import CompositeExtractor
+from .decode.extractors import KeySetExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
 from .hovers import hover
@@ -65,6 +66,9 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     server = LanguageServer("cfn-lsp-extra", "")  # TODO get real version here
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
         ResourcePropertyExtractor(), ResourceExtractor()
+    )
+    allowed_values_extractor = KeySetExtractor(
+        cfn_aws_context.properties_with_allowed_values(), lambda x: x
     )
     config = UserConfiguration()
 

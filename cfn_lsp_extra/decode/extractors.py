@@ -8,6 +8,7 @@ from abc import abstractmethod
 from typing import Callable
 from typing import Generic
 from typing import List
+from typing import Set
 from typing import TypeVar
 from typing import Union
 
@@ -256,22 +257,22 @@ class ParameterExtractor(Extractor[AWSParameter]):
 K = TypeVar("K", covariant=True)
 
 
-class KeyExtractor(RecursiveExtractor[K]):
+class KeySetExtractor(RecursiveExtractor[K]):
     """Extractor for named key values.
 
     Methods
     -------
     extract(node)
-        Extract keys from node."""
+        Extract keys from a given set from node."""
 
-    def __init__(self, key_name: str, name_fn: Callable[[str], K]):
-        self.key_name = key_name
+    def __init__(self, key_names: Set[str], name_fn: Callable[[str], K]):
+        self.key_names = key_names
         self.name_fn = name_fn
 
     def extract_node(self, node: Tree) -> List[Spanning[K]]:
         found = []
         for key, value in node.items():
-            if key == self.key_name and VALUES_POSITION_PREFIX in node:
+            if key in self.key_names and VALUES_POSITION_PREFIX in node:
                 for val_pos_dct in node[VALUES_POSITION_PREFIX]:
                     p_key = POSITION_PREFIX + str(value)
                     if p_key in val_pos_dct:
@@ -285,6 +286,18 @@ class KeyExtractor(RecursiveExtractor[K]):
                             )
                         )
         return found
+
+
+class KeyExtractor(KeySetExtractor[K]):
+    """Extractor for named key values.
+
+    Methods
+    -------
+    extract(node)
+        Extract keys from node."""
+
+    def __init__(self, key_name: str, name_fn: Callable[[str], K]):
+        super().__init__({key_name}, name_fn)
 
 
 class GetAttExtractor(RecursiveExtractor[str]):

@@ -158,6 +158,22 @@ class AWSContext:
     def ref_return_value(self, resource: AWSResourceName) -> str:
         return self[resource]["ref_return_value"]  # type: ignore[no-any-return]
 
+    def properties_with_allowed_values(self) -> List[AWSPropertyName]:
+        """Return properties with a finite set of allowed values, e.g. for completion."""
+        ls = []
+
+        def extract_recursively(name: AWSName, prop_tree: Tree) -> None:
+            if "values" in prop_tree and prop_tree["values"]:
+                ls.append(name)
+            for sub_prop_name, sub_prop_tree in prop_tree["properties"].items():
+                extract_recursively(name / sub_prop_name, sub_prop_tree)
+
+        for resource_name, resource_content in self.resource_map.items():
+            for property_name, property_tree in resource_content["properties"].items():
+                extract_recursively(resource_name / property_name, property_tree)
+
+        return ls  # type: ignore[return-value]
+
     def same_level(self, obj: AWSName) -> List[AWSName]:
         """Return names at the same (property/resource) level as obj."""
         if isinstance(obj, AWSResourceName):

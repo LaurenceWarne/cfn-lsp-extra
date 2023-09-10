@@ -100,6 +100,7 @@ class PropertyIterator:
         if self._exhausted:
             raise StopAsyncIteration
         sub_prop: Tree
+        allowed_values: List[str]
         sub_prop, required, allowed_values = {}, False, []
         async for line_b in self.content:
             line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
@@ -127,7 +128,7 @@ class PropertyIterator:
                 enum_identifier = "*Allowed values*:"
                 if line.startswith(enum_identifier):
                     allowed_values = (
-                        line.removeprefix(enum_identifier)
+                        line[len(enum_identifier) :]
                         .strip()
                         .strip("`")
                         .replace(" ", "")
