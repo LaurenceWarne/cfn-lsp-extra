@@ -96,11 +96,11 @@ class PropertyIterator:
     def __aiter__(self) -> PropertyIterator:
         return self
 
-    async def __anext__(self) -> Tuple[AWSPropertyName, str, bool, Tree]:
+    async def __anext__(self) -> Tuple[AWSPropertyName, str, bool, List[str], Tree]:
         if self._exhausted:
             raise StopAsyncIteration
         sub_prop: Tree
-        sub_prop, required = {}, False
+        sub_prop, required, allowed_values = {}, False, []
         async for line_b in self.content:
             line = re.sub(r"[ \t]+(\n|\Z)", r"\1", line_b.decode("utf-8"))
             match = re.match(self.property_start_regex, line)
@@ -113,6 +113,7 @@ class PropertyIterator:
                         finished_prop,
                         finished_desc,
                         required,
+                        allowed_values,
                         sub_prop["properties"] if sub_prop else {},
                     )
             elif line.startswith(self.end_line_prefix):
@@ -123,6 +124,15 @@ class PropertyIterator:
                     sub_prop_name = sub_prop_match.group(2)
                     sub_prop = await self.recurse_fn(self._prop_name, sub_prop_name)
                 required |= line.startswith("*Required*: Yes")
+                enum_identifier = "*Allowed values*:"
+                if line.startswith(enum_identifier):
+                    allowed_values = (
+                        line.removeprefix(enum_identifier)
+                        .strip()
+                        .strip("`")
+                        .replace(" ", "")
+                        .split("|")
+                    )
                 self._desc += line
 
         self._exhausted = True
@@ -131,6 +141,7 @@ class PropertyIterator:
                 self._prop_name,
                 self._desc,
                 required,
+                allowed_values,
                 sub_prop["properties"] if sub_prop else {},
             )
         else:
@@ -221,10 +232,11 @@ class BaseCfnDocParser(ABC):
             ),
         )
         properties = {}
-        async for prop_name, desc, required, sub_props in prop_it:
+        async for prop_name, desc, required, allowed_values, sub_props in prop_it:
             properties[prop_name.property_] = {
                 "description": self.format_description(desc),
                 "required": required,
+                "values": allowed_values,
                 "properties": sub_props,
             }
 
@@ -252,7 +264,7 @@ class BaseCfnDocParser(ABC):
             name,
         )
         return_values = {}
-        async for prop_name, desc, required, _ in attr_it:
+        async for prop_name, desc, required, _, _ in attr_it:
             return_values[prop_name.property_] = self.format_description(desc)
 
         return (
