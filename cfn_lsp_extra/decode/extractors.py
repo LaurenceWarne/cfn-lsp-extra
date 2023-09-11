@@ -214,6 +214,81 @@ class ResourceExtractor(Extractor[AWSResourceName]):
         return PositionLookup.from_iterable(props)
 
 
+class AllowedValuesExtractor(Extractor[AWSPropertyName]):
+    """Extractor for values for properties in a given set.
+
+    Methods
+    -------
+    extract(node)
+        Extract resource and nested property values from node."""
+
+    def __init__(self, property_set: Set[AWSPropertyName]):
+        self.property_set = property_set
+
+    def extract(self, node: Tree) -> PositionLookup[AWSPropertyName]:
+        props = []
+        if "Resources" in node and isinstance(node["Resources"], dict):
+            for resource in filter(
+                lambda r: isinstance(r, dict), node["Resources"].values()
+            ):
+                is_res_node = "Properties" in resource and "Type" in resource
+                if is_res_node and isinstance(resource["Properties"], dict):
+                    type_ = resource["Type"] or ""
+                    props.extend(
+                        self._extract_recursive(
+                            resource["Properties"],
+                            AWSResourceName(value=type_),
+                        )
+                    )
+                # don't care if isinstance(resource["Properties"], str) since this means no values
+        return PositionLookup.from_iterable(props)
+
+    def _extract_recursive(
+        self, node: Tree, parent: Union[AWSPropertyName, AWSResourceName]
+    ) -> List[Spanning[AWSPropertyName]]:
+        props = []
+        if isinstance(node, list):
+            for sub_node in node:
+                if isinstance(sub_node, (dict, list)):
+                    props.extend(self._extract_recursive(sub_node, parent))
+            return props
+
+        values_positions = node.get(VALUES_POSITION_PREFIX, [])
+        for key in node.keys():
+            prop = remove_prefix(key, POSITION_PREFIX)
+            if key.startswith(POSITION_PREFIX) and parent / prop in self.property_set:
+                aws_prop = parent / prop
+                # Try to obtain value position from values_positions
+                value = str(node.get(prop, ""))
+                val_key = POSITION_PREFIX + value
+                for dct in values_positions:
+                    if val_key in dct:
+                        line, char = dct[val_key]
+                        props.append(
+                            Spanning[AWSPropertyName](
+                                value=aws_prop,
+                                line=line,
+                                char=char,
+                                span=len(value),
+                            )
+                        )
+                        break
+
+                if isinstance(node[prop], dict):
+                    props.extend(self._extract_recursive(node[prop], aws_prop))
+                elif isinstance(node[prop], list):
+                    for sub_node in filter(lambda p: isinstance(p, dict), node[prop]):
+                        if isinstance(sub_node, dict):
+                            props.extend(self._extract_recursive(sub_node, aws_prop))
+                        elif isinstance(sub_node, list):
+                            props.extend(self._extract_recursive(sub_node, parent))
+                elif node[prop] == DEBUG_CHAR and VALUES_POSITION_PREFIX in node:
+                    props.extend(
+                        self._extract_unfinished(node, node[prop], parent / prop)
+                    )
+        return props
+
+
 class ParameterExtractor(Extractor[AWSParameter]):
     """Extractor for parameters.
 

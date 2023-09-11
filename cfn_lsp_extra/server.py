@@ -51,6 +51,7 @@ from .config.user_configuration import from_get_configuration_response
 from .decode import CfnDecodingException
 from .decode import decode
 from .decode import decode_unfinished
+from .decode.extractors import AllowedValuesExtractor
 from .decode.extractors import CompositeExtractor
 from .decode.extractors import KeySetExtractor
 from .decode.extractors import ResourceExtractor
@@ -67,8 +68,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
         ResourcePropertyExtractor(), ResourceExtractor()
     )
-    allowed_values_extractor = KeySetExtractor(
-        cfn_aws_context.properties_with_allowed_values(), lambda x: x
+    allowed_values_extractor = AllowedValuesExtractor(
+        set(cfn_aws_context.properties_with_allowed_values())
     )
     config = UserConfiguration()
 
