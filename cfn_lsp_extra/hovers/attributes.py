@@ -46,21 +46,22 @@ def attribute_hover(
         for get_att_src, _ in get_att_src_lookup.items():
             if get_att_src.logical_name == res:
                 type_ = get_att_src.type_
-                resource_name = AWSResourceName(value=type_)
-                return_values = aws_context.return_values(resource_name)
-                char_start, char_end = word_at_position_char_bounds(
-                    document.lines, position, RE_START_ATTRIBUTE, RE_END_ATTRIBUTE
-                )
-                line_at = position.line
-                if att in return_values:
-                    return Hover(
-                        range=Range(
-                            start=Position(line=line_at, character=char_start),
-                            end=Position(line=line_at, character=char_end),
-                        ),
-                        contents=MarkupContent(
-                            kind=MarkupKind.Markdown, value=return_values[att]
-                        ),
+                if type_:
+                    resource_name = AWSResourceName(value=type_)
+                    return_values = aws_context.return_values(resource_name)
+                    char_start, char_end = word_at_position_char_bounds(
+                        document.lines, position, RE_START_ATTRIBUTE, RE_END_ATTRIBUTE
                     )
-                break
+                    line_at = position.line
+                    if att in return_values:
+                        return Hover(
+                            range=Range(
+                                start=Position(line=line_at, character=char_start),
+                                end=Position(line=line_at, character=char_end),
+                            ),
+                            contents=MarkupContent(
+                                kind=MarkupKind.Markdown, value=return_values[att]
+                            ),
+                        )
+                    break
     return None

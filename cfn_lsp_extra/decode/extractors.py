@@ -282,10 +282,6 @@ class AllowedValuesExtractor(Extractor[AWSPropertyName]):
                             props.extend(self._extract_recursive(sub_node, aws_prop))
                         elif isinstance(sub_node, list):
                             props.extend(self._extract_recursive(sub_node, parent))
-                elif node[prop] == DEBUG_CHAR and VALUES_POSITION_PREFIX in node:
-                    props.extend(
-                        self._extract_unfinished(node, node[prop], parent / prop)
-                    )
         return props
 
 
@@ -385,7 +381,7 @@ class GetAttExtractor(RecursiveExtractor[str]):
 
     KEY = "Fn::GetAtt"
 
-    def extract_node(self, node: Tree) -> List[Spanning[K]]:
+    def extract_node(self, node: Tree) -> List[Spanning[str]]:
         found = []
         for key, value in node.items():
             if key == self.KEY and VALUES_POSITION_PREFIX in node:
@@ -395,7 +391,7 @@ class GetAttExtractor(RecursiveExtractor[str]):
                     if p_key in val_pos_dct:
                         line, char = val_pos_dct[p_key]
                         found.append(
-                            Spanning[K](
+                            Spanning[str](
                                 value=expr,
                                 line=line,
                                 char=char,

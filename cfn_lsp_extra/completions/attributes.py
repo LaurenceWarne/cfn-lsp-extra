@@ -57,13 +57,14 @@ def attribute_completions(
             for get_att_src, _ in get_att_src_lookup.items():
                 if get_att_src.logical_name == res:
                     type_ = get_att_src.type_
-                    resource_name = AWSResourceName(value=type_)
-                    if type_ and resource_name in aws_context:
-                        items = [
-                            CompletionItem(label=return_val, documentation=desc)
-                            for return_val, desc in aws_context.return_values(
-                                resource_name
-                            ).items()
-                        ]
-                        return CompletionList(is_incomplete=False, items=items)
+                    if type_:
+                        resource_name = AWSResourceName(value=type_)
+                        if type_ and resource_name in aws_context:
+                            items = [
+                                CompletionItem(label=return_val, documentation=desc)
+                                for return_val, desc in aws_context.return_values(
+                                    resource_name
+                                ).items()
+                            ]
+                            return CompletionList(is_incomplete=False, items=items)
     return None

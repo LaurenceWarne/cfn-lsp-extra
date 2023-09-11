@@ -53,7 +53,6 @@ from .decode import decode
 from .decode import decode_unfinished
 from .decode.extractors import AllowedValuesExtractor
 from .decode.extractors import CompositeExtractor
-from .decode.extractors import KeySetExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
 from .hovers import hover
@@ -70,6 +69,10 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     )
     allowed_values_extractor = AllowedValuesExtractor(
         set(cfn_aws_context.properties_with_allowed_values())
+    )
+    logger.info(
+        "Found a total of %d properties with enum values",
+        len(allowed_values_extractor.property_set),
     )
     config = UserConfiguration()
 
