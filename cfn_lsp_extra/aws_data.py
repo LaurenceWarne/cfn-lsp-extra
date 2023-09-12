@@ -152,10 +152,13 @@ class AWSContext:
         return self[name]["description"]  # type: ignore[no-any-return]
 
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
-        return self[resource]["return_values"]  # type: ignore[no-any-return]
+        return self[resource].get("return_values", {})  # type: ignore[no-any-return]
 
     def ref_return_value(self, resource: AWSResourceName) -> str:
-        return self[resource]["ref_return_value"]  # type: ignore[no-any-return]
+        return self[resource].get("ref_return_value", "unknown")  # type: ignore[no-any-return]
+
+    def allowed_values(self, property_: AWSPropertyName) -> List[str]:
+        return self[property_].get("values", [])  # type: ignore[no-any-return]
 
     def properties_with_allowed_values(self) -> List[AWSPropertyName]:
         """Return properties with a finite set of allowed values, e.g. for completion."""

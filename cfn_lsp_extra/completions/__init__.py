@@ -13,8 +13,10 @@ from ..aws_data import AWSPropertyName
 from ..aws_data import Tree
 from ..cursor import text_edit
 from ..cursor import word_before_after_position
+from ..decode.extractors import AllowedValuesExtractor
 from ..decode.extractors import ResourceExtractor
 from ..decode.extractors import ResourcePropertyExtractor
+from .allowed_values import allowed_values_completions
 from .attributes import attribute_completions
 from .functions import intrinsic_function_completions
 from .ref import ref_completions
@@ -41,6 +43,7 @@ def completions_for(
     aws_context: AWSContext,
     document: Document,
     position: Position,
+    allowed_values_extractor: AllowedValuesExtractor,
 ) -> CompletionList:
     """Return a list of completion items for the user's position in document."""
     line, char = position.line, position.character
@@ -62,6 +65,11 @@ def completions_for(
     )
     if att_completions_result:
         return att_completions_result
+    allowed_values_completions_result = allowed_values_completions(
+        template_data, aws_context, document, position, allowed_values_extractor
+    )
+    if allowed_values_completions_result:
+        return allowed_values_completions_result
     return intrinsic_function_completions(document, position)
 
 

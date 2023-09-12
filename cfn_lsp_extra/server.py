@@ -154,7 +154,13 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         except CfnDecodingException as e:
             logger.debug("Failed to decode document: %s", e)
             return None
-        return completions_for(template_data, aws_context, document, params.position)
+        return completions_for(
+            template_data,
+            aws_context,
+            document,
+            params.position,
+            allowed_values_extractor,
+        )
 
     @server.feature(COMPLETION_ITEM_RESOLVE)
     def completion_item_resolve(

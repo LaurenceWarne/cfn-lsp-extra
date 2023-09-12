@@ -6,6 +6,7 @@ from cfn_lsp_extra.aws_data import AWSPropertyName
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.completions import completions_for
 
+from ..decode.test_decode import extractor
 from ..test_aws_data import aws_context
 from ..test_aws_data import aws_context_dct
 from ..test_aws_data import aws_context_map
@@ -137,9 +138,14 @@ def test_property_completions(
     document_mapping_incomplete_property,
     aws_property_string,
     property_position,
+    extractor,
 ):
     result = completions_for(
-        document_mapping_incomplete_property, aws_context, document, property_position
+        document_mapping_incomplete_property,
+        aws_context,
+        document,
+        property_position,
+        extractor,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
@@ -151,6 +157,7 @@ def test_property_completions_with_colon(
     document_mapping_incomplete_property,
     aws_property_string,
     property_position,
+    extractor,
 ):
     document = Document(
         uri="",
@@ -159,7 +166,11 @@ def test_property_completions_with_colon(
         ),
     )
     result = completions_for(
-        document_mapping_incomplete_property, aws_context, document, property_position
+        document_mapping_incomplete_property,
+        aws_context,
+        document,
+        property_position,
+        extractor,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
@@ -172,31 +183,30 @@ def test_resource_completions(
     document_mapping_incomplete_service_provider,
     aws_resource_string,
     resource_position,
+    extractor,
 ):
     result = completions_for(
         document_mapping_incomplete_service_provider,
         aws_context,
         document,
         resource_position,
+        extractor,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_resource_string
 
 
 def test_ref_completion(
-    document, aws_context, document_mapping_incomplete_ref, ref_position
+    document, aws_context, document_mapping_incomplete_ref, ref_position, extractor
 ):
     result = completions_for(
-        document_mapping_incomplete_ref,
-        aws_context,
-        document,
-        ref_position,
+        document_mapping_incomplete_ref, aws_context, document, ref_position, extractor
     )
     assert len(result.items) == 2
     assert sorted(item.label for item in result.items) == ["MyVpcId", "PublicSubnet"]
 
 
-def test_intrinsic_function_completions(aws_context):
+def test_intrinsic_function_completions(aws_context, extractor):
     document = Document(
         uri="",
         source="""AWSTemplateFormatVersion: 2010-09-09
@@ -209,6 +219,6 @@ Resources:
       CidrBlock: 192.168.0.0/24""",
     )
     position = Position(line=6, character=15)
-    result = completions_for({}, aws_context, document, position).items
+    result = completions_for({}, aws_context, document, position, extractor).items
     assert len(result) > 0
     assert all(c.label.startswith("Fn::") for c in result)

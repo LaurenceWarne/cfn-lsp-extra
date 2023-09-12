@@ -16,7 +16,7 @@ E = TypeVar("E")
 
 @frozen
 class Spanning(Generic[E]):
-    """Enrichment of some object with a location span in a document.
+    """The enrichment of some object with a location span in a document.
 
     Attributes
     ----------
