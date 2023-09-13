@@ -256,8 +256,8 @@ class AllowedValuesExtractor(Extractor[AWSPropertyName]):
         values_positions = node.get(VALUES_POSITION_PREFIX, [])
         for key in node.keys():
             prop = remove_prefix(key, POSITION_PREFIX)
+            aws_prop = parent / prop
             if key.startswith(POSITION_PREFIX) and parent / prop in self.property_set:
-                aws_prop = parent / prop
                 # Try to obtain value position from values_positions
                 value = str(node.get(prop, ""))
                 val_key = POSITION_PREFIX + value
@@ -274,14 +274,14 @@ class AllowedValuesExtractor(Extractor[AWSPropertyName]):
                         )
                         break
 
-                if isinstance(node[prop], dict):
-                    props.extend(self._extract_recursive(node[prop], aws_prop))
-                elif isinstance(node[prop], list):
-                    for sub_node in filter(lambda p: isinstance(p, dict), node[prop]):
-                        if isinstance(sub_node, dict):
-                            props.extend(self._extract_recursive(sub_node, aws_prop))
-                        elif isinstance(sub_node, list):
-                            props.extend(self._extract_recursive(sub_node, parent))
+            if prop in node and isinstance(node[prop], dict):
+                props.extend(self._extract_recursive(node[prop], aws_prop))
+            elif prop in node and isinstance(node[prop], list):
+                for sub_node in filter(lambda p: isinstance(p, dict), node[prop]):
+                    if isinstance(sub_node, dict):
+                        props.extend(self._extract_recursive(sub_node, aws_prop))
+                    elif isinstance(sub_node, list):
+                        props.extend(self._extract_recursive(sub_node, parent))
         return props
 
 

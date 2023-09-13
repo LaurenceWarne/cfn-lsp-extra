@@ -79,7 +79,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     @server.thread()
     @server.feature(INITIALIZED)
     def intialiazed(ls: LanguageServer, params: InitializedParams) -> None:
-        """client initialized notification"""
+        """Client initialized notification."""
         workspace_capabilities = ls.client_capabilities.workspace
         if workspace_capabilities and workspace_capabilities.configuration:
             logger.info("Obtaining user config")
