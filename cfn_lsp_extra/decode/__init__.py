@@ -94,7 +94,7 @@ def yaml_line_enricher(line: str, char: int) -> str:
     if not stripped:  # Empty line for property
         new_line = line[:char] + DEBUG_CHAR
     elif (
-        stripped in ("Type:", "Ref:", "Fn::GetAtt:")
+        stripped.endswith(":")
         or stripped.endswith("!Ref")
         or stripped.endswith("!GetAtt")
     ):  # For resource or ref

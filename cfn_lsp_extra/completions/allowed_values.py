@@ -24,7 +24,7 @@ def allowed_values_completions(
 ) -> Optional[CompletionList]:
     lookup = allowed_values_extractor.extract(template_data)
     span = lookup.at(position.line, position.character)
-    if span:
+    if span and span.value in aws_context:
         allowed_values = aws_context.allowed_values(span.value)
         before, after = word_before_after_position(document.lines, position)
         items = [

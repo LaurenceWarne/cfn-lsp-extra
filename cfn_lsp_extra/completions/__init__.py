@@ -51,25 +51,29 @@ def completions_for(
     res_span = resource_lookup.at(line, char)
     if res_span:
         return resource_completions(res_span.value, aws_context, document, position)
-    prop_lookup = ResourcePropertyExtractor().extract(template_data)
-    prop_span = prop_lookup.at(line, char)
-    if prop_span:
-        return property_completions(prop_span.value, aws_context, document, position)
-    ref_completions_result = ref_completions(
-        template_data, document, position, aws_context
-    )
-    if ref_completions_result:
-        return ref_completions_result
-    att_completions_result = attribute_completions(
-        template_data, aws_context, document, position
-    )
-    if att_completions_result:
-        return att_completions_result
+
     allowed_values_completions_result = allowed_values_completions(
         template_data, aws_context, document, position, allowed_values_extractor
     )
     if allowed_values_completions_result:
         return allowed_values_completions_result
+
+    prop_lookup = ResourcePropertyExtractor().extract(template_data)
+    prop_span = prop_lookup.at(line, char)
+    if prop_span:
+        return property_completions(prop_span.value, aws_context, document, position)
+
+    ref_completions_result = ref_completions(
+        template_data, document, position, aws_context
+    )
+    if ref_completions_result:
+        return ref_completions_result
+
+    att_completions_result = attribute_completions(
+        template_data, aws_context, document, position
+    )
+    if att_completions_result:
+        return att_completions_result
     return intrinsic_function_completions(document, position)
 
 

@@ -7,6 +7,7 @@ from pygls.workspace import Document
 
 from cfn_lsp_extra.completions.allowed_values import allowed_values_completions
 from cfn_lsp_extra.decode import decode
+from cfn_lsp_extra.decode import decode_unfinished
 from cfn_lsp_extra.decode.extractors import AllowedValuesExtractor
 
 from ..test_aws_data import full_aws_context
@@ -72,3 +73,34 @@ def test_nested_property_allowed_value_completion(
     )
 
     assert "ENABLED" in (item.label for item in result.items)
+
+
+def test_property_allowed_value_completion_no_char(
+    full_aws_context, allowed_values_extractor
+):
+    line, char = 8, 18
+    document_string = """AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      DesiredCount: 1
+      LaunchType: 
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED"""
+    document = Document(uri="", source=document_string)
+    position = Position(line=line, character=char)
+    tree = decode_unfinished(document_string, "file.yaml", position)
+
+    result = allowed_values_completions(
+        tree,
+        full_aws_context,
+        document,
+        position,
+        allowed_values_extractor,
+    )
+
+    assert "FARGATE" in (item.label for item in result.items)
