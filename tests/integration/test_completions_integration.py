@@ -128,6 +128,23 @@ async def test_getatt_attribute_completion(client):
 @pytest.mark.parametrize(
     "file_name,line,character",
     [
+        ("template.yaml", 135, 21),
+        ("template.json", 244, 38),
+    ],
+)
+@pytest.mark.asyncio
+async def test_allowed_value_completion(client, file_name, line, character):
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
+    assert "Suspended" in [c.label for c in result.items]
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
         ("template.yaml", 44, 15),
         ("template.json", 33, 18),
     ],

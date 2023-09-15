@@ -133,7 +133,7 @@ Resources:
     Properties:
       AccessControl: LogDeliveryWrite
       VersioningConfiguration:
-        Status: Suspended
+        Status: Suspe
       LifecycleConfiguration:
         Rules:
         - Status: Enabled

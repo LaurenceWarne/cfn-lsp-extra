@@ -242,7 +242,7 @@
             "Properties": {
                 "AccessControl": "LogDeliveryWrite",
                 "VersioningConfiguration": {
-                    "Status": "Suspended"
+                    "Status": "Suspend"
                 },
                 "LifecycleConfiguration": {
                     "Rules": [

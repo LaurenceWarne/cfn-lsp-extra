@@ -2,7 +2,7 @@
 
 ![Python Version](https://img.shields.io/pypi/pyversions/cfn-lsp-extra) [![PyPI](https://img.shields.io/pypi/v/cfn-lsp-extra)](CHANGELOG.md) [![codecov](https://codecov.io/gh/LaurenceWarne/cfn-lsp-extra/branch/master/graph/badge.svg?token=48ixiDIBpq)](https://codecov.io/gh/LaurenceWarne/cfn-lsp-extra)
 
-An experimental cloudformation LSP server (with support for SAM templates) built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) aiming to provide hovering, completion, etc.  YAML and JSON are supported, though YAML has more features currently implemented (for example snippets) and will give a better experience.  Trust me.
+An experimental cloudformation language server (with support for SAM templates) built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) and the [Cloudformation user guide](https://github.com/awsdocs/aws-cloudformation-user-guide), aiming to provide hovering, completion, etc.  YAML and JSON are supported, though YAML has more features currently implemented (for example snippets) and will give a better experience.  Trust me.
 
 https://user-images.githubusercontent.com/17688577/176939586-df1d9ed8-5ec6-46d5-9f26-7222644047bd.mp4
 
@@ -11,7 +11,7 @@ https://user-images.githubusercontent.com/17688577/176939586-df1d9ed8-5ec6-46d5-
 | Method                            | Status                                                                                                                                                                             |
 |-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `textDocument/hover`              | Done for resources (in particular, required properties for a resource will be auto-expanded), resource properties, subproperties and `!Ref`s. *TODO* intrinsic functions. |
-| `textDocument/completion`         | Done for resources, resource properties, subproperties, refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`.                                                               |
+| `textDocument/completion`         | Done for resources, resource properties, subproperties, property values (for enums), refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`.                                                               |
 | `textDocument/definition`         | Done for `!Ref`s.  *TODO* mappings.                                                                                                                                                |
 | `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                                                                                            |
 
