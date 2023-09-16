@@ -1,5 +1,5 @@
 """
-Definitions for !Refs.
+Definitions for !GettAtts.
 """
 
 from typing import Optional
@@ -10,17 +10,31 @@ from lsprotocol.types import Range
 from pygls.workspace import Document
 
 from ..aws_data import AWSContext
+from ..aws_data import AWSRefName
 from ..aws_data import Tree
+from ..decode.extractors import KeyExtractor
+from ..decode.extractors import LogicalIdExtractor
 from ..ref import resolve_ref
 
 
-def ref_definition(
+ATTRIBUTE_EXTRACTOR = KeyExtractor[AWSRefName](
+    "Fn::GetAtt", lambda s: AWSRefName(value=s.split(".")[0])
+)
+ATTRIBUTE_SRC_EXTRACTOR = LogicalIdExtractor()
+
+
+def attribute_definition(
     template_data: Tree,
     document: Document,
     position: Position,
     aws_context: AWSContext,
 ) -> Optional[Location]:
-    link = resolve_ref(position, template_data)
+    link = resolve_ref(
+        position,
+        template_data,
+        ref_extractor=ATTRIBUTE_EXTRACTOR,
+        ref_src_extractor=ATTRIBUTE_SRC_EXTRACTOR,
+    )
     if link:
         return Location(
             uri=document.uri,

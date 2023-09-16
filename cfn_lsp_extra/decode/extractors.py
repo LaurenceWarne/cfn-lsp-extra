@@ -344,6 +344,8 @@ class KeySetExtractor(RecursiveExtractor[K]):
         found = []
         for key, value in node.items():
             if key in self.key_names and VALUES_POSITION_PREFIX in node:
+                if key == "Fn::GetAtt" and isinstance(value, list):
+                    value = ".".join(map(str, value))
                 for val_pos_dct in node[VALUES_POSITION_PREFIX]:
                     p_key = POSITION_PREFIX + str(value)
                     if p_key in val_pos_dct:
