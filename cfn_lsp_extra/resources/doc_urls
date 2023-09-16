@@ -191,6 +191,8 @@ https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-salesforcedestinationproperties.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-salesforcesourceproperties.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-sapodatadestinationproperties.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-sapodatapaginationconfig.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-sapodataparallelismconfig.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-sapodatasourceproperties.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-scheduledtriggerproperties.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-appflow-flow-servicenowsourceproperties.md
@@ -565,6 +567,7 @@ https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-billingconductor-customlineitem-customlineitemchargedetails.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-billingconductor-customlineitem-customlineitemflatchargedetails.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-billingconductor-customlineitem-customlineitempercentagechargedetails.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-billingconductor-customlineitem-lineitemfilter.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-billingconductor-pricingrule-freetier.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-billingconductor-pricingrule-tiering.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-budgets-budget-autoadjustdata.md
@@ -608,6 +611,9 @@ https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cleanrooms-configuredtable-configuredtableanalysisrulepolicyv1.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cleanrooms-configuredtable-gluetablereference.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cleanrooms-configuredtable-tablereference.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cleanrooms-membership-membershipprotectedqueryoutputconfiguration.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cleanrooms-membership-membershipprotectedqueryresultconfiguration.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cleanrooms-membership-protectedquerys3outputconfiguration.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cloud9-environmentec2-repository.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cloudformation-hookversion-loggingconfig.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-cloudformation-interface-label.md
@@ -1836,13 +1842,14 @@ https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-groundstation-missionprofile-dataflowedge.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-groundstation-missionprofile-streamskmskey.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfndatasourceconfigurations.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfnfeatureadditionalconfiguration.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfnfeatureconfiguration.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfnkubernetesauditlogsconfiguration.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfnkubernetesconfiguration.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfnmalwareprotectionconfiguration.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfns3logsconfiguration.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-cfnscanec2instancewithfindingsconfiguration.md
-https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-featureadditionalconfiguration.md
-https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-featureconfigurations.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-detector-tagitem.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-filter-condition.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-guardduty-filter-findingcriteria.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-properties-healthlake-fhirdatastore-createdat.md
@@ -5765,6 +5772,8 @@ https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-connect-trafficdistributiongroup.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-connect-user.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-connect-userhierarchygroup.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-connect-view.md
+https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-connect-viewversion.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-connectcampaigns-campaign.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-controltower-enabledcontrol.md
 https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source/aws-resource-cur-reportdefinition.md

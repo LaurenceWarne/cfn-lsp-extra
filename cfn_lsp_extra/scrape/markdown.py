@@ -315,8 +315,8 @@ class BaseCfnDocParser(ABC):
             if line.startswith("*Allowed"):
                 line = textwrap.shorten(line, width=200)
                 line += "`" if line.count("`") == 1 else ""
-            body += "\n".join(TEXT_WRAPPER.wrap(line)) + "\n"
-        return f"{first_line}\n{body}\n"
+            body += "  \n".join(TEXT_WRAPPER.wrap(line)) + "  \n"
+        return f"{first_line}  \n{body}\n"
 
     def format_description_full(self, description: str) -> str:
         description = re.sub(r"`\[(.*?)\]\((\S+)\)`", r"[`\1`](\2)", description)
