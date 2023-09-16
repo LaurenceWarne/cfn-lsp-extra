@@ -214,9 +214,12 @@ class AWSParameter(AWSRefSource):
 
     def as_documentation(self, aws_context: AWSContext) -> str:
         description_str = "\n" + self.description if self.description else ""
-        return f"""### Parameter: `{self.logical_name}`{description_str}  
-*Type*: `{self.type_}`  
-*Default*: {self.default}"""
+        # We can't triple quote here since flake8 will flag the "  " as trailing whitespace...
+        return (
+            f"### Parameter: `{self.logical_name}`{description_str}  \n"
+            f"*Type*: `{self.type_}`  \n"
+            f"*Default*: {self.default}"
+        )
 
 
 @frozen
@@ -233,8 +236,10 @@ class AWSLogicalId(AWSRefSource):
                     f"\n*Return Value*: {aws_context.ref_return_value(res_name)}  "
                 )
         type_str = "`" + self.type_ + "`" if self.type_ else "not given"
-        full_str = f"""### Resource: `{self.logical_name}`  
-*Type*: {type_str}{ref_return_value}"""
+        full_str = (
+            f"### Resource: `{self.logical_name}`  \n"
+            f"*Type*: {type_str}{ref_return_value}"
+        )
         content = ""
         for line in full_str.splitlines():
             content += "\n".join(TEXT_WRAPPER.wrap(line)) + "\n"
