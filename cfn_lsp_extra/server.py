@@ -31,8 +31,6 @@ from lsprotocol.types import Hover
 from lsprotocol.types import HoverParams
 from lsprotocol.types import InitializedParams
 from lsprotocol.types import Location
-from lsprotocol.types import Position
-from lsprotocol.types import Range
 from pygls.server import LanguageServer
 from pygls.workspace import Document
 
@@ -55,8 +53,8 @@ from .decode.extractors import AllowedValuesExtractor
 from .decode.extractors import CompositeExtractor
 from .decode.extractors import ResourceExtractor
 from .decode.extractors import ResourcePropertyExtractor
+from .definitions import definition
 from .hovers import hover
-from .ref import resolve_ref
 
 
 logger = logging.getLogger(__name__)
@@ -193,26 +191,13 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:
         document = server.workspace.get_document(params.text_document.uri)
+        aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode(document.source, document.filename)
         except CfnDecodingException as e:
             logger.debug("Failed to decode document: %s", e)
             return None
-        link = resolve_ref(params.position, template_data)
-        if link:
-            return Location(
-                uri=document.uri,
-                range=Range(
-                    start=Position(
-                        line=link.source_span.line, character=link.source_span.char
-                    ),
-                    end=Position(
-                        line=link.source_span.line,
-                        character=link.source_span.char + link.source_span.span,
-                    ),
-                ),
-            )
-        return None
+        return definition(template_data, document, params.position, aws_context)
 
     @server.feature(WORKSPACE_DID_CHANGE_CONFIGURATION)
     def did_change_configuration(
