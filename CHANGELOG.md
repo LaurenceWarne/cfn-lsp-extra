@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.0
+- [9e5416c](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/9e5416cb282547d0bb428e525b80619286c74c98) `textDocument/definition` for `!GetAtt`s.
+- [6826623](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/682662354d52252716b3cba943fb77b527039a39) Completions for enum property values.
+- [b10f249](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/b10f249a72e49b0b240c21f11a63a440ba58be44) Support `textDocument/hover` for `!GetAtts`
+
 ## v0.4.4
 - [#5](https://github.com/LaurenceWarne/cfn-lsp-extra/pull/5) Respect `cfn-lint` config if it exists, thanks to [@mbarneyjr](https://github.com/mbarneyjr)
 - [445a824](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/445a8248cd03b87c5292a361a6b17fc446cb797c) Fix for [#4](https://github.com/LaurenceWarne/cfn-lsp-extra/issues/4) - error with Python 3.11
