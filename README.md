@@ -68,7 +68,27 @@ vim.filetype.add {
 }
 ```
 
-Then you can use [LanguageClient-neovim](https://github.com/autozimu/LanguageClient-neovim) to start the server on those file types:
+Then you can use one of:
+
+1. Neovim's [built-in LSP client](https://neovim.io/doc/user/lsp.html):
+
+```lua
+require('lspconfig.configs').cfn_lsp = {
+  default_config = {
+    cmd = { os.getenv("HOME") .. '/.local/bin/cfn-lsp-extra' },
+    filetypes = { 'yaml.cloudformation', 'json.cloudformation' },
+    root_dir = function(fname)
+      return require('lspconfig').util.find_git_ancestor(fname) or vim.fn.getcwd()
+    end,
+    settings = {
+      documentFormatting = false,
+    },
+  },
+}
+require('lspconfig').cfn_lsp.setup{}
+```
+
+2. [LanguageClient-neovim](https://github.com/autozimu/LanguageClient-neovim):
 
 ```vim
 let g:LanguageClient_serverCommands = {
@@ -76,7 +96,6 @@ let g:LanguageClient_serverCommands = {
     \ 'json.cloudformation': ['~/.local/bin/cfn-lsp-extra']
     \ }
 ```
-
 
 Patches documenting integration for other editors are very welcome!
 
