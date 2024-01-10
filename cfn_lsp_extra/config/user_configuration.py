@@ -62,7 +62,8 @@ def configuration_params() -> ConfigurationParams:
 def from_get_configuration_response(config: List[Any]) -> UserConfiguration:
     """Obtain config from the response of a workspace/configuration response.
 
-    https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_configuration"""
+    https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_configuration
+    """
     user_config = UserConfiguration()
     if config and isinstance(config, list) and len(config) > 0:
         diagnostic_publishing_method, *_ = config
@@ -79,7 +80,8 @@ def from_did_change_config(config: DidChangeConfigurationParams) -> UserConfigur
     """Obtain config from a DidChangeConfigurationParams object.
 
     Example object:
-    DidChangeConfigurationParams(settings={'cfn': {'diagnosticPublishingMethod': 'ON_DID_CHANGE'}})"""
+    DidChangeConfigurationParams(settings={'cfn': {'diagnosticPublishingMethod': 'ON_DID_CHANGE'}})
+    """
     user_config = UserConfiguration()
     if config.settings:
         relevant_settings = config.settings.get(SECTION, {})
@@ -87,7 +89,7 @@ def from_did_change_config(config: DidChangeConfigurationParams) -> UserConfigur
             diagnostic_publishing_method_from_string(
                 relevant_settings.get(
                     DIAGNOSTIC_PUBLISHING_METHOD_KEY,
-                    DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT,
+                    str(DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT),
                 )
             )
         )

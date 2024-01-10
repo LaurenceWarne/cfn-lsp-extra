@@ -4,6 +4,7 @@ Test user configuration methods.
 import pytest
 from lsprotocol.types import DidChangeConfigurationParams
 
+from cfn_lsp_extra.config.user_configuration import DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT
 from cfn_lsp_extra.config.user_configuration import DiagnosticPublishingMethod
 from cfn_lsp_extra.config.user_configuration import (
     diagnostic_publishing_method_from_string,
@@ -48,3 +49,9 @@ def test_from_did_change_config(input_str, expected_publishing_method):
     )
     conf = from_did_change_config(params)
     assert conf.diagnostic_publishing_method == expected_publishing_method
+
+
+def test_from_did_change_config_no_input():
+    params = DidChangeConfigurationParams(settings={"cfn": {}})
+    conf = from_did_change_config(params)
+    assert conf.diagnostic_publishing_method == DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT
