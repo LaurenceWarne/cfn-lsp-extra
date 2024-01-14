@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.5.1
+- [a378823](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/a378823c127b76abbf81bcf3d8ca6bfe5bf01fef) Fix for configuration error with Neovim (https://github.com/LaurenceWarne/cfn-lsp-extra/issues/7).
+
 ## v0.5.0
 - [9e5416c](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/9e5416cb282547d0bb428e525b80619286c74c98) `textDocument/definition` for `!GetAtt`s.
 - [6826623](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/682662354d52252716b3cba943fb77b527039a39) Completions for enum property values.
