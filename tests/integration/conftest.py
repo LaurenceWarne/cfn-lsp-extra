@@ -12,7 +12,6 @@ from lsprotocol.types import TextDocumentIdentifier
 from pytest_lsp import ClientServerConfig
 from pytest_lsp import LanguageClient
 from pytest_lsp import client_capabilities
-from pytest_lsp import make_test_client
 
 
 root_path = pathlib.Path(__file__).parent / "workspace"

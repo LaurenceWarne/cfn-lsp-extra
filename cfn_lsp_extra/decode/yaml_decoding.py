@@ -5,7 +5,12 @@ from typing import Any
 from typing import List
 from typing import Tuple
 
-from cfnlint.decode.cfn_yaml import multi_constructor
+from cfnlint.decode.cfn_yaml import FN_PREFIX
+from cfnlint.decode.cfn_yaml import UNCONVERTED_SUFFIXES
+from cfnlint.decode.node import dict_node
+from cfnlint.decode.node import list_node
+from cfnlint.decode.node import str_node
+from cfnlint.decode.node import sub_node
 
 
 try:
@@ -23,10 +28,51 @@ POSITION_PREFIX = "__position__"
 VALUES_POSITION_PREFIX = "__value_positions__"
 
 
+# Copied from an earlier version of cfnlint for compat
+def multi_constructor(loader, tag_suffix, node):
+    """
+    Deal with !Ref style function format
+    """
+
+    if tag_suffix not in UNCONVERTED_SUFFIXES:
+        tag_suffix = f"{FN_PREFIX}{tag_suffix}"
+
+    constructor = None
+    if tag_suffix == "Fn::GetAtt":
+        constructor = construct_getatt
+    elif isinstance(node, ScalarNode):
+        constructor = loader.construct_scalar
+    elif isinstance(node, SequenceNode):
+        constructor = loader.construct_sequence
+    elif isinstance(node, MappingNode):
+        constructor = loader.construct_mapping
+    else:
+        raise f"Bad tag: !{tag_suffix}"
+
+    if tag_suffix == "Fn::Sub":
+        return sub_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)
+
+    return dict_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)
+
+
+def construct_getatt(node):
+    """
+    Reconstruct !GetAtt into a list
+    """
+
+    if isinstance(node.value, (str)):
+        return list_node(node.value.split(".", 1), node.start_mark, node.end_mark)
+    if isinstance(node.value, list):
+        return list_node([s.value for s in node.value], node.start_mark, node.end_mark)
+
+    raise ValueError(f"Unexpected node type: {type(node.value)}")
+
+
 class SafePositionLoader(SafeLoader):
     """A loader which saves positional information on elements.
 
-    It takes inspiration from https://stackoverflow.com/questions/13319067/parsing-yaml-return-with-line-number#13319530."""  # noqa
+    It takes inspiration from https://stackoverflow.com/questions/13319067/parsing-yaml-return-with-line-number#13319530.
+    """  # noqa
 
     yaml_multi_constructors = {"!": multi_constructor}
 
