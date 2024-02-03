@@ -5,12 +5,11 @@ import asyncio
 import json
 import logging
 from collections import ChainMap
-from importlib.resources import as_file
-from importlib.resources import files
-from importlib.resources import read_text
 from pathlib import Path
 from typing import MutableMapping
 
+from importlib_resources import as_file
+from importlib_resources import files
 from platformdirs import PlatformDirs
 
 from .aws_data import AWSContext
@@ -31,13 +30,16 @@ custom_ctx_path = Path(dirs.user_config_dir) / "custom.json"
 def download_context(
     cfn_path: Path = CFN_OVERRIDE_CTX_PATH, sam_path: Path = SAM_OVERRIDE_CTX_PATH
 ) -> None:
-    # Not using importlib.resources.files is considered legacy but is
-    # necessary for python < 3.9
-    cfn_urls = read_text("cfn_lsp_extra.resources", "doc_urls").splitlines()
+    source = files("cfn_lsp_extra.resources").joinpath("doc_urls")
+    with as_file(source) as path, open(path, "r") as f:
+        cfn_urls = f.readlines()
+
     logger.info("CFN: Downloading documentation from %s urls", len(cfn_urls))
     cfn_ctx_map = asyncio.run(parse_urls(cfn_urls))
 
-    sam_urls = read_text("cfn_lsp_extra.resources", "sam_doc_urls").splitlines()
+    sam_source = files("cfn_lsp_extra.resources").joinpath("sam_doc_urls")
+    with as_file(sam_source) as path, open(path, "r") as f:
+        sam_urls = f.readlines()
     logger.info("SAM: Downloading documentation from %s urls", len(sam_urls))
     sam_ctx_map = asyncio.run(parse_urls(sam_urls, base_url=SAM_BASE_URL))
     cfn_path.parent.mkdir(parents=True, exist_ok=True)
