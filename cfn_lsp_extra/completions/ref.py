@@ -30,7 +30,7 @@ def ref_completions(
     ref_lookup = ref_extractor.extract(template_data)
     ref_span = ref_lookup.at(position.line, position.character)
     if ref_span:
-        before, after = word_before_after_position(document.lines, position)
+        before, after = word_before_after_position(document, position)
         ref_src_lookup = ref_src_extractor.extract(template_data)
         items = [
             CompletionItem(

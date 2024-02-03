@@ -17,18 +17,6 @@ from pytest_lsp import client_capabilities
 root_path = pathlib.Path(__file__).parent / "workspace"
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    # We need to redefine the event_loop fixture to match the scope of our
-    # client_server fixture.
-    #
-    # https://github.com/pytest-dev/pytest-asyncio/issues/68#issuecomment-334083751
-
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
 # https://github.com/swyddfa/lsp-devtools/blob/develop/lib/pytest-lsp/README.md
 @pytest_lsp.fixture(
     config=ClientServerConfig(
@@ -37,8 +25,6 @@ def event_loop():
 )
 async def client(lsp_client: LanguageClient):
     capabilities = client_capabilities("neovim")
-    # pygls' LspClient blows up otherwise:
-    capabilities.workspace.configuration = False
     response = await lsp_client.initialize_session(
         InitializeParams(
             capabilities=capabilities,

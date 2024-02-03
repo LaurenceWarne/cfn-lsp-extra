@@ -59,7 +59,7 @@ def intrinsic_function_completions(
     position: Position,
     intrinsic_functions: List[IntrinsicFunction] = INTRINSIC_FUNCTIONS,
 ) -> CompletionList:
-    before, after = word_before_after_position(document.lines, position)
+    before, after = word_before_after_position(document, position)
     word = before + after
     filter_fn: Callable[[IntrinsicFunction], bool]
     label_fn: Callable[[IntrinsicFunction], str]

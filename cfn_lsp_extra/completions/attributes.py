@@ -38,7 +38,7 @@ def attribute_completions(
         l, c, span = next(ps[0] for e, ps in get_att_lookup.items() if e == text)
         res, _, att = text.partition(".")
 
-        before, after = word_before_after_position(document.lines, position)
+        before, after = word_before_after_position(document, position)
         if c <= position.character <= c + len(res):
             get_att_src_lookup = get_att_src_extractor.extract(template_data)
             items = [

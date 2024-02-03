@@ -84,7 +84,7 @@ def property_completions(
     position: Position,
 ) -> CompletionList:
     if name.parent in aws_context:
-        before, after = word_before_after_position(document.lines, position)
+        before, after = word_before_after_position(document, position)
         suffix = (
             ": "
             if not re.match(r".*:.*", document.lines[position.line])

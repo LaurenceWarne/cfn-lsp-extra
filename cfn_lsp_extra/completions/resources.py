@@ -24,11 +24,13 @@ def resource_completions(
     position: Position,
 ) -> CompletionList:
     """Return a list of all resources, without documentation."""
-    use_snippet = (document.filename and not document.filename.endswith("json")) and (
+    use_snippet = (
+        not document.filename or not document.filename.endswith("json")
+    ) and (
         position.line == len(document.lines) - 1
         or not document.lines[position.line + 1].strip()
     )
-    before, after = word_before_after_position(document.lines, position)
+    before, after = word_before_after_position(document, position)
     items = []
     for r in map(lambda r: r.short_form(), aws_context.same_level(name)):
         if use_snippet:

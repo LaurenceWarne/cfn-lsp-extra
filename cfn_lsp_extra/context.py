@@ -5,7 +5,8 @@ import asyncio
 import json
 import logging
 from collections import ChainMap
-from importlib.resources import open_text
+from importlib.resources import as_file
+from importlib.resources import files
 from importlib.resources import read_text
 from pathlib import Path
 from typing import MutableMapping
@@ -53,7 +54,8 @@ def with_custom(
 ) -> AWSContext:
     """Overwrite part of context with custom content."""
     logger.info("Updating context using custom file %s", custom_path)
-    with open_text("cfn_lsp_extra.resources", "custom.json") as f:
+    source = files("cfn_lsp_extra.resources").joinpath("custom.json")
+    with as_file(source) as path, open(path, "r") as f:
         context_map = ChainMap(AWSContextMap(**json.load(f)), context_map)
     if custom_path.exists():
         logger.info("Updating context using user custom file %s", custom_path)
@@ -72,7 +74,8 @@ def load_context(
             return with_custom(AWSContextMap(**json.load(f)))
     else:
         logger.info("Loading context...")
-        with open_text("cfn_lsp_extra.resources", resource) as f:
+        source = files("cfn_lsp_extra.resources").joinpath(resource)
+        with as_file(source) as path, open(path, "r") as f:
             return with_custom(AWSContextMap(**json.load(f)))
 
 

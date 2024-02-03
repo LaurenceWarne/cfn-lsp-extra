@@ -50,7 +50,7 @@ def attribute_hover(
                     resource_name = AWSResourceName(value=type_)
                     return_values = aws_context.return_values(resource_name)
                     char_start, char_end = word_at_position_char_bounds(
-                        document.lines, position, RE_START_ATTRIBUTE, RE_END_ATTRIBUTE
+                        document, position, RE_START_ATTRIBUTE, RE_END_ATTRIBUTE
                     )
                     line_at = position.line
                     if att in return_values:

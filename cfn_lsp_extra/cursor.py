@@ -1,12 +1,11 @@
 import re
-from typing import List
 from typing import Pattern
 from typing import Tuple
 
 from lsprotocol.types import Position
 from lsprotocol.types import Range
 from lsprotocol.types import TextEdit
-from pygls.workspace import position_from_utf16
+from pygls.workspace import Document
 
 
 RE_END_WORD = re.compile("^[A-Za-z_0-9!:]*")
@@ -21,16 +20,18 @@ def text_edit(position: Position, before: str, after: str, text: str) -> TextEdi
 
 
 def word_before_after_position(
-    lines: List[str],
+    document: Document,
     position: Position,
     re_start_word: Pattern[str] = RE_START_WORD,
     re_end_word: Pattern[str] = RE_END_WORD,
 ) -> Tuple[str, str]:
+    lines = document.lines
     if position.line >= len(lines):
         return "", ""
 
-    pos = position_from_utf16(lines, position)
+    pos = document.position_codec.position_from_client_units(lines, position)
     row, col = pos.line, pos.character
+
     line = lines[row]
     # Split word in two
     start = line[:col]
@@ -45,13 +46,13 @@ def word_before_after_position(
 
 
 def word_at_position_char_bounds(
-    lines: List[str],
+    document: Document,
     position: Position,
     re_start_word: Pattern[str] = RE_START_WORD,
     re_end_word: Pattern[str] = RE_END_WORD,
 ) -> Tuple[int, int]:
     before, after = word_before_after_position(
-        lines, position, re_start_word, re_end_word
+        document, position, re_start_word, re_end_word
     )
     char = position.character
     return char - len(before), char + len(after)
