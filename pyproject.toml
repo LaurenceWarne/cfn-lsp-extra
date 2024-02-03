@@ -46,7 +46,7 @@ pytest-mock = "^3.7"
 # https://github.com/swyddfa/lsp-devtools
 pytest-lsp = "^0.4.0" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = "^1.10.0"
-nox = "^2022.1"
+nox = "^2023.04.22"
 
 [tool.poetry.scripts]
 cfn-lsp-extra = "cfn_lsp_extra.__main__:main"
