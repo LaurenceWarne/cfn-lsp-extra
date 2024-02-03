@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.2
+- [1281b33](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/d2f386c6adfb4f81138ca7e977b272870754c3bb) Update `cfn-lint` version (https://github.com/LaurenceWarne/cfn-lsp-extra/issues/8).
+- [99701c4](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/99701c42fa297bbd9456e6012bb0338a3cd5383b) Drop Python 3.7 support
+
 ## v0.5.1
 - [a378823](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/a378823c127b76abbf81bcf3d8ca6bfe5bf01fef) Fix for configuration error with Neovim (https://github.com/LaurenceWarne/cfn-lsp-extra/issues/7).
 
