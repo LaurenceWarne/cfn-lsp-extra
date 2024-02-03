@@ -56,7 +56,7 @@ from aiohttp import ClientSession
 from aiohttp import StreamReader
 from aiohttp.client import ClientTimeout
 from aiohttp.client import ServerTimeoutError
-from tqdm.asyncio import tqdm_asyncio  # type: ignore[import]
+from tqdm.asyncio import tqdm_asyncio  # type: ignore[import-untyped]
 
 from cfn_lsp_extra.aws_data import AWSContextMap
 
@@ -150,7 +150,6 @@ class PropertyIterator:
 
 
 class BaseCfnDocParser(ABC):
-
     HEADER_REGEX: Pattern[str] = re.compile(r"^\s*`([a-zA-Z0-9\.]+)`.*<a*.a>")
     SUB_PROP_REGEX: Pattern[str] = re.compile(r"^\*Type\*:.*\[(.*)\]\((.*\.md)\)")
     PROPERTY_LINE_PREFIX = "## Properties"
@@ -162,17 +161,15 @@ class BaseCfnDocParser(ABC):
 
     def __init__(self, base_url: str):
         self.base_url = base_url
-        self.ignore_condition: Callable[
-            [AWSPropertyName], bool
-        ] = lambda prop_name: any(p in prop_name for p in self.IGNORE_PROP_SET)
+        self.ignore_condition: Callable[[AWSPropertyName], bool] = (
+            lambda prop_name: any(p in prop_name for p in self.IGNORE_PROP_SET)
+        )
 
     @abstractmethod
-    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
-        ...
+    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser: ...
 
     @abstractmethod
-    async def parse_name(self, content: StreamReader) -> Optional[AWSName]:
-        ...
+    async def parse_name(self, content: StreamReader) -> Optional[AWSName]: ...
 
     @abstractmethod
     def build_object(
@@ -182,8 +179,7 @@ class BaseCfnDocParser(ABC):
         properties: Tree,
         ref_return_value: str,
         return_values: Dict[str, str],
-    ) -> Optional[Tree]:
-        ...
+    ) -> Optional[Tree]: ...
 
     async def parse(
         self, session: ClientSession, url: str, retry: bool = True

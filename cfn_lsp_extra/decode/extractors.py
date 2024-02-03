@@ -80,8 +80,7 @@ class RecursiveExtractor(Extractor[E]):
         return position_lookup
 
     @abstractmethod
-    def extract_node(self, node: Tree) -> List[Spanning[E]]:
-        ...
+    def extract_node(self, node: Tree) -> List[Spanning[E]]: ...
 
 
 class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
@@ -425,7 +424,7 @@ class LogicalIdExtractor(Extractor[AWSLogicalId]):
                         type_ = None
                     line, char = node[self.SECTION][key]
                     params.append(
-                        Spanning[K](
+                        Spanning[AWSLogicalId](
                             value=AWSLogicalId(logical_name=logical_id, type_=type_),
                             line=line,
                             char=char,

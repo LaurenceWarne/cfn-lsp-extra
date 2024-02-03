@@ -88,7 +88,7 @@ def property_completions(
         suffix = (
             ": "
             if not re.match(r".*:.*", document.lines[position.line])
-            and not document.filename.endswith("json")
+            and not (document.filename and document.filename.endswith("json"))
             else ""
         )
         return CompletionList(

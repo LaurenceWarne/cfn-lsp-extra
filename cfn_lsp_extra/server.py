@@ -108,7 +108,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_change(ls: LanguageServer, params: DidChangeTextDocumentParams) -> None:
         """Text document did change notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_document(uri)
+        text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
         file_path = text_doc.path
         if (
             config.diagnostic_publishing_method
@@ -124,7 +124,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_save(ls: LanguageServer, params: DidSaveTextDocumentParams) -> None:
         """Text document did save notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_document(uri)
+        text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
         file_path = text_doc.path
         if (
             config.diagnostic_publishing_method
@@ -143,7 +143,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     ) -> Optional[CompletionList]:
         """Returns completion items."""
         uri = params.text_document.uri
-        document = server.workspace.get_document(uri)
+        document = server.workspace.get_document(uri)  # type: ignore[no-untyped-call]
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode_unfinished(
@@ -174,7 +174,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Text document did hover notification."""
         uri = params.text_document.uri
-        document = server.workspace.get_document(uri)
+        document = server.workspace.get_document(uri)  # type: ignore[no-untyped-call]
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode(document.source, document.filename)
@@ -190,7 +190,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def goto_definition(
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:
-        document = server.workspace.get_document(params.text_document.uri)
+        document = server.workspace.get_document(params.text_document.uri)  # type: ignore[no-untyped-call]
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode(document.source, document.filename)

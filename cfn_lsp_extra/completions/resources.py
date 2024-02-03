@@ -24,7 +24,7 @@ def resource_completions(
     position: Position,
 ) -> CompletionList:
     """Return a list of all resources, without documentation."""
-    use_snippet = not document.filename.endswith("json") and (
+    use_snippet = (document.filename and not document.filename.endswith("json")) and (
         position.line == len(document.lines) - 1
         or not document.lines[position.line + 1].strip()
     )

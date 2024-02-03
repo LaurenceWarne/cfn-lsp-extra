@@ -2,6 +2,7 @@
 Utilities for parsing yaml document strings.
 """
 from typing import Any
+from typing import Callable
 from typing import List
 from typing import Tuple
 
@@ -16,7 +17,7 @@ from cfnlint.decode.node import sub_node
 try:
     from yaml.cyaml import CSafeLoader as SafeLoader
 except ImportError:
-    from yaml.loader import SafeLoader  # type: ignore[misc]
+    from yaml.loader import SafeLoader  # type: ignore[assignment]
 
 from yaml.nodes import MappingNode
 from yaml.nodes import Node
@@ -30,9 +31,7 @@ VALUES_POSITION_PREFIX = "__value_positions__"
 
 # Copied from an earlier version of cfnlint for compat
 def multi_constructor(loader: SafeLoader, tag_suffix: str, node: Node) -> Node:
-    """
-    Deal with !Ref style function format.
-    """
+    """Deal with !Ref style function format."""
 
     if tag_suffix not in UNCONVERTED_SUFFIXES:
         tag_suffix = f"{FN_PREFIX}{tag_suffix}"
@@ -40,29 +39,27 @@ def multi_constructor(loader: SafeLoader, tag_suffix: str, node: Node) -> Node:
     if tag_suffix == "Fn::GetAtt":
         constructor = construct_getatt
     elif isinstance(node, ScalarNode):
-        constructor = loader.construct_scalar
+        constructor = loader.construct_scalar  # type: ignore[assignment]
     elif isinstance(node, SequenceNode):
-        constructor = loader.construct_sequence
+        constructor = loader.construct_sequence  # type: ignore[assignment]
     elif isinstance(node, MappingNode):
-        constructor = loader.construct_mapping
+        constructor = loader.construct_mapping  # type: ignore[assignment]
     else:
-        raise f"Bad tag: !{tag_suffix}"
+        raise Exception(f"Bad tag: !{tag_suffix}")
 
     if tag_suffix == "Fn::Sub":
-        return sub_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)
+        return sub_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)  # type: ignore[no-any-return]
 
-    return dict_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)
+    return dict_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)  # type: ignore[no-any-return]
 
 
 def construct_getatt(node: Node) -> Node:
-    """
-    Reconstruct !GetAtt into a list.
-    """
+    """Reconstruct !GetAtt into a list."""
 
     if isinstance(node.value, str):
-        return list_node(node.value.split(".", 1), node.start_mark, node.end_mark)
+        return list_node(node.value.split(".", 1), node.start_mark, node.end_mark)  # type: ignore[no-any-return]
     if isinstance(node.value, list):
-        return list_node([s.value for s in node.value], node.start_mark, node.end_mark)
+        return list_node([s.value for s in node.value], node.start_mark, node.end_mark)  # type: ignore[no-any-return]
 
     raise ValueError(f"Unexpected node type: {type(node.value)}")
 
