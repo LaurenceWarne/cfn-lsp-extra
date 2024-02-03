@@ -86,8 +86,7 @@ async def test_completion_item_resolve_adds_documentation_for_resource(client):
     resource = "AWS::S3::Bucket"
     item = CompletionItem(label=resource)
 
-    # TODO ask upstream to add this as a client method
-    result = await client.lsp.send_request_async(COMPLETION_ITEM_RESOLVE, item)
+    result = await client.completion_item_resolve_async(item)
     assert resource in result.documentation
 
 

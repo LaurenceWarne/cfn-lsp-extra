@@ -98,7 +98,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         """Text document did open notification."""
         uri = params.text_document.uri
         ls.show_message("Text Document Did Open")
-        text_doc = ls.workspace.get_document(uri)
+        text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
         logger.debug("Is template SAM: %s", is_document_sam(text_doc))
         file_path = text_doc.path
         ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))

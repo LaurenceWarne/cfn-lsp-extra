@@ -29,15 +29,14 @@ VALUES_POSITION_PREFIX = "__value_positions__"
 
 
 # Copied from an earlier version of cfnlint for compat
-def multi_constructor(loader, tag_suffix, node):
+def multi_constructor(loader: SafeLoader, tag_suffix: str, node: Node) -> Node:
     """
-    Deal with !Ref style function format
+    Deal with !Ref style function format.
     """
 
     if tag_suffix not in UNCONVERTED_SUFFIXES:
         tag_suffix = f"{FN_PREFIX}{tag_suffix}"
 
-    constructor = None
     if tag_suffix == "Fn::GetAtt":
         constructor = construct_getatt
     elif isinstance(node, ScalarNode):
@@ -55,12 +54,12 @@ def multi_constructor(loader, tag_suffix, node):
     return dict_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)
 
 
-def construct_getatt(node):
+def construct_getatt(node: Node) -> Node:
     """
-    Reconstruct !GetAtt into a list
+    Reconstruct !GetAtt into a list.
     """
 
-    if isinstance(node.value, (str)):
+    if isinstance(node.value, str):
         return list_node(node.value.split(".", 1), node.start_mark, node.end_mark)
     if isinstance(node.value, list):
         return list_node([s.value for s in node.value], node.start_mark, node.end_mark)
