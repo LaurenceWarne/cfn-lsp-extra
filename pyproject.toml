@@ -31,6 +31,7 @@ black = "^24.1.1"
 coverage = {extras = ["toml"], version = ">=6.2"}
 flakeheaven = "^3.3.0"
 bandit = "1.7.2"  # https://github.com/PyCQA/bandit/issues/837
+# https://github.com/flakeheaven/flakeheaven/issues/132
 flake8 = "^4.0.1"
 flake8-bandit = "^2.1.2"
 flake8-bugbear = "^21.9.2"

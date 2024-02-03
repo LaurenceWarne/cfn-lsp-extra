@@ -11,7 +11,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        # TODO add 3.12 to CI after we have moved from flakeheaven to ruff.  Flakeheaven requires
+        # a (very) old version of flake8, which in turn requires a very old version of importlib_metadata.
+        # See:
+        # https://github.com/python/importlib_metadata/issues/411#issuecomment-1279757777
+        # # https://github.com/flakeheaven/flakeheaven/issues/132
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
