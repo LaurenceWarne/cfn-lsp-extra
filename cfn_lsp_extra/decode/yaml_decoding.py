@@ -2,7 +2,6 @@
 Utilities for parsing yaml document strings.
 """
 from typing import Any
-from typing import Callable
 from typing import List
 from typing import Tuple
 
@@ -10,7 +9,6 @@ from cfnlint.decode.cfn_yaml import FN_PREFIX
 from cfnlint.decode.cfn_yaml import UNCONVERTED_SUFFIXES
 from cfnlint.decode.node import dict_node
 from cfnlint.decode.node import list_node
-from cfnlint.decode.node import str_node
 from cfnlint.decode.node import sub_node
 
 

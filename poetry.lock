@@ -836,13 +836,13 @@ flake8 = ">=3.7"
 
 [[package]]
 name = "flakeheaven"
-version = "2.1.3"
+version = "3.3.0"
 description = "FlakeHeaven is a [Flake8](https://gitlab.com/pycqa/flake8) wrapper to make it cool."
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "flakeheaven-2.1.3-py3-none-any.whl", hash = "sha256:ccff80ef4eadd5f04b462fc07fa84036863461ebb037e86edd2a6ce84aa25d58"},
-    {file = "flakeheaven-2.1.3.tar.gz", hash = "sha256:737acc42081988e1306e84607015143c37a8ce6c9ebae7e30541d795355f0c63"},
+    {file = "flakeheaven-3.3.0-py3-none-any.whl", hash = "sha256:ae246197a178845b30b63fc03023f7ba925cc84cc96314ec19807dafcd6b39a3"},
+    {file = "flakeheaven-3.3.0.tar.gz", hash = "sha256:eb07860e028ff8dd56cce742c4766624a37a4ce397fd34300254ab623d13047b"},
 ]
 
 [package.dependencies]
@@ -2587,4 +2587,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6f9ef40e12441065fd68cbebfa16adf97d70e1baf6f86b0e929753e36ecfb0f3"
+content-hash = "1c60332d2e393e37213f5fe8126afad9a638d41ce07a1107b557edba743d342d"

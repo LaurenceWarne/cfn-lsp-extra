@@ -28,14 +28,14 @@ aws-sam-translator = "^1.84.0"
 [tool.poetry.dev-dependencies]
 black = "^24.1.1"
 coverage = {extras = ["toml"], version = ">=6.2"}
-flakeheaven = "^2.0.0"
+flakeheaven = "^3.3.0"
 bandit = "1.7.2"  # https://github.com/PyCQA/bandit/issues/837
 flake8 = "^4.0.1"
 flake8-bandit = "^2.1.2"
 flake8-bugbear = "^21.9.2"
 flake8-pie = "^0.15.0"
 flake8-simplify = "^0.19.2"
-isort = "^5.10.1"
+isort = "^5.13.2"
 mypy = "^1.8.0"
 pep8-naming = "^0.12.1"
 pytest = "^7.4.4"
@@ -102,7 +102,8 @@ pycodestyle = [
     "-W503",  # line break before binary operator
     "-E203",  # whitespace before ':'
     "-E501",  # line too long
-    "-E731"   # do not assign a lambda expression, use a def
+    "-E731",  # do not assign a lambda expression, use a def
+    "-E704"   # multiple statements on one line (def)
 ]
 
 [build-system]
