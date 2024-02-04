@@ -14,10 +14,11 @@
 ** TODO add descriptions to intrinsic function completions
 ** TODO implement "fn::GetAtt" completions
 ** DONE parse the meaning of !Ref for resources, and insert this in hovers and documentation over !Ref arguments
-** TODO switch from Pydantic to [[https://www.attrs.org/en/stable/index.html][attrs]]
+** DONE switch from Pydantic to [[https://www.attrs.org/en/stable/index.html][attrs]]
 ** TODO integration tests for diagnostics
-** TODO completion for property values, this could be gleaned from https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json
+** DONE completion for property values, this could be gleaned from https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json
 ** TODO respect client capabilities in more places
+** TODO switch to [[https://github.com/astral-sh/ruff][ruff]]
 
 * Bugs
 ** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load
@@ -25,4 +26,4 @@
 ** TODO !GetAtt completion after "." does not appear to work in lists
 ** TODO return_values are not parsed for some resources, for example [[https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/aws-resource-dynamodb-table.md]]
 ** TODO when a property expects a list, we allow completion even without a '-' (note under the hood we don't differentiate between a property taking a List[T] or T)
-** TODO pygls: client blows up when configuration requested
+** DONE pygls: client blows up when configuration requested
