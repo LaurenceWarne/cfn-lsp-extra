@@ -1,27 +1,17 @@
 """
 Utilities for parsing yaml document strings.
 """
-from typing import Any
-from typing import List
-from typing import Tuple
+from typing import Any, List, Tuple
 
-from cfnlint.decode.cfn_yaml import FN_PREFIX
-from cfnlint.decode.cfn_yaml import UNCONVERTED_SUFFIXES
-from cfnlint.decode.node import dict_node
-from cfnlint.decode.node import list_node
-from cfnlint.decode.node import sub_node
-
+from cfnlint.decode.cfn_yaml import FN_PREFIX, UNCONVERTED_SUFFIXES
+from cfnlint.decode.node import dict_node, list_node, sub_node
 
 try:
     from yaml.cyaml import CSafeLoader as SafeLoader
 except ImportError:
     from yaml.loader import SafeLoader  # type: ignore[assignment]
 
-from yaml.nodes import MappingNode
-from yaml.nodes import Node
-from yaml.nodes import ScalarNode
-from yaml.nodes import SequenceNode
-
+from yaml.nodes import MappingNode, Node, ScalarNode, SequenceNode
 
 POSITION_PREFIX = "__position__"
 VALUES_POSITION_PREFIX = "__value_positions__"

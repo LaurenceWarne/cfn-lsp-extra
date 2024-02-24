@@ -8,17 +8,11 @@ from collections import ChainMap
 from pathlib import Path
 from typing import MutableMapping
 
-from importlib_resources import as_file
-from importlib_resources import files
+from importlib_resources import as_file, files
 from platformdirs import PlatformDirs
 
-from .aws_data import AWSContext
-from .aws_data import AWSContextMap
-from .aws_data import AWSName
-from .aws_data import Tree
-from .scrape.markdown import SAM_BASE_URL
-from .scrape.markdown import parse_urls
-
+from .aws_data import AWSContext, AWSContextMap, AWSName, Tree
+from .scrape.markdown import SAM_BASE_URL, parse_urls
 
 logger = logging.getLogger(__name__)
 dirs = PlatformDirs("cfn-lsp-extra", "cfn-lsp-extra")

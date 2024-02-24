@@ -4,13 +4,10 @@ Definitions for !Refs.
 
 from typing import Optional
 
-from lsprotocol.types import Location
-from lsprotocol.types import Position
-from lsprotocol.types import Range
+from lsprotocol.types import Location, Position, Range
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import Tree
+from ..aws_data import AWSContext, Tree
 from ..ref import resolve_ref
 
 

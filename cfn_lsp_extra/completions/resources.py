@@ -5,16 +5,11 @@ There are 899+ resources in total, which empircally is ok to send to a
 client as long as we don't send send the documentation along with the
 labels and snippets.
 """
-from lsprotocol.types import CompletionItem
-from lsprotocol.types import CompletionList
-from lsprotocol.types import InsertTextFormat
-from lsprotocol.types import Position
+from lsprotocol.types import CompletionItem, CompletionList, InsertTextFormat, Position
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import AWSResourceName
-from ..cursor import text_edit
-from ..cursor import word_before_after_position
+from ..aws_data import AWSContext, AWSResourceName
+from ..cursor import text_edit, word_before_after_position
 
 
 def resource_completions(

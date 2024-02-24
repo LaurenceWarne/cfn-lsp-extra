@@ -4,22 +4,12 @@ Hovers for !GetAtt
 import re
 from typing import Optional
 
-from lsprotocol.types import Hover
-from lsprotocol.types import MarkupContent
-from lsprotocol.types import MarkupKind
-from lsprotocol.types import Position
-from lsprotocol.types import Range
+from lsprotocol.types import Hover, MarkupContent, MarkupKind, Position, Range
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import AWSLogicalId
-from ..aws_data import AWSResourceName
-from ..aws_data import Tree
+from ..aws_data import AWSContext, AWSLogicalId, AWSResourceName, Tree
 from ..cursor import word_at_position_char_bounds
-from ..decode.extractors import Extractor
-from ..decode.extractors import GetAttExtractor
-from ..decode.extractors import LogicalIdExtractor
-
+from ..decode.extractors import Extractor, GetAttExtractor, LogicalIdExtractor
 
 GET_ATT_EXTRACTOR = GetAttExtractor()
 GET_ATT_SRC_EXTRACTOR = LogicalIdExtractor()
@@ -39,7 +29,7 @@ def attribute_hover(
     get_att_span = get_att_lookup.at(position.line, position.character)
     if get_att_span:
         text = get_att_span.value
-        l, c, span = next(ps[0] for e, ps in get_att_lookup.items() if e == text)
+        _, c, span = next(ps[0] for e, ps in get_att_lookup.items() if e == text)
         res, _, att = text.partition(".")
 
         get_att_src_lookup = get_att_src_extractor.extract(template_data)

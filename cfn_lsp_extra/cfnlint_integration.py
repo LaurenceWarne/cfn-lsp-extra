@@ -163,9 +163,7 @@ def _decode(yaml_content, filename):
                 matches = json_err.matches
             except JSONDecodeError as json_err:
                 if hasattr(json_err, "message"):
-                    if (
-                        json_err.message == "No JSON object could be decoded"
-                    ):  # pylint: disable=no-member
+                    if json_err.message == "No JSON object could be decoded":  # pylint: disable=no-member
                         matches = [create_match_yaml_parser_error(err, filename)]
                     else:
                         matches = [create_match_json_parser_error(json_err, filename)]

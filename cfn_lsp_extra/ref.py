@@ -2,17 +2,15 @@ from typing import Optional
 
 from lsprotocol.types import Position
 
-from .aws_data import AWSRefName
-from .aws_data import AWSRefSource
-from .aws_data import Tree
-from .decode.extractors import CompositeExtractor
-from .decode.extractors import Extractor
-from .decode.extractors import KeyExtractor
-from .decode.extractors import LogicalIdExtractor
-from .decode.extractors import ParameterExtractor
-from .decode.position import PositionLink
-from .decode.position import Spanning
-
+from .aws_data import AWSRefName, AWSRefSource, Tree
+from .decode.extractors import (
+    CompositeExtractor,
+    Extractor,
+    KeyExtractor,
+    LogicalIdExtractor,
+    ParameterExtractor,
+)
+from .decode.position import PositionLink, Spanning
 
 REF_EXTRACTOR = KeyExtractor[AWSRefName]("Ref", lambda s: AWSRefName(value=s))
 REF_SRC_EXTRACTOR = CompositeExtractor[AWSRefSource](

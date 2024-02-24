@@ -38,34 +38,19 @@ from __future__ import annotations
 import logging
 import re
 import textwrap
-from abc import ABC
-from abc import abstractmethod
-from itertools import dropwhile
-from itertools import takewhile
-from typing import Awaitable
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Pattern
-from typing import Tuple
-from typing import TypeVar
+from abc import ABC, abstractmethod
+from itertools import dropwhile, takewhile
+from typing import Awaitable, Callable, Dict, List, Optional, Pattern, Tuple, TypeVar
 
 import aiohttp
-from aiohttp import ClientSession
-from aiohttp import StreamReader
-from aiohttp.client import ClientTimeout
-from aiohttp.client import ServerTimeoutError
+from aiohttp import ClientSession, StreamReader
+from aiohttp.client import ClientTimeout, ServerTimeoutError
 from tqdm.asyncio import tqdm_asyncio  # type: ignore[import-untyped]
 
 from cfn_lsp_extra.aws_data import AWSContextMap
 
-from ..aws_data import AWSName
-from ..aws_data import AWSPropertyName
-from ..aws_data import AWSResourceName
-from ..aws_data import Tree
+from ..aws_data import AWSName, AWSPropertyName, AWSResourceName, Tree
 from .markdown_textwrapper import TEXT_WRAPPER
-
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -145,8 +130,7 @@ class PropertyIterator:
                 allowed_values,
                 sub_prop["properties"] if sub_prop else {},
             )
-        else:
-            raise StopAsyncIteration
+        raise StopAsyncIteration
 
 
 class BaseCfnDocParser(ABC):
@@ -166,10 +150,12 @@ class BaseCfnDocParser(ABC):
         )
 
     @abstractmethod
-    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser: ...
+    def sub_property_parser(self, base_url: str, name: AWSName) -> BaseCfnDocParser:
+        ...
 
     @abstractmethod
-    async def parse_name(self, content: StreamReader) -> Optional[AWSName]: ...
+    async def parse_name(self, content: StreamReader) -> Optional[AWSName]:
+        ...
 
     @abstractmethod
     def build_object(
@@ -179,7 +165,8 @@ class BaseCfnDocParser(ABC):
         properties: Tree,
         ref_return_value: str,
         return_values: Dict[str, str],
-    ) -> Optional[Tree]: ...
+    ) -> Optional[Tree]:
+        ...
 
     async def parse(
         self, session: ClientSession, url: str, retry: bool = True
@@ -195,14 +182,12 @@ class BaseCfnDocParser(ABC):
                     return self.build_object(
                         name, description, properties, ref_return_value, return_values
                     )
-                else:
-                    return None
+                return None
         except ServerTimeoutError as e:
             if retry:
                 logger.debug("Timeout for %s, retrying", url)
                 return await self.parse(session, url, False)
-            else:
-                raise e
+            raise e
 
     async def parse_response_raw(
         self, content: StreamReader, url: str, session: ClientSession
@@ -242,7 +227,7 @@ class BaseCfnDocParser(ABC):
             line = line_b.decode("utf-8")
             if line.startswith(self.REF_RETURN_LINE_PREFIX):
                 break
-            elif line.startswith(self.GETATT_LINE_PREFIX):
+            if line.startswith(self.GETATT_LINE_PREFIX):
                 found_getatt = True
                 break
         ref_return_value = (  # Some pages skip it: https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/49c4f75dfb9ac791369eda412ab15127c15e44d6/doc_source/aws-resource-amplify-app.md
@@ -261,7 +246,7 @@ class BaseCfnDocParser(ABC):
             name,
         )
         return_values = {}
-        async for prop_name, desc, required, _, _ in attr_it:
+        async for prop_name, desc, _, _, _ in attr_it:
             return_values[prop_name.property_] = self.format_description(desc)
 
         return (
@@ -278,9 +263,8 @@ class BaseCfnDocParser(ABC):
         logger.debug("parsing %s", property_name)
         if self.ignore_condition(property_name):
             return None
-        else:
-            parser = self.sub_property_parser(self.base_url, property_name)
-            return await parser.parse(session, url)
+        parser = self.sub_property_parser(self.base_url, property_name)
+        return await parser.parse(session, url)
 
     async def parse_description(self, content: StreamReader, name: AWSName) -> str:
         description = f"# {name}\n"
@@ -288,8 +272,7 @@ class BaseCfnDocParser(ABC):
             line = line_b.decode("utf-8")
             if line.startswith("#"):
                 break
-            else:
-                description += line
+            description += line
         return description
 
     async def parse_ref_return_value(self, content: StreamReader) -> str:
@@ -298,8 +281,7 @@ class BaseCfnDocParser(ABC):
             line = line_b.decode("utf-8")
             if line.startswith("##"):
                 break
-            else:
-                description += line
+            description += line
         description = re.sub(r"`Ref`(\S)", r"`Ref` \1", description)
         return description.strip()
 
@@ -307,7 +289,7 @@ class BaseCfnDocParser(ABC):
         description = re.sub(r"`\[(.*?)\]\((\S+)\)`", r"[`\1`](\2)", description)
         first_line, *rest = description.splitlines()
         body = ""
-        for line in filter(lambda l: l.strip(), rest):
+        for line in filter(lambda line: line.strip(), rest):
             if line.startswith("*Allowed"):
                 line = textwrap.shorten(line, width=200)
                 line += "`" if line.count("`") == 1 else ""
@@ -370,8 +352,7 @@ class CfnPropertyDocParser(BaseCfnDocParser):
     ) -> Optional[Tree]:
         if self.max_depth > 0:
             return await super().parse_sub_property(session, property_name, url)
-        else:
-            return None
+        return None
 
     def build_object(
         self,
@@ -385,7 +366,9 @@ class CfnPropertyDocParser(BaseCfnDocParser):
 
 
 BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-cloudformation-user-guide/main/doc_source"  # noqa
-SAM_BASE_URL = "https://raw.githubusercontent.com/awsdocs/aws-sam-developer-guide/main/doc_source"  # noqa
+SAM_BASE_URL = (
+    "https://raw.githubusercontent.com/awsdocs/aws-sam-developer-guide/main/doc_source"  # noqa
+)
 
 
 async def parse_urls(urls: List[str], base_url: str = BASE_URL) -> AWSContextMap:

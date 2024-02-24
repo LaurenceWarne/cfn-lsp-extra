@@ -3,15 +3,11 @@ Completions for property values.
 """
 from typing import Optional
 
-from lsprotocol.types import CompletionItem
-from lsprotocol.types import CompletionList
-from lsprotocol.types import Position
+from lsprotocol.types import CompletionItem, CompletionList, Position
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import Tree
-from ..cursor import text_edit
-from ..cursor import word_before_after_position
+from ..aws_data import AWSContext, Tree
+from ..cursor import text_edit, word_before_after_position
 from ..decode.extractors import AllowedValuesExtractor
 
 

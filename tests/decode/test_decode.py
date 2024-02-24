@@ -5,7 +5,7 @@ Tests for cfn_lsp_extra/decode/__init__.py
 import pytest
 from lsprotocol.types import Position
 
-from cfn_lsp_extra.decode import CfnDecodingException
+from cfn_lsp_extra.decode import CfnDecodingError
 from cfn_lsp_extra.decode import decode
 from cfn_lsp_extra.decode import decode_unfinished
 from cfn_lsp_extra.decode.extractors import RecursiveExtractor
@@ -94,13 +94,13 @@ def test_decode_for_yaml(extractor, yaml_string):
 
 
 def test_decode_for_invalid_json(extractor, yaml_string):
-    with pytest.raises(CfnDecodingException):
+    with pytest.raises(CfnDecodingError):
         decode(yaml_string, "f.json")
 
 
 def test_decode_for_invalid_yaml(extractor):
     invalid_yaml = "foo: {bar"
-    with pytest.raises(CfnDecodingException):
+    with pytest.raises(CfnDecodingError):
         decode(invalid_yaml, "f.yaml")
 
 
@@ -188,7 +188,7 @@ Resources:
       CidrBlock: 172.31.48.0/20
       VpcId: !!R
       MapPublicIpOnLaunch: true"""
-    with pytest.raises(CfnDecodingException) as e:
+    with pytest.raises(CfnDecodingError) as e:
         decode(doc, "f.yaml")
 
 

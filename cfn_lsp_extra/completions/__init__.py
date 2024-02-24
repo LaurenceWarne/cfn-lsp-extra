@@ -3,25 +3,21 @@ Completion logic.
 """
 import re
 
-from lsprotocol.types import CompletionItem
-from lsprotocol.types import CompletionList
-from lsprotocol.types import Position
+from lsprotocol.types import CompletionItem, CompletionList, Position
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import AWSPropertyName
-from ..aws_data import Tree
-from ..cursor import text_edit
-from ..cursor import word_before_after_position
-from ..decode.extractors import AllowedValuesExtractor
-from ..decode.extractors import ResourceExtractor
-from ..decode.extractors import ResourcePropertyExtractor
+from ..aws_data import AWSContext, AWSPropertyName, Tree
+from ..cursor import text_edit, word_before_after_position
+from ..decode.extractors import (
+    AllowedValuesExtractor,
+    ResourceExtractor,
+    ResourcePropertyExtractor,
+)
 from .allowed_values import allowed_values_completions
 from .attributes import attribute_completions
 from .functions import intrinsic_function_completions
 from .ref import ref_completions
 from .resources import resource_completions
-
 
 TRIGGER_CHARACTERS = [
     ".",
@@ -104,5 +100,4 @@ def property_completions(
                 for s in aws_context.same_level(name)
             ],
         )
-    else:
-        return CompletionList(is_incomplete=False, items=[])
+    return CompletionList(is_incomplete=False, items=[])

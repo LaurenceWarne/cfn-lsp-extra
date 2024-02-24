@@ -1,15 +1,8 @@
 from __future__ import annotations
 
-from typing import Dict
-from typing import Generic
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Tuple
-from typing import TypeVar
+from typing import Dict, Generic, Iterable, List, Optional, Tuple, TypeVar
 
 from attrs import frozen
-
 
 E = TypeVar("E")
 

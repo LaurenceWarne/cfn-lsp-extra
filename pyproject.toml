@@ -27,19 +27,9 @@ aws-sam-translator = "^1.84.0"
 importlib_resources = "^6.0"
 
 [tool.poetry.dev-dependencies]
-black = "^24.1.1"
 coverage = {extras = ["toml"], version = ">=6.2"}
-flakeheaven = "^3.3.0"
-bandit = "1.7.2"  # https://github.com/PyCQA/bandit/issues/837
-# https://github.com/flakeheaven/flakeheaven/issues/132
-flake8 = "^4.0.1"
-flake8-bandit = "^2.1.2"
-flake8-bugbear = "^21.9.2"
-flake8-pie = "^0.15.0"
-flake8-simplify = "^0.19.2"
-isort = "^5.13.2"
+ruff = "^0.2.2"
 mypy = "^1.8.0"
-pep8-naming = "^0.12.1"
 pytest = "^7.4.4"
 pytest-asyncio = "^0.23.4"
 pytest-mock = "^3.7"
@@ -64,14 +54,6 @@ omit = ["cfn_lsp_extra/cfnlint_integration.py", "cfn_lsp_extra/server.py", "cfn_
 show_missing = true
 fail_under = 80
 
-[tool.black]
-preview = true
-
-[tool.isort]
-profile = "black"
-force_single_line = true
-lines_after_imports = 2
-
 [tool.mypy]
 strict = true
 warn_unreachable = true
@@ -88,24 +70,36 @@ ignore_missing_imports = true
 asyncio_mode = "auto"
 markers = ["integration: mark the test as an integration test"]
 
-[tool.flakeheaven]
-max-line-length = 88
-exclude = ["tests/*"]
+[tool.ruff]
+exclude = [
+    "tests",  # MAYBE shouldn't be excluding this
+    "bin"
+]
 
-[tool.flakeheaven.plugins]
-# include everything in pyflakes
-pyflakes = ["+*"]
-# enable everything that starts from `flake8-`
-"flake8-*" = ["+*"]
-# explicitly disable plugin
-flake8-docstrings = ["-*"]  # TODO why is this needed?
-pycodestyle = [
-    "+*",
-    "-W503",  # line break before binary operator
-    "-E203",  # whitespace before ':'
-    "-E501",  # line too long
-    "-E731",  # do not assign a lambda expression, use a def
-    "-E704"   # multiple statements on one line (def)
+[tool.ruff.lint]
+select = [
+    "F",    # Pyflakes
+    "E",    # Pycodestyle
+    "W",    # Pycodestyle
+    "I",    # isort
+    "N",    # PEP8 naming
+    "B",    # flake8-bugbear
+    "PIE",  # flake8-pie
+    "SIM",  # flake8-simplify
+    "Q",    # flake8-quotes
+    "RET",  # flake8-return
+]
+
+ignore = [
+    # "W503",  # line break before binary operator
+    "E203",  # whitespace before ':'
+    "E501",  # line too long
+    "E731",  # do not assign a lambda expression, use a def
+    # "E704"   # multiple statements on one line (def)
+]
+
+exclude = [
+    "tests"
 ]
 
 [build-system]

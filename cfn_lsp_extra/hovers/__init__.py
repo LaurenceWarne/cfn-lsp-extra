@@ -2,24 +2,15 @@
 
 """
 import logging
-from typing import Optional
-from typing import Union
+from typing import Optional, Union
 
-from lsprotocol.types import Hover
-from lsprotocol.types import MarkupContent
-from lsprotocol.types import MarkupKind
-from lsprotocol.types import Position
-from lsprotocol.types import Range
+from lsprotocol.types import Hover, MarkupContent, MarkupKind, Position, Range
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import AWSPropertyName
-from ..aws_data import AWSResourceName
-from ..aws_data import Tree
+from ..aws_data import AWSContext, AWSPropertyName, AWSResourceName, Tree
 from ..decode.position import PositionLookup
 from .attributes import attribute_hover
 from .refs import ref_hover
-
 
 logger = logging.getLogger(__name__)
 

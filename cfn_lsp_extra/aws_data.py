@@ -8,21 +8,13 @@ of 899 resources.  The most properties for a resource is 52 for
 
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any
-from typing import Dict
-from typing import Iterator
-from typing import List
-from typing import MutableMapping
-from typing import Optional
-from typing import Union
+from typing import Any, Dict, Iterator, List, MutableMapping, Optional, Union
 
 from attrs import frozen
 
 from .scrape.markdown_textwrapper import TEXT_WRAPPER
-
 
 # A Tree type representing a recursive nested structure such as yaml or json
 # https://github.com/python/mypy/issues/731
@@ -80,14 +72,12 @@ class AWSPropertyName:
             return True
         if isinstance(self.parent, AWSResourceName):
             return other == self.parent.value
-        else:
-            return other in self.parent
+        return other in self.parent
 
     def split(self) -> List[str]:
         if isinstance(self.parent, AWSResourceName):
             return [str(self.parent), self.property_]
-        else:
-            return self.parent.split() + [self.property_]
+        return self.parent.split() + [self.property_]
 
     def short_form(self) -> str:
         return self.property_
@@ -96,7 +86,7 @@ class AWSPropertyName:
 AWSName = Union[AWSResourceName, AWSPropertyName]
 
 
-class OverridingKeyNotInContextException(Exception):
+class OverridingKeyNotInContextError(Exception):
     def __init__(self, message: str, path: str):
         super().__init__(message)
         self.path = path
@@ -107,7 +97,7 @@ class AWSContextMap(MutableMapping[AWSName, Tree]):
         self.resources = resources
 
     def __iter__(self) -> Iterator[AWSName]:
-        for resource in self.resources.keys():
+        for resource in self.resources:
             yield AWSResourceName(value=resource)
 
     def __getitem__(self, name: AWSName) -> Tree:
@@ -141,8 +131,8 @@ class AWSContext:
     def __getitem__(self, name: AWSName) -> Tree:
         try:
             return self.resource_map[name]
-        except KeyError:
-            raise KeyError(f"'{name}' is not a recognised resource or property")
+        except KeyError as e:
+            raise KeyError(f"'{name}' is not a recognised resource or property") from e
 
     def __contains__(self, name: AWSName) -> bool:
         return name in self.resource_map
@@ -180,13 +170,12 @@ class AWSContext:
         """Return names at the same (property/resource) level as obj."""
         if isinstance(obj, AWSResourceName):
             return list(self.resource_map.keys())
-        elif isinstance(obj, AWSPropertyName):
+        if isinstance(obj, AWSPropertyName):
             try:
-                return [obj.parent / p for p in self[obj.parent]["properties"].keys()]
+                return [obj.parent / p for p in self[obj.parent]["properties"]]
             except KeyError:
                 return []
-        else:
-            raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
+        raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
 
 
 @frozen

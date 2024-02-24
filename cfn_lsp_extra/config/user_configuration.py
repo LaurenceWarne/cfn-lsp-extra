@@ -5,18 +5,16 @@ See also:
 https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_configuration
 https://pygls.readthedocs.io/en/latest/pages/advanced_usage.html#configuration
 """
-from enum import Enum
-from enum import auto
-from enum import unique
-from typing import Any
-from typing import List
+from enum import Enum, auto, unique
+from typing import Any, List
 
 from attrs import define
-from lsprotocol.types import ConfigurationItem
-from lsprotocol.types import ConfigurationParams
-from lsprotocol.types import DidChangeConfigurationParams
-from lsprotocol.types import WorkspaceConfigurationParams
-
+from lsprotocol.types import (
+    ConfigurationItem,
+    ConfigurationParams,
+    DidChangeConfigurationParams,
+    WorkspaceConfigurationParams,
+)
 
 SECTION = "cfn"
 
@@ -42,8 +40,7 @@ class UserConfiguration:
 def diagnostic_publishing_method_from_string(string: str) -> DiagnosticPublishingMethod:
     if string.upper() == "ON_DID_SAVE":
         return DiagnosticPublishingMethod.ON_DID_SAVE
-    else:
-        return DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT
+    return DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT
 
 
 def workspace_configuration_params(uri: str) -> WorkspaceConfigurationParams:

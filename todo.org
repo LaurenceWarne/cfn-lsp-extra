@@ -18,7 +18,7 @@
 ** TODO integration tests for diagnostics
 ** DONE completion for property values, this could be gleaned from https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json
 ** TODO respect client capabilities in more places
-** TODO switch to [[https://github.com/astral-sh/ruff][ruff]]
+** DONE switch to [[https://github.com/astral-sh/ruff][ruff]]
 
 * Bugs
 ** DONE AWS::EC2::Instance/InstanceType and other properties have very long doc which take a while to load

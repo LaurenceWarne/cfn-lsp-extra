@@ -1,12 +1,8 @@
 import re
-from typing import Pattern
-from typing import Tuple
+from typing import Pattern, Tuple
 
-from lsprotocol.types import Position
-from lsprotocol.types import Range
-from lsprotocol.types import TextEdit
+from lsprotocol.types import Position, Range, TextEdit
 from pygls.workspace import Document
-
 
 RE_END_WORD = re.compile("^[A-Za-z_0-9!:]*")
 RE_START_WORD = re.compile("[A-Za-z_0-9!:]*$")

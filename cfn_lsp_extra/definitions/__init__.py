@@ -5,15 +5,12 @@ Definitions for !Refs.
 import logging
 from typing import Optional
 
-from lsprotocol.types import Location
-from lsprotocol.types import Position
+from lsprotocol.types import Location, Position
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext
-from ..aws_data import Tree
+from ..aws_data import AWSContext, Tree
 from .attributes import attribute_definition
 from .ref import ref_definition
-
 
 logger = logging.getLogger(__name__)
 

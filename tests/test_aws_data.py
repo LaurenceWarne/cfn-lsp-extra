@@ -3,7 +3,6 @@ import pytest
 from cfn_lsp_extra.aws_data import AWSContext
 from cfn_lsp_extra.aws_data import AWSContextMap
 from cfn_lsp_extra.aws_data import AWSResourceName
-from cfn_lsp_extra.aws_data import OverridingKeyNotInContextException
 from cfn_lsp_extra.context import load_cfn_context
 
 

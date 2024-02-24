@@ -3,25 +3,19 @@ Classes for extracting positional information from decoded documents.
 
 For example extracting the positions of resource parameters.
 """
-from abc import ABC
-from abc import abstractmethod
-from typing import Callable
-from typing import Generic
-from typing import List
-from typing import Set
-from typing import TypeVar
-from typing import Union
+from abc import ABC, abstractmethod
+from typing import Callable, Generic, List, Set, TypeVar, Union
 
-from ..aws_data import AWSLogicalId
-from ..aws_data import AWSParameter
-from ..aws_data import AWSPropertyName
-from ..aws_data import AWSResourceName
-from ..aws_data import Tree
+from ..aws_data import (
+    AWSLogicalId,
+    AWSParameter,
+    AWSPropertyName,
+    AWSResourceName,
+    Tree,
+)
 from . import DEBUG_CHAR
-from .position import PositionLookup
-from .position import Spanning
-from .yaml_decoding import POSITION_PREFIX
-from .yaml_decoding import VALUES_POSITION_PREFIX
+from .position import PositionLookup, Spanning
+from .yaml_decoding import POSITION_PREFIX, VALUES_POSITION_PREFIX
 
 
 # credit https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string
@@ -80,7 +74,8 @@ class RecursiveExtractor(Extractor[E]):
         return position_lookup
 
     @abstractmethod
-    def extract_node(self, node: Tree) -> List[Spanning[E]]: ...
+    def extract_node(self, node: Tree) -> List[Spanning[E]]:
+        ...
 
 
 class ResourcePropertyExtractor(Extractor[AWSPropertyName]):
@@ -253,7 +248,7 @@ class AllowedValuesExtractor(Extractor[AWSPropertyName]):
             return props
 
         values_positions = node.get(VALUES_POSITION_PREFIX, [])
-        for key in node.keys():
+        for key in node:
             prop = remove_prefix(key, POSITION_PREFIX)
             aws_prop = parent / prop
             if key.startswith(POSITION_PREFIX) and parent / prop in self.property_set:

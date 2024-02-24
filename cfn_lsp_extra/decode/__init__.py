@@ -7,11 +7,10 @@ from ..aws_data import Tree
 from .json_decoding import CfnJSONDecoder  # type: ignore[attr-defined]
 from .yaml_decoding import SafePositionLoader
 
-
 DEBUG_CHAR = "."
 
 
-class CfnDecodingException(Exception):
+class CfnDecodingError(Exception):
     pass
 
 
@@ -34,7 +33,7 @@ def decode(source: str, filename: str) -> Tree:
 
     Raises
     ------
-    CfnDecodingException
+    CfnDecodingError
         If json or yaml parsing fails."""
     try:
         if filename.endswith("json"):
@@ -42,7 +41,7 @@ def decode(source: str, filename: str) -> Tree:
         else:
             data = yaml.load(source, Loader=SafePositionLoader)  # noqa
     except (json.JSONDecodeError, yaml.YAMLError) as e:
-        raise CfnDecodingException(f"Error decoding {filename}") from e
+        raise CfnDecodingError(f"Error decoding {filename}") from e
     return data
 
 
@@ -71,7 +70,7 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
 
     Raises
     ------
-    CfnDecodingException
+    CfnDecodingError
         If json or yaml parsing fails even after edits."""
     source_lst = source.splitlines()
     line, char = position.line, position.character
@@ -80,7 +79,7 @@ def decode_unfinished(source: str, filename: str, position: Position) -> Tree:
         source = "\n".join(source_lst)
     try:
         return decode(source, filename)
-    except CfnDecodingException:
+    except CfnDecodingError:
         if filename.endswith("json"):
             source_lst[line] = source_lst[line].rstrip(":, ") + ': "",'
         else:
@@ -93,11 +92,7 @@ def yaml_line_enricher(line: str, char: int) -> str:
     stripped = line.strip()
     if not stripped:  # Empty line for property
         new_line = line[:char] + DEBUG_CHAR
-    elif (
-        stripped.endswith(":")
-        or stripped.endswith("!Ref")
-        or stripped.endswith("!GetAtt")
-    ):  # For resource or ref
+    elif stripped.endswith((":", "!Ref", "!GetAtt")):  # For resource or ref
         new_line = line + DEBUG_CHAR
     elif stripped.startswith("-"):  # First element in a list
         new_line = line + DEBUG_CHAR + ": "

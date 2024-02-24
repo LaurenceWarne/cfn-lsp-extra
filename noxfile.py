@@ -1,6 +1,5 @@
 import nox
 
-
 package = "cfn_lsp_extra"
 python_versions = ["3.12", "3.11", "3.10", "3.9", "3.8"]
 nox.needs_version = ">= 2021.6.6"
@@ -22,8 +21,7 @@ def integration_tests(session):
 @nox.session(python=python_versions)
 def lint(session):
     session.run("poetry", "install", external=True)
-    session.run("flakeheaven", "lint", package)
-    session.run("isort", "-c", "cfn-lsp-extra", "tests")
+    session.run("ruff", "check", package)
 
 
 @nox.session(python=python_versions)

@@ -3,20 +3,13 @@ Intrinsic function completions, see:
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 For more information.
 """
-from typing import Callable
-from typing import List
+from typing import Callable, List
 
 from attrs import frozen
-from lsprotocol.types import CompletionItem
-from lsprotocol.types import CompletionList
-from lsprotocol.types import Position
-from pygls.workspace import Document
-from pygls.workspace import position_from_utf16
+from lsprotocol.types import CompletionItem, CompletionList, Position
+from pygls.workspace import Document, position_from_utf16
 
-from ..cursor import RE_END_WORD
-from ..cursor import RE_START_WORD
-from ..cursor import text_edit
-from ..cursor import word_before_after_position
+from ..cursor import RE_END_WORD, RE_START_WORD, text_edit, word_before_after_position
 
 
 @frozen
@@ -63,7 +56,7 @@ def intrinsic_function_completions(
     word = before + after
     filter_fn: Callable[[IntrinsicFunction], bool]
     label_fn: Callable[[IntrinsicFunction], str]
-    if word.startswith("Fn") or word.startswith("fn"):
+    if word.startswith(("Fn", "fn")):
         filter_fn = lambda f: f.full_name_prefix == "Fn::"
         label_fn = lambda f: f.full_name()
     elif word.startswith("!"):

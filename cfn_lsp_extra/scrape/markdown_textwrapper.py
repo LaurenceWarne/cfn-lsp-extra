@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import re
 from textwrap import TextWrapper
-from typing import List
-from typing import Pattern
+from typing import List, Pattern
 
 
 class MarkdownLink(str):
