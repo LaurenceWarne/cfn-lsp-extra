@@ -1444,6 +1444,25 @@ lsprotocol = "2023.0.1"
 ws = ["websockets (>=11.0.3)"]
 
 [[package]]
+name = "pylsp-mypy"
+version = "0.6.8"
+description = "Mypy linter for the Python LSP Server"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pylsp-mypy-0.6.8.tar.gz", hash = "sha256:3f8307ca07d7e253e50e38c5fe31c371ceace0bc33d31c3429fa035d6d41bd5f"},
+    {file = "pylsp_mypy-0.6.8-py3-none-any.whl", hash = "sha256:3ea7c406d0f100317a212d8cd39075a2c139f1a4a2866d4412fe531b3f23b381"},
+]
+
+[package.dependencies]
+mypy = ">=0.981"
+python-lsp-server = ">=1.7.0"
+tomli = ">=1.1.0"
+
+[package.extras]
+test = ["coverage", "pytest", "pytest-cov", "tox"]
+
+[[package]]
 name = "pytest"
 version = "7.4.4"
 description = "pytest: simple powerful testing with Python"
@@ -1550,6 +1569,27 @@ ujson = ">=3.0.0"
 test = ["coverage", "pycodestyle", "pyflakes", "pylint", "pytest", "pytest-cov"]
 
 [[package]]
+name = "python-lsp-ruff"
+version = "2.1.0"
+description = "Ruff linting plugin for pylsp"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "python-lsp-ruff-2.1.0.tar.gz", hash = "sha256:baf4d29a863dad5184aeec58db4c0e3d5811d894c10f36e7e52edc703cf7cc15"},
+    {file = "python_lsp_ruff-2.1.0-py3-none-any.whl", hash = "sha256:83798549ec8c998c264fe4fbfc79456e30f4bfdc2d9922485cba9ae8a455c4fa"},
+]
+
+[package.dependencies]
+cattrs = "!=23.2.1"
+lsprotocol = ">=2023.0.1"
+python-lsp-server = "*"
+ruff = ">=0.2.0,<0.3.0"
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+dev = ["pre-commit", "pytest"]
+
+[[package]]
 name = "python-lsp-server"
 version = "1.10.0"
 description = "Python Language Server for the Language Server Protocol"
@@ -1566,6 +1606,7 @@ importlib-metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""
 jedi = ">=0.17.2,<0.20.0"
 pluggy = ">=1.0.0"
 python-lsp-jsonrpc = ">=1.1.0,<2.0.0"
+rope = {version = ">=1.11.0", optional = true, markers = "extra == \"rope\""}
 ujson = ">=3.0.0"
 
 [package.extras]
@@ -1581,6 +1622,28 @@ rope = ["rope (>=1.11.0)"]
 test = ["coverage", "flaky", "matplotlib", "numpy", "pandas", "pylint (>=2.5.0,<3.1)", "pyqt5", "pytest", "pytest-cov"]
 websockets = ["websockets (>=10.3)"]
 yapf = ["whatthepatch (>=1.0.2,<2.0.0)", "yapf (>=0.33.0)"]
+
+[[package]]
+name = "pytoolconfig"
+version = "1.3.1"
+description = "Python tool configuration"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pytoolconfig-1.3.1-py3-none-any.whl", hash = "sha256:5d8cea8ae1996938ec3eaf44567bbc5ef1bc900742190c439a44a704d6e1b62b"},
+    {file = "pytoolconfig-1.3.1.tar.gz", hash = "sha256:51e6bd1a6f108238ae6aab6a65e5eed5e75d456be1c2bf29b04e5c1e7d7adbae"},
+]
+
+[package.dependencies]
+packaging = ">=23.2"
+platformdirs = {version = ">=3.11.0", optional = true, markers = "extra == \"global\""}
+tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
+
+[package.extras]
+doc = ["sphinx (>=7.1.2)", "tabulate (>=0.9.0)"]
+gendocs = ["pytoolconfig[doc]", "sphinx (>=7.1.2)", "sphinx-autodoc-typehints (>=1.25.2)", "sphinx-rtd-theme (>=2.0.0)"]
+global = ["platformdirs (>=3.11.0)"]
+validation = ["pydantic (>=2.5.3)"]
 
 [[package]]
 name = "pyyaml"
@@ -1758,6 +1821,25 @@ files = [
     {file = "regex-2023.12.25-cp39-cp39-win_amd64.whl", hash = "sha256:e693e233ac92ba83a87024e1d32b5f9ab15ca55ddd916d878146f4e3406b5c91"},
     {file = "regex-2023.12.25.tar.gz", hash = "sha256:29171aa128da69afdf4bde412d5bedc335f2ca8fcfe4489038577d05f16181e5"},
 ]
+
+[[package]]
+name = "rope"
+version = "1.12.0"
+description = "a python refactoring library..."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "rope-1.12.0-py3-none-any.whl", hash = "sha256:01f06624159e6b2ec9b94412d519e8877a19eeabe392f469c36f7236df05d443"},
+    {file = "rope-1.12.0.tar.gz", hash = "sha256:93a1bb991fbf0426e8d415102d1c092ccc42e826ce9a42c4d61ce53d7786d9d9"},
+]
+
+[package.dependencies]
+pytoolconfig = {version = ">=1.2.2", extras = ["global"]}
+
+[package.extras]
+dev = ["build (>=0.7.0)", "pre-commit (>=2.20.0)", "pytest (>=7.0.1)", "pytest-timeout (>=2.1.0)"]
+doc = ["pytoolconfig[doc]", "sphinx (>=4.5.0)", "sphinx-autodoc-typehints (>=1.18.1)", "sphinx-rtd-theme (>=1.0.0)"]
+release = ["pip-tools (>=6.12.1)", "toml (>=0.10.2)", "twine (>=4.0.2)"]
 
 [[package]]
 name = "rpds-py"
@@ -2251,4 +2333,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0d4867b6b45eca24a300bdba7243a28897f609782a0b8fe16b8c7dcd376824f8"
+content-hash = "1a4f6b38aa604aea6bfae2ac54b8f90ed24cfbeb82c9f565a2281d60a3f782ac"

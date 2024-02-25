@@ -11,3 +11,4 @@ __pycache__/
 /.dir-locals.el
 /bin/parse_links.py
 *~
+/.ropeproject/
