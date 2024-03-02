@@ -37,7 +37,7 @@ pytest-mock = "^3.7"
 pytest-lsp = "^0.4.0" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = {extras = ["rope"], version = "^1.10.0"}
 pylsp-mypy = "^0.6.8"
-python-lsp-ruff = "^2.1.0"
+python-lsp-ruff = "^2.2.0"
 nox = "^2023.04.22"
 
 [tool.poetry.scripts]
