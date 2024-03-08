@@ -1142,23 +1142,24 @@ test = ["codecov (>=2.1)", "pytest (>=7.2)", "pytest-cov (>=4.0)"]
 
 [[package]]
 name = "nox"
-version = "2023.4.22"
+version = "2024.3.2"
 description = "Flexible test automation."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "nox-2023.4.22-py3-none-any.whl", hash = "sha256:0b1adc619c58ab4fa57d6ab2e7823fe47a32e70202f287d78474adcc7bda1891"},
-    {file = "nox-2023.4.22.tar.gz", hash = "sha256:46c0560b0dc609d7d967dc99e22cb463d3c4caf54a5fda735d6c11b5177e3a9f"},
+    {file = "nox-2024.3.2-py3-none-any.whl", hash = "sha256:e53514173ac0b98dd47585096a55572fe504fecede58ced708979184d05440be"},
+    {file = "nox-2024.3.2.tar.gz", hash = "sha256:f521ae08a15adbf5e11f16cb34e8d0e6ea521e0b92868f684e91677deb974553"},
 ]
 
 [package.dependencies]
 argcomplete = ">=1.9.4,<4.0"
 colorlog = ">=2.6.1,<7.0.0"
 packaging = ">=20.9"
-virtualenv = ">=14"
+virtualenv = ">=20.14.1"
 
 [package.extras]
-tox-to-nox = ["jinja2", "tox (<4)"]
+tox-to-nox = ["jinja2", "tox"]
+uv = ["uv"]
 
 [[package]]
 name = "packaging"
@@ -2333,4 +2334,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ad2480bc72d74db225a7599f22a0a4ad7f6b75a26aa5f8ca42222b829185ccea"
+content-hash = "e608f88d1d080c6431e66a58d9d2982c5a162d69254c9c726b999b0374affe26"
