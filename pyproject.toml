@@ -38,7 +38,7 @@ pytest-lsp = "^0.4.0" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = {extras = ["rope"], version = "^1.10.0"}
 pylsp-mypy = "^0.6.8"
 python-lsp-ruff = "^2.2.0"
-nox = "^2023.04.22"
+nox = "^2024.3.2"
 
 [tool.poetry.scripts]
 cfn-lsp-extra = "cfn_lsp_extra.__main__:main"
