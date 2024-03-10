@@ -5,7 +5,14 @@ There are 899+ resources in total, which empircally is ok to send to a
 client as long as we don't send send the documentation along with the
 labels and snippets.
 """
-from lsprotocol.types import CompletionItem, CompletionList, InsertTextFormat, Position
+from lsprotocol.types import (
+    CompletionItem,
+    CompletionList,
+    InsertTextFormat,
+    MarkupContent,
+    MarkupKind,
+    Position,
+)
 from pygls.workspace import Document
 
 from ..aws_data import AWSContext, AWSResourceName
@@ -47,7 +54,7 @@ def resolve_resource_completion_item(
 ) -> CompletionItem:
     """Enrich a completion_item with documentation."""
     resource_name = AWSResourceName(value=completion_item.label)
-    completion_item.documentation = aws_context.description(resource_name)
+    completion_item.documentation = MarkupContent(kind=MarkupKind.Markdown, value=aws_context.description(resource_name))
     return completion_item
 
 

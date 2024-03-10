@@ -87,7 +87,7 @@ async def test_completion_item_resolve_adds_documentation_for_resource(client):
     item = CompletionItem(label=resource)
 
     result = await client.completion_item_resolve_async(item)
-    assert resource in result.documentation
+    assert resource in result.documentation.value
 
 
 @pytest.mark.asyncio
