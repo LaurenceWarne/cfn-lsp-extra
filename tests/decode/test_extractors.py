@@ -13,6 +13,7 @@ from cfn_lsp_extra.decode.extractors import ParameterExtractor
 from cfn_lsp_extra.decode.extractors import RecursiveExtractor
 from cfn_lsp_extra.decode.extractors import ResourceExtractor
 from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
+from cfn_lsp_extra.decode.extractors import StaticResourceKeyExtractor
 from cfn_lsp_extra.decode.position import Spanning
 
 from ..test_aws_data import full_aws_context
@@ -128,6 +129,19 @@ def incomplete_logical_id_document_mapping():
         },
         "__position__AWSTemplateFormatVersion": [0, 0],
         "__value_positions__": [{"__position__2010-09-09": [0, 26]}],
+        "__position__Resources": [1, 0],
+    }
+
+@pytest.fixture
+def no_resources_document_mapping():
+    return {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Resources": "MyTaskde",
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__MyTaskde": [2, 2]},
+        ],
         "__position__Resources": [1, 0],
     }
 
@@ -385,19 +399,9 @@ def test_resource_extractor_for_incomplete_resource():
     assert [(9, 10, 16)] == positions[AWSResourceName(value="AWS::EC2::Subnet")]
 
 
-def test_resource_extractor_for_empty_resources():
-    document_mapping = {
-        "AWSTemplateFormatVersion": "2010-09-09",
-        "Resources": "MyTaskde",
-        "__position__AWSTemplateFormatVersion": [0, 0],
-        "__value_positions__": [
-            {"__position__2010-09-09": [0, 26]},
-            {"__position__MyTaskde": [2, 2]},
-        ],
-        "__position__Resources": [1, 0],
-    }
+def test_resource_extractor_for_empty_resources(no_resources_document_mapping):
     extractor = ResourceExtractor()
-    positions = extractor.extract(document_mapping)
+    positions = extractor.extract(no_resources_document_mapping)
     assert not positions
 
 
@@ -458,6 +462,40 @@ def test_logical_id_extractor_incomplete_logical_id(
         AWSLogicalId(logical_name="MyResource", type_=None)
     ]
 
+
+def test_static_resource_key_extractor(document_mapping):
+    extractor = StaticResourceKeyExtractor()
+    positions = extractor.extract(document_mapping)
+    assert [(10, 4, 10), (17, 4, 10)] == sorted(positions["Properties"])
+    assert [(9, 4, 4), (16, 4, 4)] == sorted(positions["Type"])
+
+
+def test_static_resource_key_extractor_for_empty_resources(no_resources_document_mapping):
+    extractor = StaticResourceKeyExtractor()
+    positions = extractor.extract(no_resources_document_mapping)
+    assert not positions
+    
+
+def test_static_resource_key_extractor_for_empty_resource():
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "My template",
+        "Resources": {
+            "PublicSubnet": "foo",
+            "__position__PublicSubnet": [4, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [
+            {"__position__2010-09-09": [0, 26]},
+            {"__position__My template": [2, 13]},
+        ],
+        "__position__Description": [2, 0],
+        "__position__Resources": [3, 0],
+    }
+    extractor = StaticResourceKeyExtractor()
+    positions = extractor.extract(document_mapping)
+    assert not positions
+    
 
 def test_allowed_values_extractor(full_aws_context):
     allowed_values = full_aws_context.properties_with_allowed_values()

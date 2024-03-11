@@ -17,6 +17,7 @@ from .allowed_values import allowed_values_completions
 from .attributes import attribute_completions
 from .functions import intrinsic_function_completions
 from .ref import ref_completions
+from .resource_keys import resource_key_completions
 from .resources import resource_completions
 
 TRIGGER_CHARACTERS = [
@@ -70,6 +71,11 @@ def completions_for(
     )
     if att_completions_result:
         return att_completions_result
+
+    resource_key_result = resource_key_completions(template_data, aws_context, document, position)
+    if resource_key_result:
+        return resource_key_result
+
     return intrinsic_function_completions(document, position)
 
 
