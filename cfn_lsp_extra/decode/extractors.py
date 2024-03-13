@@ -212,33 +212,6 @@ class ResourceExtractor(Extractor[AWSResourceName]):
         return PositionLookup.from_iterable(props)
 
 
-class StaticResourceKeyExtractor(Extractor[str]):
-    """Extractor for resources names.
-
-    Methods
-    -------
-    extract(node)
-        Extract resource names from node."""
-
-    def extract(self, node: Tree) -> PositionLookup[str]:
-        found = []
-        if "Resources" in node and isinstance(node["Resources"], dict):
-            for resource_dct in node["Resources"].values():
-                if isinstance(resource_dct, dict):
-                    for key in resource_dct:
-                        pos_key = POSITION_PREFIX + key
-                        if pos_key in resource_dct:
-                            line, char = resource_dct[pos_key]
-                            found.append(
-                                Spanning[str](
-                                    value=key,
-                                    line=line,
-                                    char=char,
-                                    span=len(key),
-                                )
-                            )
-        return PositionLookup.from_iterable(found)
-
 @frozen
 class StaticPath:
     value: Tuple[str, ...]
