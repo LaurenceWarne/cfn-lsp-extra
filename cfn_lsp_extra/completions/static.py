@@ -41,9 +41,19 @@ RESOURCE_ATTRIBUTES = [
 
 RESOURCE_PATH = StaticPath.root("Resources") / StaticPath.MatchAny / StaticPath.MatchAny
 
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+OUTPUT_ATTRIBUTES = [
+    "Description",
+    "Value",
+    "Export"
+]
+
+OUTPUT_PATH = StaticPath.root("Outputs") / StaticPath.MatchAny / StaticPath.MatchAny
+
 STATIC_LOOKUP = {
     TOP_LEVEL_PATH: TOP_LEVEL_ATTRIBUTES,
-    RESOURCE_PATH: RESOURCE_ATTRIBUTES
+    RESOURCE_PATH: RESOURCE_ATTRIBUTES,
+    OUTPUT_PATH: OUTPUT_ATTRIBUTES
 }
 STATIC_EXTRACTOR = StaticExtractor(paths={TOP_LEVEL_PATH, RESOURCE_PATH})
 
