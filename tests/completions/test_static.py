@@ -37,5 +37,6 @@ Resources:
         aws_context,
         document,
         position,
+        False
     )
     assert "DeletionPolicy" in map(lambda c: c.label, result.items)

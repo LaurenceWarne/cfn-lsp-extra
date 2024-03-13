@@ -41,6 +41,7 @@ def completions_for(
     document: Document,
     position: Position,
     allowed_values_extractor: AllowedValuesExtractor,
+    use_sam: bool
 ) -> CompletionList:
     """Return a list of completion items for the user's position in document."""
     line, char = position.line, position.character
@@ -72,7 +73,9 @@ def completions_for(
     if att_completions_result:
         return att_completions_result
 
-    static_completions_result = static_completions(template_data, aws_context, document, position)
+    static_completions_result = static_completions(
+        template_data, aws_context, document, position, use_sam
+    )
     if static_completions_result:
         return static_completions_result
 

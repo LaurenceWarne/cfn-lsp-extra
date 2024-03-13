@@ -60,13 +60,30 @@ OUTPUT_ATTRIBUTES = [
 
 OUTPUT_PATH = StaticPath.root("Outputs") / StaticPath.MatchAny / StaticPath.MatchAny
 
-STATIC_LOOKUP = {
-    TOP_LEVEL_PATH: TOP_LEVEL_ATTRIBUTES,
+TOP_LEVEL_SAM_ATTRIBUTES = [
+    "Transform",
+    "Globals",
+    "Description",
+    "Metadata",
+    "Parameters",
+    "Mappings",
+    "Conditions",
+    "Resources",
+    "Outputs"
+]
+
+TOP_LEVEL_SAM_PATH = StaticPath.root(StaticPath.MatchAny)
+
+COMMON_STATIC_LOOKUP = {
     PARAMETER_PATH: PARAMETER_ATTRIBUTES,
     RESOURCE_PATH: RESOURCE_ATTRIBUTES,
-    OUTPUT_PATH: OUTPUT_ATTRIBUTES
+    OUTPUT_PATH: OUTPUT_ATTRIBUTES,
+    TOP_LEVEL_SAM_PATH: TOP_LEVEL_SAM_ATTRIBUTES,
 }
-STATIC_EXTRACTOR = StaticExtractor(paths=set(STATIC_LOOKUP.keys()))
+CFN_STATIC_LOOKUP = {**COMMON_STATIC_LOOKUP, TOP_LEVEL_PATH: TOP_LEVEL_ATTRIBUTES}
+SAM_STATIC_LOOKUP = {**COMMON_STATIC_LOOKUP, TOP_LEVEL_SAM_PATH: TOP_LEVEL_SAM_ATTRIBUTES}
+CFN_EXTRACTOR = StaticExtractor(paths=set(CFN_STATIC_LOOKUP.keys()))
+SAM_EXTRACTOR = StaticExtractor(paths=set(SAM_STATIC_LOOKUP.keys()))
 
 
 def static_completions(
@@ -74,10 +91,12 @@ def static_completions(
     aws_context: AWSContext,
     document: Document,
     position: Position,
+    use_sam: bool
 ) -> Optional[CompletionList]:
-    position_lookup = STATIC_EXTRACTOR.extract(template_data)
+    lookup, extractor = (SAM_STATIC_LOOKUP, SAM_EXTRACTOR) if use_sam else (CFN_STATIC_LOOKUP, CFN_EXTRACTOR)
+    position_lookup = extractor.extract(template_data)
     span = position_lookup.at(position.line, position.character)
-    if span and span.value in STATIC_LOOKUP:
+    if span and span.value in lookup:
         before, after = word_before_after_position(document, position)
         return CompletionList(
             is_incomplete=False,
@@ -88,7 +107,7 @@ def static_completions(
                         position, before, after, s
                     ),
                 )
-                for s in STATIC_LOOKUP[span.value]
+                for s in lookup[span.value]
             ],
         )
     return None

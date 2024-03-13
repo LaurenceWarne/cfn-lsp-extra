@@ -105,15 +105,6 @@ exclude = [
     "tests"
 ]
 
-# TODO why can't they just use LSP config for this?!
-# https://github.com/python-lsp/pylsp-mypy/issues/32
-[tool.pylsp-mypy]
-enabled = true
-live_mode = true
-strict = true
-exclude = ["tests/*"]
-overrides = ["--python-executable", ".nox/tests-3-11/bin/python", true]
-
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

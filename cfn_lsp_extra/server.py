@@ -143,7 +143,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         """Returns completion items."""
         uri = params.text_document.uri
         document = server.workspace.get_document(uri)  # type: ignore[no-untyped-call]
-        aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
+        use_sam = is_document_sam(document)
+        aws_context = sam_aws_context if use_sam else cfn_aws_context
         try:
             template_data = decode_unfinished(
                 document.source, document.filename, params.position
@@ -157,6 +158,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
             document,
             params.position,
             allowed_values_extractor,
+            use_sam
         )
 
     @server.feature(COMPLETION_ITEM_RESOLVE)
