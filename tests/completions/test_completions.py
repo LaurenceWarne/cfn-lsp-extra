@@ -5,6 +5,7 @@ from pygls.workspace import Document
 from cfn_lsp_extra.aws_data import AWSPropertyName
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.completions import completions_for
+from cfn_lsp_extra.decode import decode
 
 from ..decode.test_decode import extractor
 from ..test_aws_data import aws_context
@@ -222,3 +223,24 @@ Resources:
     result = completions_for({}, aws_context, document, position, extractor).items
     assert len(result) > 0
     assert all(c.label.startswith("Fn::") for c in result)
+
+
+def test_static_completions(aws_context, extractor):
+    document = Document(
+        uri="",
+        source="""AWSTemplateFormatVersion: 2010-09-09
+Description: My template
+Resources:
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: Fn
+      CidrBlock: 192.168.0.0/24""",
+    )
+    position = Position(line=4, character=5)
+    result = completions_for(
+        decode(document.source, "file.yaml"), aws_context, document,
+        position, extractor
+    ).items
+    assert len(result) > 0
+    assert "Type" in (c.label for c in result)

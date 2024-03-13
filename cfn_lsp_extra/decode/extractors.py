@@ -233,6 +233,12 @@ class StaticPath:
 
 
 class StaticExtractor(Extractor[StaticPath]):
+    """Extractor matching a set of 'fixed' paths.
+
+    Methods
+    -------
+    extract(node)
+        Extract fixed paths node."""
 
     def __init__(self, paths: Set[StaticPath]):
         self.paths = paths
