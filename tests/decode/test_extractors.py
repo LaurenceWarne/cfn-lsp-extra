@@ -4,6 +4,7 @@ from cfn_lsp_extra.aws_data import AWSLogicalId
 from cfn_lsp_extra.aws_data import AWSParameter
 from cfn_lsp_extra.aws_data import AWSRefName
 from cfn_lsp_extra.aws_data import AWSResourceName
+from cfn_lsp_extra.completions.static import RESOURCE_PATH
 from cfn_lsp_extra.decode.extractors import AllowedValuesExtractor
 from cfn_lsp_extra.decode.extractors import CompositeExtractor
 from cfn_lsp_extra.decode.extractors import Extractor
@@ -13,7 +14,7 @@ from cfn_lsp_extra.decode.extractors import ParameterExtractor
 from cfn_lsp_extra.decode.extractors import RecursiveExtractor
 from cfn_lsp_extra.decode.extractors import ResourceExtractor
 from cfn_lsp_extra.decode.extractors import ResourcePropertyExtractor
-from cfn_lsp_extra.decode.extractors import StaticResourceKeyExtractor
+from cfn_lsp_extra.decode.extractors import StaticExtractor
 from cfn_lsp_extra.decode.position import Spanning
 
 from ..test_aws_data import full_aws_context
@@ -463,15 +464,14 @@ def test_logical_id_extractor_incomplete_logical_id(
     ]
 
 
-def test_static_resource_key_extractor(document_mapping):
-    extractor = StaticResourceKeyExtractor()
+def test_static_extractor(document_mapping):
+    extractor = StaticExtractor(paths={RESOURCE_PATH})
     positions = extractor.extract(document_mapping)
-    assert [(10, 4, 10), (17, 4, 10)] == sorted(positions["Properties"])
-    assert [(9, 4, 4), (16, 4, 4)] == sorted(positions["Type"])
+    assert [(9, 4, 4), (10, 4, 10), (16, 4, 4), (17, 4, 10)] == sorted(positions[RESOURCE_PATH])
 
 
 def test_static_resource_key_extractor_for_empty_resources(no_resources_document_mapping):
-    extractor = StaticResourceKeyExtractor()
+    extractor = StaticExtractor(paths={RESOURCE_PATH})
     positions = extractor.extract(no_resources_document_mapping)
     assert not positions
     
@@ -492,7 +492,7 @@ def test_static_resource_key_extractor_for_empty_resource():
         "__position__Description": [2, 0],
         "__position__Resources": [3, 0],
     }
-    extractor = StaticResourceKeyExtractor()
+    extractor = StaticExtractor(paths={RESOURCE_PATH})
     positions = extractor.extract(document_mapping)
     assert not positions
     

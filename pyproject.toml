@@ -112,7 +112,7 @@ enabled = true
 live_mode = true
 strict = true
 exclude = ["tests/*"]
-overrides = ["--python-executable", ".nox/tests-3-11/bin/python", True]
+overrides = ["--python-executable", ".nox/tests-3-11/bin/python", true]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

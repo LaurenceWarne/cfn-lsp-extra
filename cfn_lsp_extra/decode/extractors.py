@@ -3,8 +3,12 @@ Classes for extracting positional information from decoded documents.
 
 For example extracting the positions of resource parameters.
 """
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, List, Set, TypeVar, Union
+from typing import Callable, Generic, List, Optional, Set, Tuple, TypeVar, Union
+
+from attrs import frozen
 
 from ..aws_data import (
     AWSLogicalId,
@@ -234,6 +238,62 @@ class StaticResourceKeyExtractor(Extractor[str]):
                                 )
                             )
         return PositionLookup.from_iterable(found)
+
+@frozen
+class StaticPath:
+    value: Tuple[str, ...]
+
+    MatchAny: str = "*"
+
+    def __truediv__(self, sub_node: str) -> StaticPath:
+        return StaticPath(value=self.value + (sub_node,))
+
+    def head_tail(self) -> Tuple[Optional[str], StaticPath]:
+        if not self.value:
+            return None, StaticPath(value=())
+        head, *tail = self.value
+        return head, StaticPath(value=tuple(tail))
+
+    @staticmethod
+    def root(key: str) -> StaticPath:
+        return StaticPath(value=(key,))
+
+
+class StaticExtractor(Extractor[StaticPath]):
+
+    def __init__(self, paths: Set[StaticPath]):
+        self.paths = paths
+
+    def extract(self, node: Tree) -> PositionLookup[StaticPath]:
+        spans = (span for path in self.paths for span in self._extract_recursive(node, path, path))
+        return PositionLookup.from_iterable(spans)
+
+    def _extract_recursive(self, node: Tree, cur_path: StaticPath, full_path: StaticPath) -> List[Spanning[StaticPath]]:
+        spans = []
+        head, tail = cur_path.head_tail()
+        is_base_case, match_all = not tail.value, head == StaticPath.MatchAny
+        if is_base_case and match_all:
+            for key in node:
+                pos_key = POSITION_PREFIX + key
+                if pos_key in node:
+                    line, char = node[pos_key]
+                    spans.append(
+                        Spanning[StaticPath](value=full_path, line=line, char=char, span=len(key))
+                    )
+        elif is_base_case and head:
+            pos_key = POSITION_PREFIX + head
+            if pos_key in node:
+                line, char = node[pos_key]
+                spans.append(
+                    Spanning[StaticPath](value=full_path, line=line, char=char, span=len(head))
+                )
+        elif match_all:
+            for sub_node in node.values():
+                if isinstance(sub_node, dict):
+                    spans.extend(self._extract_recursive(sub_node, tail, full_path))
+        elif head and head in node and isinstance(node[head], dict):
+            spans.extend(self._extract_recursive(node[head], tail, full_path))
+        return spans
 
 
 class AllowedValuesExtractor(Extractor[AWSPropertyName]):

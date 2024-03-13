@@ -1,5 +1,6 @@
 """
-Resource key completions
+Static completions, e.g. at the top level we can only complete 'AWSTemplateFormatVersion', 'Resources',
+etc.
 """
 from typing import Optional
 
@@ -8,9 +9,25 @@ from pygls.workspace import Document
 
 from ..aws_data import AWSContext, Tree
 from ..cursor import text_edit, word_before_after_position
-from ..decode.extractors import StaticResourceKeyExtractor
+from ..decode.extractors import StaticExtractor, StaticPath
 
-RESOURCE_KEYS = [
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
+TOP_LEVEL_ATTRIBUTES = [
+    "AWSTemplateFormatVersion",
+    "Description",
+    "Metadata",
+    "Parameters",
+    "Rules",
+    "Mappings",
+    "Conditions",
+    "Transform",
+    "Resources",
+    "Outputs"
+]
+
+TOP_LEVEL_PATH = StaticPath.root(StaticPath.MatchAny)
+
+RESOURCE_ATTRIBUTES = [
     "Type",
     "Properties",
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
@@ -21,17 +38,25 @@ RESOURCE_KEYS = [
     "UpdatePolicy",
     "UpdateReplacePolicy"
 ]
-STATIC_RESOURCE_KEY_EXTRACTOR = StaticResourceKeyExtractor()
 
-def resource_key_completions(
+RESOURCE_PATH = StaticPath.root("Resources") / StaticPath.MatchAny / StaticPath.MatchAny
+
+STATIC_LOOKUP = {
+    TOP_LEVEL_PATH: TOP_LEVEL_ATTRIBUTES,
+    RESOURCE_PATH: RESOURCE_ATTRIBUTES
+}
+STATIC_EXTRACTOR = StaticExtractor(paths={TOP_LEVEL_PATH, RESOURCE_PATH})
+
+
+def static_completions(
     template_data: Tree,
     aws_context: AWSContext,
     document: Document,
     position: Position,
 ) -> Optional[CompletionList]:
-    position_lookup = STATIC_RESOURCE_KEY_EXTRACTOR.extract(template_data)
+    position_lookup = STATIC_EXTRACTOR.extract(template_data)
     span = position_lookup.at(position.line, position.character)
-    if span:
+    if span and span.value in STATIC_LOOKUP:
         before, after = word_before_after_position(document, position)
         return CompletionList(
             is_incomplete=False,
@@ -42,7 +67,9 @@ def resource_key_completions(
                         position, before, after, s
                     ),
                 )
-                for s in RESOURCE_KEYS
+                for s in STATIC_LOOKUP[span.value]
             ],
         )
     return None
+
+
