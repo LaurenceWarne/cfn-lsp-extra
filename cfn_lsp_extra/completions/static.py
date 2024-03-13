@@ -27,6 +27,16 @@ TOP_LEVEL_ATTRIBUTES = [
 
 TOP_LEVEL_PATH = StaticPath.root(StaticPath.MatchAny)
 
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+PARAMETER_ATTRIBUTES = [
+    "Type",
+    "Default",
+    "AllowedValues",
+    "Description"
+]
+
+PARAMETER_PATH = StaticPath.root("Parameters") / StaticPath.MatchAny / StaticPath.MatchAny
+
 RESOURCE_ATTRIBUTES = [
     "Type",
     "Properties",
@@ -52,10 +62,11 @@ OUTPUT_PATH = StaticPath.root("Outputs") / StaticPath.MatchAny / StaticPath.Matc
 
 STATIC_LOOKUP = {
     TOP_LEVEL_PATH: TOP_LEVEL_ATTRIBUTES,
+    PARAMETER_PATH: PARAMETER_ATTRIBUTES,
     RESOURCE_PATH: RESOURCE_ATTRIBUTES,
     OUTPUT_PATH: OUTPUT_ATTRIBUTES
 }
-STATIC_EXTRACTOR = StaticExtractor(paths={TOP_LEVEL_PATH, RESOURCE_PATH})
+STATIC_EXTRACTOR = StaticExtractor(paths=set(STATIC_LOOKUP.keys()))
 
 
 def static_completions(

@@ -127,6 +127,82 @@ async def test_getatt_attribute_completion(client):
 @pytest.mark.parametrize(
     "file_name,line,character",
     [
+        ("template.yaml", 7, 0),
+        ("template.json", 3, 5),
+    ],
+)
+@pytest.mark.asyncio
+async def test_top_level_completion(client, file_name, line, character):
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "Parameters" in labels
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 11, 4),
+        ("template.json", 5, 13),
+    ],
+)
+@pytest.mark.asyncio
+async def test_parameter_key_completion(client, file_name, line, character):
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "Default" in labels
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 131, 4),
+        ("template.json", 66, 13),
+    ],
+)
+@pytest.mark.asyncio
+async def test_resource_key_completion(client, file_name, line, character):
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "CreationPolicy" in labels
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
+        ("template.yaml", 198, 4),
+        ("template.json", 305, 13),
+    ],
+)
+@pytest.mark.asyncio
+async def test_output_key_completion(client, file_name, line, character):
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+
+    result = await client.text_document_completion_async(
+        CompletionParams(text_document, Position(line=line, character=character))
+    )
+
+    labels = [c.label for c in result.items]
+    assert "Export" in labels
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
         ("template.yaml", 135, 21),
         ("template.json", 244, 38),
     ],
@@ -144,8 +220,8 @@ async def test_allowed_value_completion(client, file_name, line, character):
 @pytest.mark.parametrize(
     "file_name,line,character",
     [
-        ("template.yaml", 44, 15),
-        ("template.json", 33, 18),
+        ("template.yaml", 35, 10),
+        ("template.json", 4, 4),
     ],
 )
 @pytest.mark.asyncio
