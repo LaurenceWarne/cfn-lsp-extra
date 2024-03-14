@@ -213,6 +213,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
 
 def is_document_sam(document: Document) -> bool:
     for line in document.lines:
-        if not line.lstrip().startswith("#"):
-            return line.rstrip() == "Transform: AWS::Serverless-2016-10-31"
+        line_stripped = line.strip()
+        if not line_stripped.startswith("#") and not line_stripped.startswith("{"):
+            return line_stripped == "Transform: AWS::Serverless-2016-10-31" or \
+                line_stripped.replace(" ", "").startswith('"Transform":"AWS::Serverless-2016-10-31"')
     return False
