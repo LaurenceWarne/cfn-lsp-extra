@@ -6,7 +6,6 @@ from pygls.workspace import Document
 
 RE_END_WORD = re.compile("^[A-Za-z_0-9!:]*")
 RE_START_WORD = re.compile("[A-Za-z_0-9!:]*$")
-RE_COLON = re.compile(r".*:.*")
 
 def text_edit(position: Position, before: str, after: str, text: str) -> TextEdit:
     """Return a TextEdit for position given text before and after the cursor."""
@@ -14,16 +13,6 @@ def text_edit(position: Position, before: str, after: str, text: str) -> TextEdi
     end = Position(line=position.line, character=position.character + len(after))
     return TextEdit(range=Range(start=start, end=end), new_text=text)
 
-
-def position_has_colon(
-    document: Document,
-    position: Position,
-    re_start_word: Pattern[str] = RE_START_WORD,
-    re_end_word: Pattern[str] = RE_END_WORD
-) -> bool:
-    """Return a TextEdit for position given text before and after the cursor."""
-    return bool(re.match(RE_COLON, document.lines[position.line])) or \
-       (document.filename is not None and document.filename.endswith("json"))
 
 def word_before_after_position(
     document: Document,

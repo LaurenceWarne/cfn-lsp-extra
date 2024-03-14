@@ -46,6 +46,10 @@ async def test_property_completion(client):
     assert "Bucket" in labels
     assert "PolicyDocument" in labels
 
+    inserts = [c.text_edit.new_text for c in result.items]
+    assert "Bucket: " in inserts
+    assert "PolicyDocument: " in inserts 
+
 
 @pytest.mark.asyncio
 async def test_nested_property_completion(client):
@@ -57,6 +61,10 @@ async def test_nested_property_completion(client):
     labels = [c.label for c in result.items]
     assert "LogFilePrefix" in labels
     assert "DestinationBucketName" in labels
+
+    inserts = [c.text_edit.new_text for c in result.items]
+    assert "LogFilePrefix: " in inserts
+    assert "DestinationBucketName: " in inserts
 
 
 @pytest.mark.asyncio

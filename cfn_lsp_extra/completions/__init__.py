@@ -6,7 +6,7 @@ from lsprotocol.types import CompletionItem, CompletionList, Position
 from pygls.workspace import Document
 
 from ..aws_data import AWSContext, AWSPropertyName, Tree
-from ..cursor import position_has_colon, text_edit, word_before_after_position
+from ..cursor import text_edit, word_before_after_position
 from ..decode.extractors import (
     AllowedValuesExtractor,
     ResourceExtractor,
@@ -89,7 +89,7 @@ def property_completions(
 ) -> CompletionList:
     if name.parent in aws_context:
         before, after = word_before_after_position(document, position)
-        suffix = ": " if not position_has_colon(document, position) else ""
+        suffix = "" if (document.filename is not None and document.filename.endswith("json")) else ": "
         return CompletionList(
             is_incomplete=False,
             items=[

@@ -8,7 +8,7 @@ from lsprotocol.types import CompletionItem, CompletionList, Position
 from pygls.workspace import Document
 
 from ..aws_data import AWSContext, Tree
-from ..cursor import position_has_colon, text_edit, word_before_after_position
+from ..cursor import text_edit, word_before_after_position
 from ..decode.extractors import StaticExtractor, StaticPath
 
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
@@ -98,7 +98,7 @@ def static_completions(
     span = position_lookup.at(position.line, position.character)
     if span and span.value in lookup:
         before, after = word_before_after_position(document, position)
-        suffix = ": " if not position_has_colon(document, position) else ""
+        suffix = "" if (document.filename is not None and document.filename.endswith("json")) else ": "
         return CompletionList(
             is_incomplete=False,
             items=[
