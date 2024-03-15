@@ -110,5 +110,3 @@ def static_completions(
             ],
         )
     return None
-
-

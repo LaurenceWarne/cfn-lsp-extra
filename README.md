@@ -8,12 +8,12 @@ https://user-images.githubusercontent.com/17688577/176939586-df1d9ed8-5ec6-46d5-
 
 ## Features
 
-| Method                            | Status                                                                                                                                                                    |
-|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `textDocument/hover`              | Done for resources (in particular, required properties for a resource will be auto-expanded), resource properties, subproperties and `!Ref`s. *TODO* intrinsic functions. |
-| `textDocument/completion`         | Done for resources, resource properties, subproperties, property values (for enums), refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`.                         |
-| `textDocument/definition`         | Done for `!Ref`s and `!GetAtt`s.  *TODO* mappings.                                                                                                                        |
-| `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                                                                                   |
+| Method                            | Status                                                                                                                                                             |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `textDocument/hover`              | Done for resources (in particular, required properties for a resource will be auto-expanded), resource properties, subproperties, `!Ref`s and intrinsic functions. |
+| `textDocument/completion`         | Done for resources, resource properties, subproperties, property values (for enums), refs, !GetAtts and intrinsic functions. *TODO* `Fn::GetAtt`.                  |
+| `textDocument/definition`         | Done for `!Ref`s and `!GetAtt`s.  *TODO* mappings.                                                                                                                 |
+| `textDocument/publishDiagnostics` | Done through `cfnlint`.                                                                                                                                            |
 
 Also checkout the [changelog](/CHANGELOG.md).
 
