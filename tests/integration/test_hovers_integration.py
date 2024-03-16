@@ -93,6 +93,25 @@ async def test_parameter_ref_hover(client, file_name, line, character):
 @pytest.mark.parametrize(
     "file_name,line,character",
     [
+        ("template.yaml", 40, 20),
+        ("template.json", 39, 25),
+    ],
+)
+@pytest.mark.asyncio
+async def test_intrinsic_function_hover(client, file_name, line, character):
+    text_document = TextDocumentIdentifier(uri=str(root_path / file_name))
+    result = await client.text_document_hover_async(
+        HoverParams(
+            text_document=text_document,
+            position=Position(line=line, character=character),
+        )
+    )
+    assert "Sub" in result.contents.value
+
+
+@pytest.mark.parametrize(
+    "file_name,line,character",
+    [
         ("template.yaml", 44, 15),
         ("template.json", 33, 18),
     ],

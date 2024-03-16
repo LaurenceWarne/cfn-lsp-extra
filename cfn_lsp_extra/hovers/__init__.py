@@ -10,6 +10,7 @@ from pygls.workspace import Document
 from ..aws_data import AWSContext, AWSPropertyName, AWSResourceName, Tree
 from ..decode.position import PositionLookup
 from .attributes import attribute_hover
+from .functions import intrinsic_function_hover
 from .refs import ref_hover
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ def hover(
         try:
             documentation = aws_context.description(span.value)
         except KeyError:  # no description for value, e.g. incomplete
-            return None
+            pass
         else:
             char, length = span.char, span.span
             return Hover(
@@ -47,5 +48,9 @@ def hover(
     for_attribute = attribute_hover(template_data, aws_context, document, position)
     if for_attribute:
         return for_attribute
+
+    for_intrinsic_function = intrinsic_function_hover(document, position)
+    if for_intrinsic_function:
+        return for_intrinsic_function
 
     return None
