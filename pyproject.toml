@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cfn-lsp-extra"
-version = "0.5.2"
+version = "0.6.0"
 description = "Cfn Lsp Extra"
 authors = ["Laurence Warne <laurencewarne@gmail.com>"]
 license = "MIT"

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.0
+- [2b45847](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/2b4584776dba08d47e3f6f9bef410fecd0a00ac8) Implement completions for static keys, e.g. `Type`/`Properties`/`DeletionPolicy`/... for resources, `Description`/`Value`/`Export`/... for outputs
+- [adf8ba4](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/adf8ba426fd900849b72c9245195f4f71cc780b0) Hovers for intrinsic functions
+
 ## v0.5.2
 - [1281b33](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/d2f386c6adfb4f81138ca7e977b272870754c3bb) Update `cfn-lint` version (https://github.com/LaurenceWarne/cfn-lsp-extra/issues/8).
 - [99701c4](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/99701c42fa297bbd9456e6012bb0338a3cd5383b) Drop Python 3.7 support
