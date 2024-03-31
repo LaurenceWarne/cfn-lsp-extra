@@ -31,7 +31,7 @@ coverage = {extras = ["toml"], version = ">=6.2"}
 ruff = "^0.3.4"
 mypy = "^1.9.0"
 pytest = "^8.1.1"
-pytest-asyncio = "^0.23.4"
+pytest-asyncio = "^0.23.6"
 pytest-mock = "^3.14"
 # https://github.com/swyddfa/lsp-devtools
 pytest-lsp = "^0.4.0" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
