@@ -26,6 +26,11 @@ tqdm = "^4.64"
 aws-sam-translator = "^1.84.0"
 importlib_resources = "^6.0"
 
+# Optional: https://python-poetry.org/docs/pyproject/#extras
+lxml = { version = "^5.2.1", optional = true }
+markdownify = { version = "^0.12.1", optional = true }
+beautifulsoup4 = { version = "^4.12.3", optional = true }
+
 [tool.poetry.dev-dependencies]
 coverage = {extras = ["toml"], version = ">=6.2"}
 ruff = "^0.4.2"
@@ -39,6 +44,13 @@ python-lsp-server = {extras = ["rope"], version = "^1.11.0"}
 pylsp-mypy = "^0.6.8"
 python-lsp-ruff = "^2.2.0"
 nox = "^2024.4.15"
+
+[tool.poetry.extras]
+parse = [
+  "lxml",
+  "markdownify",
+  "beautifulsoup4"
+]
 
 [tool.poetry.scripts]
 cfn-lsp-extra = "cfn_lsp_extra.__main__:main"
