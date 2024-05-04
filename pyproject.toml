@@ -35,7 +35,7 @@ beautifulsoup4 = { version = "^4.12.3", optional = true }
 coverage = {extras = ["toml"], version = ">=6.2"}
 ruff = "^0.4.2"
 mypy = "^1.10.0"
-pytest = "^8.1.2"
+pytest = "^8.2.0"
 pytest-asyncio = "^0.23.6"
 pytest-mock = "^3.14"
 # https://github.com/swyddfa/lsp-devtools
