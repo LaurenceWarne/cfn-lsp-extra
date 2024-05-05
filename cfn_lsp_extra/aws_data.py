@@ -9,7 +9,7 @@ of 899 resources.  The most properties for a resource is 52 for
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import Enum, unique
 from typing import Any, Dict, Iterator, List, MutableMapping, Optional, Union
 
 from attrs import frozen
@@ -20,6 +20,20 @@ from .scrape.markdown_textwrapper import TEXT_WRAPPER
 # https://github.com/python/mypy/issues/731
 # Tree = Dict[str, Union[str, "Tree"]]
 Tree = Any
+
+
+@unique
+class AWSSpecification(Enum):
+    """Fields from the AWS Cloudformation resource and property specification"""
+
+    ATTRIBUTES = "Attributes"
+    PROPERTIES = "Properties"
+    DOCUMENTATION = "Documentation"
+
+    # Syntethic Fields
+    MARKDOWN_DOCUMENTATION = "MarkdownDocumentation"
+    ALLOWED_VALUES = "AllowedValues"
+    REF_RETURN_VALUE = "RefReturnValue"
 
 
 class AWSRoot(Enum):
@@ -173,6 +187,85 @@ class AWSContext:
         if isinstance(obj, AWSPropertyName):
             try:
                 return [obj.parent / p for p in self[obj.parent]["properties"]]
+            except KeyError:
+                return []
+        raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
+
+
+class AWSContextV2:
+    """A handle on AWS resource data for the lsp server."""
+
+    def __init__(self, resource_map: Tree, property_map: Tree):
+        self.resource_map = resource_map
+        self.property_map = property_map
+
+    def __getitem__(self, name: AWSName) -> Tree:
+        try:
+            resource, *props = name.split()
+            tree = self.resource_map[resource]
+            if props:
+                prop_name, *subprops = props
+                while subprops:
+                    tree = self.property_map[f"{resource}.{prop_name}"]
+                    prop_name, *subprops = subprops
+            return tree
+        except KeyError as e:
+            raise KeyError(f"'{name}' is not a recognised resource or property") from e
+
+    def __contains__(self, name: AWSName) -> bool:
+        try:
+            self[name]
+        except KeyError:
+            return False
+        else:
+            return True
+
+    def description(self, name: AWSName) -> str:
+        """Get the description of obj."""
+        return self[name][AWSSpecification.MARKDOWN_DOCUMENTATION]  # type: ignore[no-any-return]
+
+    def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
+        return self[resource].get(AWSSpecification.ATTRIBUTES, {})  # type: ignore[no-any-return]
+
+    def ref_return_value(self, resource: AWSResourceName) -> str:
+        return self[resource].get(AWSSpecification.REF_RETURN_VALUE, "unknown")  # type: ignore[no-any-return]
+
+    def allowed_values(self, property_: AWSPropertyName) -> List[str]:
+        return self[property_].get(AWSSpecification.ALLOWED_VALUES, [])  # type: ignore[no-any-return]
+
+    def properties_with_allowed_values(self) -> List[AWSPropertyName]:
+        """Return properties with a finite set of allowed values, e.g. for completion."""
+        ls = []
+
+        def extract_recursively(name: AWSName, prop_tree: Tree) -> None:
+            if (
+                AWSSpecification.ALLOWED_VALUES in prop_tree
+                and prop_tree[AWSSpecification.ALLOWED_VALUES]
+            ):
+                ls.append(name)
+            for sub_prop_name, sub_prop_tree in prop_tree[
+                AWSSpecification.PROPERTIES
+            ].items():
+                extract_recursively(name / sub_prop_name, sub_prop_tree)
+
+        for resource_name, resource_content in self.resource_map.items():
+            for property_name, property_tree in resource_content[
+                AWSSpecification.PROPERTIES
+            ].items():
+                extract_recursively(resource_name / property_name, property_tree)
+
+        return ls  # type: ignore[return-value]
+
+    def same_level(self, obj: AWSName) -> List[AWSName]:
+        """Return names at the same (property/resource) level as obj."""
+        if isinstance(obj, AWSResourceName):
+            return list(self.resource_map.keys())
+        if isinstance(obj, AWSPropertyName):
+            try:
+                return [
+                    obj.parent / p
+                    for p in self[obj.parent][AWSSpecification.PROPERTIES]
+                ]
             except KeyError:
                 return []
         raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
