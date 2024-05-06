@@ -244,10 +244,16 @@ class StaticExtractor(Extractor[StaticPath]):
         self.paths = paths
 
     def extract(self, node: Tree) -> PositionLookup[StaticPath]:
-        spans = (span for path in self.paths for span in self._extract_recursive(node, path, path))
+        spans = (
+            span
+            for path in self.paths
+            for span in self._extract_recursive(node, path, path)
+        )
         return PositionLookup.from_iterable(spans)
 
-    def _extract_recursive(self, node: Tree, cur_path: StaticPath, full_path: StaticPath) -> List[Spanning[StaticPath]]:
+    def _extract_recursive(
+        self, node: Tree, cur_path: StaticPath, full_path: StaticPath
+    ) -> List[Spanning[StaticPath]]:
         spans = []
         head, tail = cur_path.head_tail()
         is_base_case, match_all = not tail.value, head == StaticPath.MatchAny
@@ -257,14 +263,18 @@ class StaticExtractor(Extractor[StaticPath]):
                 if pos_key in node:
                     line, char = node[pos_key]
                     spans.append(
-                        Spanning[StaticPath](value=full_path, line=line, char=char, span=len(key))
+                        Spanning[StaticPath](
+                            value=full_path, line=line, char=char, span=len(key)
+                        )
                     )
         elif is_base_case and head:
             pos_key = POSITION_PREFIX + head
             if pos_key in node:
                 line, char = node[pos_key]
                 spans.append(
-                    Spanning[StaticPath](value=full_path, line=line, char=char, span=len(head))
+                    Spanning[StaticPath](
+                        value=full_path, line=line, char=char, span=len(head)
+                    )
                 )
         elif match_all:
             for sub_node in node.values():
@@ -273,77 +283,6 @@ class StaticExtractor(Extractor[StaticPath]):
         elif head and head in node and isinstance(node[head], dict):
             spans.extend(self._extract_recursive(node[head], tail, full_path))
         return spans
-
-
-class AllowedValuesExtractor(Extractor[AWSPropertyName]):
-    """Extractor for values for properties in a given set.
-
-    Methods
-    -------
-    extract(node)
-        Extract resource and nested property values from node."""
-
-    def __init__(self, property_set: Set[AWSPropertyName]):
-        self.property_set = property_set
-
-    def extract(self, node: Tree) -> PositionLookup[AWSPropertyName]:
-        props = []
-        if "Resources" in node and isinstance(node["Resources"], dict):
-            for resource in filter(
-                lambda r: isinstance(r, dict), node["Resources"].values()
-            ):
-                is_res_node = "Properties" in resource and "Type" in resource
-                if is_res_node and isinstance(resource["Properties"], dict):
-                    type_ = resource["Type"] or ""
-                    props.extend(
-                        self._extract_recursive(
-                            resource["Properties"],
-                            AWSResourceName(value=type_),
-                        )
-                    )
-                # don't care if isinstance(resource["Properties"], str) since this means no values
-        return PositionLookup.from_iterable(props)
-
-    def _extract_recursive(
-        self, node: Tree, parent: Union[AWSPropertyName, AWSResourceName]
-    ) -> List[Spanning[AWSPropertyName]]:
-        props = []
-        if isinstance(node, list):
-            for sub_node in node:
-                if isinstance(sub_node, (dict, list)):
-                    props.extend(self._extract_recursive(sub_node, parent))
-            return props
-
-        values_positions = node.get(VALUES_POSITION_PREFIX, [])
-        for key in node:
-            prop = remove_prefix(key, POSITION_PREFIX)
-            aws_prop = parent / prop
-            if key.startswith(POSITION_PREFIX) and parent / prop in self.property_set:
-                # Try to obtain value position from values_positions
-                value = str(node.get(prop, ""))
-                val_key = POSITION_PREFIX + value
-                for dct in values_positions:
-                    if val_key in dct:
-                        line, char = dct[val_key]
-                        props.append(
-                            Spanning[AWSPropertyName](
-                                value=aws_prop,
-                                line=line,
-                                char=char,
-                                span=len(value),
-                            )
-                        )
-                        break
-
-            if prop in node and isinstance(node[prop], dict):
-                props.extend(self._extract_recursive(node[prop], aws_prop))
-            elif prop in node and isinstance(node[prop], list):
-                for sub_node in filter(lambda p: isinstance(p, dict), node[prop]):
-                    if isinstance(sub_node, dict):
-                        props.extend(self._extract_recursive(sub_node, aws_prop))
-                    elif isinstance(sub_node, list):
-                        props.extend(self._extract_recursive(sub_node, parent))
-        return props
 
 
 class ParameterExtractor(Extractor[AWSParameter]):

@@ -22,20 +22,6 @@ from .scrape.markdown_textwrapper import TEXT_WRAPPER
 Tree = Any
 
 
-@unique
-class AWSSpecification(Enum):
-    """Fields from the AWS Cloudformation resource and property specification"""
-
-    ATTRIBUTES = "Attributes"
-    PROPERTIES = "Properties"
-    DOCUMENTATION = "Documentation"
-
-    # Syntethic Fields
-    MARKDOWN_DOCUMENTATION = "MarkdownDocumentation"
-    ALLOWED_VALUES = "AllowedValues"
-    REF_RETURN_VALUE = "RefReturnValue"
-
-
 class AWSRoot(Enum):
     """Represents the root of the heirarchy.
 
@@ -164,22 +150,6 @@ class AWSContext:
     def allowed_values(self, property_: AWSPropertyName) -> List[str]:
         return self[property_].get("values", [])  # type: ignore[no-any-return]
 
-    def properties_with_allowed_values(self) -> List[AWSPropertyName]:
-        """Return properties with a finite set of allowed values, e.g. for completion."""
-        ls = []
-
-        def extract_recursively(name: AWSName, prop_tree: Tree) -> None:
-            if "values" in prop_tree and prop_tree["values"]:
-                ls.append(name)
-            for sub_prop_name, sub_prop_tree in prop_tree["properties"].items():
-                extract_recursively(name / sub_prop_name, sub_prop_tree)
-
-        for resource_name, resource_content in self.resource_map.items():
-            for property_name, property_tree in resource_content["properties"].items():
-                extract_recursively(resource_name / property_name, property_tree)
-
-        return ls  # type: ignore[return-value]
-
     def same_level(self, obj: AWSName) -> List[AWSName]:
         """Return names at the same (property/resource) level as obj."""
         if isinstance(obj, AWSResourceName):
@@ -192,22 +162,43 @@ class AWSContext:
         raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
 
 
+class AWSSpecification:
+    """Fields from the AWS Cloudformation resource and property specification"""
+
+    ATTRIBUTES = "Attributes"
+    PROPERTIES = "Properties"
+    DOCUMENTATION = "Documentation"
+
+    # Syntethic Fields
+    MARKDOWN_DOCUMENTATION = "MarkdownDocumentation"
+    ALLOWED_VALUES = "AllowedValues"
+    REF_RETURN_VALUE = "RefReturnValue"
+
+
 class AWSContextV2:
     """A handle on AWS resource data for the lsp server."""
 
     def __init__(self, resource_map: Tree, property_map: Tree):
         self.resource_map = resource_map
+        """For resources that have properties within a property (also known as subproperties), a list of subproperty specifications"""
         self.property_map = property_map
 
     def __getitem__(self, name: AWSName) -> Tree:
         try:
             resource, *props = name.split()
             tree = self.resource_map[resource]
-            if props:
-                prop_name, *subprops = props
-                while subprops:
-                    tree = self.property_map[f"{resource}.{prop_name}"]
-                    prop_name, *subprops = subprops
+            if props:  # Is NOT a resource
+                property_key = f"{resource}.{props[-1]}"
+                if property_key in self.property_map:
+                    return self.property_map[property_key]
+                elif len(props) == 1:
+                    return tree[AWSSpecification.PROPERTIES][prop]
+                else:  # The second to last property must be in self.property_map right?
+                    *_, snd_lst, lst = props
+                    property_key = f"{resource}.{snd_lst}"
+                    return self.property_map[property_key][AWSSpecification.PROPERTIES][
+                        lst
+                    ]
             return tree
         except KeyError as e:
             raise KeyError(f"'{name}' is not a recognised resource or property") from e
@@ -225,7 +216,8 @@ class AWSContextV2:
         return self[name][AWSSpecification.MARKDOWN_DOCUMENTATION]  # type: ignore[no-any-return]
 
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
-        return self[resource].get(AWSSpecification.ATTRIBUTES, {})  # type: ignore[no-any-return]
+        dcts = self[resource].get(AWSSpecification.ATTRIBUTES, {})
+        return {k: v[AWSSpecification.MARKDOWN_DOCUMENTATION] for k, v in dcts.items()}  # type: ignore[no-any-return]
 
     def ref_return_value(self, resource: AWSResourceName) -> str:
         return self[resource].get(AWSSpecification.REF_RETURN_VALUE, "unknown")  # type: ignore[no-any-return]
@@ -233,33 +225,10 @@ class AWSContextV2:
     def allowed_values(self, property_: AWSPropertyName) -> List[str]:
         return self[property_].get(AWSSpecification.ALLOWED_VALUES, [])  # type: ignore[no-any-return]
 
-    def properties_with_allowed_values(self) -> List[AWSPropertyName]:
-        """Return properties with a finite set of allowed values, e.g. for completion."""
-        ls = []
-
-        def extract_recursively(name: AWSName, prop_tree: Tree) -> None:
-            if (
-                AWSSpecification.ALLOWED_VALUES in prop_tree
-                and prop_tree[AWSSpecification.ALLOWED_VALUES]
-            ):
-                ls.append(name)
-            for sub_prop_name, sub_prop_tree in prop_tree[
-                AWSSpecification.PROPERTIES
-            ].items():
-                extract_recursively(name / sub_prop_name, sub_prop_tree)
-
-        for resource_name, resource_content in self.resource_map.items():
-            for property_name, property_tree in resource_content[
-                AWSSpecification.PROPERTIES
-            ].items():
-                extract_recursively(resource_name / property_name, property_tree)
-
-        return ls  # type: ignore[return-value]
-
     def same_level(self, obj: AWSName) -> List[AWSName]:
         """Return names at the same (property/resource) level as obj."""
         if isinstance(obj, AWSResourceName):
-            return list(self.resource_map.keys())
+            return [AWSResourceName(value=r) for r in self.resource_map]
         if isinstance(obj, AWSPropertyName):
             try:
                 return [

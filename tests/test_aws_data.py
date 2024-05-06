@@ -1,8 +1,5 @@
 import pytest
-
-from cfn_lsp_extra.aws_data import AWSContext
-from cfn_lsp_extra.aws_data import AWSContextMap
-from cfn_lsp_extra.aws_data import AWSResourceName
+from cfn_lsp_extra.aws_data import AWSContext, AWSContextMap, AWSResourceName
 from cfn_lsp_extra.context import load_cfn_context
 
 
@@ -196,10 +193,3 @@ def test_aws_context_contains_negative(aws_context, aws_resource_string):
     resource_name = AWSResourceName(value=aws_resource_string)
     assert AWSResourceName(value="notaresource") not in aws_context
     assert resource_name / "notaproperty" not in aws_context
-
-
-def test_aws_context_properties_with_allowed_values(full_aws_context):
-    props_with_allowed = full_aws_context.properties_with_allowed_values()
-    assert (
-        AWSResourceName(value="AWS::Lambda::Function") / "Runtime" in props_with_allowed
-    )

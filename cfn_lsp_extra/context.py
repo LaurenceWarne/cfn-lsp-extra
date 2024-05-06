@@ -11,7 +11,7 @@ from typing import MutableMapping
 from importlib_resources import as_file, files
 from platformdirs import PlatformDirs
 
-from .aws_data import AWSContext, AWSContextMap, AWSName, Tree
+from .aws_data import AWSContext, AWSContextMap, AWSContextV2, AWSName, Tree
 from .scrape.markdown import SAM_BASE_URL, parse_urls
 
 logger = logging.getLogger(__name__)
@@ -75,8 +75,24 @@ def load_context(
             return with_custom(AWSContextMap(**json.load(f)))
 
 
+def load_contextV2(
+    resource: str, override_path: Path = CFN_OVERRIDE_CTX_PATH
+) -> AWSContext:
+    """Load AWS context from a cache."""
+    if override_path.exists():
+        logger.info("Loading custom context from %s", override_path)
+        with override_path.open("r") as f:
+            d = json.load(f)
+            return AWSContextV2(d["ResourceTypes"], d["PropertyTypes"])
+    else:
+        logger.info("Loading context...")
+        source = files("cfn_lsp_extra.resources").joinpath(resource)
+        with as_file(source) as path, open(path, "r") as f:
+            return with_custom(AWSContextMap(**json.load(f)))
+
+
 def load_cfn_context() -> AWSContext:
-    return load_context("context.json", CFN_OVERRIDE_CTX_PATH)
+    return load_contextV2("context.json", CFN_OVERRIDE_CTX_PATH)
 
 
 def load_sam_context(cfn_context: AWSContext) -> AWSContext:

@@ -48,7 +48,6 @@ from .config.user_configuration import (
 )
 from .decode import CfnDecodingError, decode, decode_unfinished
 from .decode.extractors import (
-    AllowedValuesExtractor,
     CompositeExtractor,
     ResourceExtractor,
     ResourcePropertyExtractor,
@@ -61,15 +60,9 @@ logger = logging.getLogger(__name__)
 
 def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer("cfn-lsp-extra", "")  # TODO get real version here
+    property_extractor = ResourcePropertyExtractor()
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
-        ResourcePropertyExtractor(), ResourceExtractor()
-    )
-    allowed_values_extractor = AllowedValuesExtractor(
-        set(cfn_aws_context.properties_with_allowed_values())
-    )
-    logger.info(
-        "Found a total of %d properties with enum values",
-        len(allowed_values_extractor.property_set),
+        property_extractor, ResourceExtractor()
     )
     config = UserConfiguration()
 
@@ -157,8 +150,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
             aws_context,
             document,
             params.position,
-            allowed_values_extractor,
-            use_sam
+            property_extractor,
+            use_sam,
         )
 
     @server.feature(COMPLETION_ITEM_RESOLVE)
@@ -167,7 +160,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     ) -> CompletionItem:
         """Resolves a completion item."""
         if re.match(r"^.+::.+::.+$", completion_item.label):
-            return resolve_resource_completion_item(completion_item, sam_aws_context)
+            return resolve_resource_completion_item(completion_item, cfn_aws_context)
         return completion_item  # Not a resource
 
     @server.feature(TEXT_DOCUMENT_HOVER)
@@ -215,6 +208,10 @@ def is_document_sam(document: Document) -> bool:
     for line in document.lines:
         line_stripped = line.strip()
         if not line_stripped.startswith("#") and not line_stripped.startswith("{"):
-            return line_stripped == "Transform: AWS::Serverless-2016-10-31" or \
-                line_stripped.replace(" ", "").startswith('"Transform":"AWS::Serverless-2016-10-31"')
+            return (
+                line_stripped == "Transform: AWS::Serverless-2016-10-31"
+                or line_stripped.replace(" ", "").startswith(
+                    '"Transform":"AWS::Serverless-2016-10-31"'
+                )
+            )
     return False
