@@ -48,6 +48,7 @@ from .config.user_configuration import (
 )
 from .decode import CfnDecodingError, decode, decode_unfinished
 from .decode.extractors import (
+    AllowedValuesExtractor,
     CompositeExtractor,
     ResourceExtractor,
     ResourcePropertyExtractor,
@@ -60,9 +61,9 @@ logger = logging.getLogger(__name__)
 
 def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> LanguageServer:
     server = LanguageServer("cfn-lsp-extra", "")  # TODO get real version here
-    property_extractor = ResourcePropertyExtractor()
+    allowed_values_extractor = AllowedValuesExtractor()
     extractor = CompositeExtractor[Union[AWSResourceName, AWSPropertyName]](
-        property_extractor, ResourceExtractor()
+        ResourcePropertyExtractor(), ResourceExtractor()
     )
     config = UserConfiguration()
 
@@ -150,7 +151,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
             aws_context,
             document,
             params.position,
-            property_extractor,
+            allowed_values_extractor,
             use_sam,
         )
 

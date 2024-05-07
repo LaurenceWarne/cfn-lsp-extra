@@ -182,23 +182,30 @@ class AWSContextV2:
         self.resource_map = resource_map
         """For resources that have properties within a property (also known as subproperties), a list of subproperty specifications"""
         self.property_map = property_map
+        self.property_map_lc = {k.lower(): k for k in property_map}
 
     def __getitem__(self, name: AWSName) -> Tree:
         try:
             resource, *props = name.split()
             tree = self.resource_map[resource]
             if props:  # Is NOT a resource
-                property_key = f"{resource}.{props[-1]}"
-                if property_key in self.property_map:
-                    return self.property_map[property_key]
-                elif len(props) == 1:
-                    return tree[AWSSpecification.PROPERTIES][prop]
-                else:  # The second to last property must be in self.property_map right?
-                    *_, snd_lst, lst = props
-                    property_key = f"{resource}.{snd_lst}"
-                    return self.property_map[property_key][AWSSpecification.PROPERTIES][
-                        lst
-                    ]
+                idx = -1
+                for idx, prop in list(enumerate(props))[::-1]:
+                    property_key = f"{resource}.{prop}"
+                    if property_key in self.property_map:
+                        tree = self.property_map[property_key]
+                        break
+                    if property_key.lower() in self.property_map_lc:
+                        tree = self.property_map[
+                            self.property_map_lc[property_key.lower()]
+                        ]
+                        break
+                else:
+                    idx = -1
+
+                for nested_prop in props[idx + 1 :]:
+                    tree = tree[AWSSpecification.PROPERTIES][nested_prop]
+
             return tree
         except KeyError as e:
             raise KeyError(f"'{name}' is not a recognised resource or property") from e
@@ -217,7 +224,7 @@ class AWSContextV2:
 
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
         dcts = self[resource].get(AWSSpecification.ATTRIBUTES, {})
-        return {k: v[AWSSpecification.MARKDOWN_DOCUMENTATION] for k, v in dcts.items()}  # type: ignore[no-any-return]
+        return {k: v[AWSSpecification.MARKDOWN_DOCUMENTATION] for k, v in dcts.items()}
 
     def ref_return_value(self, resource: AWSResourceName) -> str:
         return self[resource].get(AWSSpecification.REF_RETURN_VALUE, "unknown")  # type: ignore[no-any-return]

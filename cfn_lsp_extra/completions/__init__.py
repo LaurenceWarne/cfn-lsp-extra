@@ -7,7 +7,12 @@ from pygls.workspace import Document
 
 from ..aws_data import AWSContext, AWSPropertyName, Tree
 from ..cursor import text_edit, word_before_after_position
-from ..decode.extractors import Extractor, ResourceExtractor, ResourcePropertyExtractor
+from ..decode.extractors import (
+    AllowedValuesExtractor,
+    Extractor,
+    ResourceExtractor,
+    ResourcePropertyExtractor,
+)
 from .allowed_values import allowed_values_completions
 from .attributes import attribute_completions
 from .functions import intrinsic_function_completions
@@ -35,7 +40,7 @@ def completions_for(
     aws_context: AWSContext,
     document: Document,
     position: Position,
-    property_extractor: Extractor[AWSPropertyName],
+    allowed_values_extractor: AllowedValuesExtractor,
     use_sam: bool,
 ) -> CompletionList:
     """Return a list of completion items for the user's position in document."""
@@ -46,7 +51,7 @@ def completions_for(
         return resource_completions(res_span.value, aws_context, document, position)
 
     allowed_values_completions_result = allowed_values_completions(
-        template_data, aws_context, document, position, property_extractor
+        template_data, aws_context, document, position, allowed_values_extractor
     )
     if allowed_values_completions_result:
         return allowed_values_completions_result

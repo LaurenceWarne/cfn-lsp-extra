@@ -7,6 +7,7 @@ from cfn_lsp_extra.aws_data import (
 )
 from cfn_lsp_extra.completions.static import RESOURCE_PATH
 from cfn_lsp_extra.decode.extractors import (
+    AllowedValuesExtractor,
     CompositeExtractor,
     Extractor,
     KeyExtractor,
@@ -502,3 +503,128 @@ def test_static_resource_key_extractor_for_empty_resource():
     extractor = StaticExtractor(paths={RESOURCE_PATH})
     positions = extractor.extract(document_mapping)
     assert not positions
+
+
+def test_allowed_values_extractor(full_aws_context):
+    extractor = AllowedValuesExtractor()
+
+    document_mapping = {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Parameters": {
+            "BaseStackName": {
+                "Type": "String",
+                "Description": "Name of the base stack",
+                "__position__Type": [3, 4],
+                "__value_positions__": [
+                    {"__position__String": [3, 10]},
+                    {"__position__Name of the base stack": [4, 17]},
+                ],
+                "__position__Description": [4, 4],
+            },
+            "LayerKey": {
+                "Type": "String",
+                "Description": (
+                    "Name of the S3 key pointing to the lambda layer containg the"
+                    " executable"
+                ),
+                "__position__Type": [6, 4],
+                "__value_positions__": [
+                    {"__position__String": [6, 10]},
+                    {
+                        "__position__Name of the S3 key pointing to the lambda layer containg the executable": [
+                            7,
+                            17,
+                        ]
+                    },
+                ],
+                "__position__Description": [7, 4],
+            },
+            "__position__BaseStackName": [2, 2],
+            "__position__LayerKey": [5, 2],
+        },
+        "Resources": {
+            "ExeLambdaLayer": {
+                "Type": "AWS::Lambda::LayerVersion",
+                "Properties": {
+                    "Content": {
+                        "S3Bucket": {
+                            "Fn::ImportValue": {
+                                "Fn::Sub": "${BaseStackName}-MiscBucket",
+                                "__position__Fn::Sub": [16, 10],
+                                "__value_positions__": [
+                                    {
+                                        "__position__${BaseStackName}-MiscBucket": [
+                                            16,
+                                            21,
+                                        ]
+                                    }
+                                ],
+                            }
+                        },
+                        "S3Key": {
+                            "Ref": "LayerKey",
+                            "__value_positions__": [{"__position__LayerKey": [17, 20]}],
+                        },
+                        "__position__S3Bucket": [15, 8],
+                        "__position__S3Key": [17, 8],
+                    },
+                    "__position__Content": [14, 6],
+                },
+                "__position__Type": [12, 4],
+                "__value_positions__": [
+                    {"__position__AWS::Lambda::LayerVersion": [12, 10]}
+                ],
+                "__position__Properties": [13, 4],
+            },
+            "LambdaFunction": {
+                "Type": "AWS::Lambda::Function",
+                "Properties": {
+                    "Layers": [
+                        "arn:aws:lambda:us-east-1:553035198032:layer:git-lambda2:8",
+                        {
+                            "Ref": "ExeLambdaLayer",
+                            "__value_positions__": [
+                                {"__position__ExeLambdaLayer": [25, 15]}
+                            ],
+                        },
+                    ],
+                    "Role": {
+                        "Fn::GetAtt": ["LambdaFunctionRole", "Arn"],
+                        "__value_positions__": [
+                            {"__position__LambdaFunctionRole.Arn": [26, 20]}
+                        ],
+                    },
+                    "Runtime": "provided.al2",
+                    "Handler": "bootstrap",
+                    "Timeout": 120,
+                    "MemorySize": 512,
+                    "__position__Layers": [22, 6],
+                    "__position__Role": [26, 6],
+                    "__position__Runtime": [27, 6],
+                    "__value_positions__": [
+                        {"__position__provided.al2": [27, 15]},
+                        {"__position__bootstrap": [28, 15]},
+                        {"__position__120": [29, 15]},
+                        {"__position__512": [30, 18]},
+                    ],
+                    "__position__Handler": [28, 6],
+                    "__position__Timeout": [29, 6],
+                    "__position__MemorySize": [30, 6],
+                },
+                "__position__Type": [20, 4],
+                "__value_positions__": [
+                    {"__position__AWS::Lambda::Function": [20, 10]}
+                ],
+                "__position__Properties": [21, 4],
+            },
+            "__position__ExeLambdaLayer": [11, 2],
+            "__position__LambdaFunction": [19, 2],
+        },
+        "__position__AWSTemplateFormatVersion": [0, 0],
+        "__value_positions__": [{"__position__2010-09-09": [0, 26]}],
+        "__position__Parameters": [1, 0],
+        "__position__Resources": [9, 0],
+    }
+
+    positions = extractor.extract(document_mapping)
+    assert [(27, 15, 12)] in positions.values()
