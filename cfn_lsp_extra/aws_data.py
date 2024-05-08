@@ -184,13 +184,26 @@ class AWSContextV2:
         self.property_map = property_map
         self.property_map_lc = {k.lower(): k for k in property_map}
 
-    def __getitem__(self, name: AWSName) -> Tree:
+    def __enrich_name(self, name: AWSName) -> AWSName:
+        resource, *props = name.split()
+        name = AWSResourceName(resource)
+        for prop in props:
+            name = name / prop
+            tree = self.__raw_getitem(name)
+            if "ItemType" in tree:
+                name = name / tree["ItemType"]
+        return name
+
+    def enrich_name(self, name: AWSName) -> AWSName:
+        return self.__enrich_name(name)
+
+    def __raw_getitem(self, name: AWSName) -> Tree:
         try:
             resource, *props = name.split()
             tree = self.resource_map[resource]
             if props:  # Is NOT a resource
                 idx = -1
-                for idx, prop in list(enumerate(props))[::-1]:
+                for idx, prop in list(enumerate(props))[::-1]:  # noqa: B007
                     property_key = f"{resource}.{prop}"
                     if property_key in self.property_map:
                         tree = self.property_map[property_key]
@@ -209,6 +222,9 @@ class AWSContextV2:
             return tree
         except KeyError as e:
             raise KeyError(f"'{name}' is not a recognised resource or property") from e
+
+    def __getitem__(self, name: AWSName) -> Tree:
+        return self.__raw_getitem(self.__enrich_name(name))
 
     def __contains__(self, name: AWSName) -> bool:
         try:

@@ -33,6 +33,19 @@ def generate_cache() -> None:
     download_context()
 
 
+@cli.command()
+def update_specification() -> None:
+    """Update the specification used by cfn-lsp-extra."""
+    try:
+        from .scrape.specification import run
+    except ImportError as e:
+        raise Exception(
+            "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
+        ) from e
+    else:
+        run()
+
+
 def main() -> None:
     cli(prog_name="cfn-lsp-extra", auto_envvar_prefix="CFN_LSP_EXTRA")
 
