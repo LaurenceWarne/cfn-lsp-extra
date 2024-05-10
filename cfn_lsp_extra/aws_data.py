@@ -9,7 +9,7 @@ of 899 resources.  The most properties for a resource is 52 for
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from enum import Enum, unique
+from enum import Enum
 from typing import Any, Dict, Iterator, List, MutableMapping, Optional, Union
 
 from attrs import frozen

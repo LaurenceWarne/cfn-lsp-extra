@@ -9,7 +9,6 @@ from ..aws_data import AWSContext, AWSPropertyName, Tree
 from ..cursor import text_edit, word_before_after_position
 from ..decode.extractors import (
     AllowedValuesExtractor,
-    Extractor,
     ResourceExtractor,
     ResourcePropertyExtractor,
 )
