@@ -11,7 +11,14 @@ from typing import MutableMapping
 from importlib_resources import as_file, files
 from platformdirs import PlatformDirs
 
-from .aws_data import AWSContext, AWSContextMap, AWSContextV2, AWSName, Tree
+from .aws_data import (
+    AWSContext,
+    AWSContextMap,
+    AWSContextV2,
+    AWSName,
+    AWSSpecification,
+    Tree,
+)
 from .scrape.markdown import SAM_BASE_URL, parse_urls
 
 logger = logging.getLogger(__name__)
@@ -52,30 +59,18 @@ def with_custom(
     logger.info("Updating context using custom file %s", custom_path)
     source = files("cfn_lsp_extra.resources").joinpath("custom.json")
     with as_file(source) as path, open(path, "r") as f:
-        context_map = ChainMap(AWSContextMap(**json.load(f)), context_map)
+        context_map = ChainMap(json.load(f), context_map)
     if custom_path.exists():
         logger.info("Updating context using user custom file %s", custom_path)
         with custom_path.open("r") as f:
-            context_map = ChainMap(AWSContextMap(**json.load(f)), context_map)
-    return AWSContext(resource_map=context_map)
+            context_map = ChainMap(json.load(f), context_map)
+    return AWSContextV2(
+        resource_map=context_map[AWSSpecification.RESOURCE_TYPES],
+        property_map=context_map[AWSSpecification.PROPERTY_TYPES],
+    )
 
 
 def load_context(
-    resource: str, override_path: Path = CFN_OVERRIDE_CTX_PATH
-) -> AWSContext:
-    """Load AWS context from a cache."""
-    if override_path.exists():
-        logger.info("Loading custom context from %s", override_path)
-        with override_path.open("r") as f:
-            return with_custom(AWSContextMap(**json.load(f)))
-    else:
-        logger.info("Loading context...")
-        source = files("cfn_lsp_extra.resources").joinpath(resource)
-        with as_file(source) as path, open(path, "r") as f:
-            return with_custom(AWSContextMap(**json.load(f)))
-
-
-def load_contextV2(
     resource: str, override_path: Path = CFN_OVERRIDE_CTX_PATH
 ) -> AWSContext:
     """Load AWS context from a cache."""
@@ -92,13 +87,8 @@ def load_contextV2(
 
 
 def load_cfn_context() -> AWSContext:
-    return load_contextV2("context.json", CFN_OVERRIDE_CTX_PATH)
+    return load_context("context.json", CFN_OVERRIDE_CTX_PATH)
 
 
 def load_sam_context(cfn_context: AWSContext) -> AWSContext:
-    return AWSContext(
-        resource_map=ChainMap(
-            load_context("sam_context.json", SAM_OVERRIDE_CTX_PATH).resource_map,
-            cfn_context.resource_map,
-        )
-    )
+    return AWSContextV2({}, {})

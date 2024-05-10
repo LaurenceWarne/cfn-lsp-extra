@@ -165,6 +165,8 @@ class AWSContext:
 class AWSSpecification:
     """Fields from the AWS Cloudformation resource and property specification"""
 
+    RESOURCE_TYPES = "ResourceTypes"
+    PROPERTY_TYPES = "PropertyTypes"
     ATTRIBUTES = "Attributes"
     PROPERTIES = "Properties"
     DOCUMENTATION = "Documentation"
