@@ -1,18 +1,17 @@
 import pytest
+from cfn_lsp_extra.aws_data import AWSPropertyName, AWSResourceName
+from cfn_lsp_extra.completions import completions_for
+from cfn_lsp_extra.decode import decode
 from lsprotocol.types import Position
 from pygls.workspace import Document
 
-from cfn_lsp_extra.aws_data import AWSPropertyName
-from cfn_lsp_extra.aws_data import AWSResourceName
-from cfn_lsp_extra.completions import completions_for
-from cfn_lsp_extra.decode import decode
-
 from ..decode.test_decode import extractor
-from ..test_aws_data import aws_context
-from ..test_aws_data import aws_context_dct
-from ..test_aws_data import aws_context_map
-from ..test_aws_data import aws_property_string
-from ..test_aws_data import aws_resource_string
+from ..test_aws_data import (
+    aws_context,
+    aws_context_resource_dct,
+    aws_property_string,
+    aws_resource_string,
+)
 
 
 @pytest.fixture
@@ -147,7 +146,7 @@ def test_property_completions(
         document,
         property_position,
         extractor,
-        False
+        False,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
@@ -173,7 +172,7 @@ def test_property_completions_with_colon(
         document,
         property_position,
         extractor,
-        False
+        False,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_property_string
@@ -194,7 +193,7 @@ def test_resource_completions(
         document,
         resource_position,
         extractor,
-        False
+        False,
     )
     assert len(result.items) == 1
     assert result.items[0].label == aws_resource_string
@@ -209,7 +208,7 @@ def test_ref_completion(
         document,
         ref_position,
         extractor,
-        False
+        False,
     )
     assert len(result.items) == 2
     assert sorted(item.label for item in result.items) == ["MyVpcId", "PublicSubnet"]
@@ -228,7 +227,9 @@ Resources:
       CidrBlock: 192.168.0.0/24""",
     )
     position = Position(line=6, character=15)
-    result = completions_for({}, aws_context, document, position, extractor, False).items
+    result = completions_for(
+        {}, aws_context, document, position, extractor, False
+    ).items
     assert len(result) > 0
     assert all(c.label.startswith("Fn::") for c in result)
 
@@ -247,8 +248,12 @@ Resources:
     )
     position = Position(line=4, character=5)
     result = completions_for(
-        decode(document.source, "file.yaml"), aws_context, document,
-        position, extractor, False
+        decode(document.source, "file.yaml"),
+        aws_context,
+        document,
+        position,
+        extractor,
+        False,
     ).items
     assert len(result) > 0
     assert "Type" in (c.label for c in result)

@@ -4,5 +4,6 @@ from cfn_lsp_extra.server import server
 
 def test_create_server():
     lsp_server = server(
-        AWSContext(resource_map=dict()), AWSContext(resource_map=dict())
+        AWSContext(resource_map={}, property_map={}),
+        AWSContext(resource_map={}, property_map={}),
     )

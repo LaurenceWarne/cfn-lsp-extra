@@ -15,7 +15,7 @@ from lsprotocol.types import (
 )
 from pygls.workspace import Document
 
-from ..aws_data import AWSContext, AWSResourceName
+from ..aws_data import AWSContext, AWSResourceName, AWSSpecification
 from ..cursor import text_edit, word_before_after_position
 
 
@@ -54,7 +54,9 @@ def resolve_resource_completion_item(
 ) -> CompletionItem:
     """Enrich a completion_item with documentation."""
     resource_name = AWSResourceName(value=completion_item.label)
-    completion_item.documentation = MarkupContent(kind=MarkupKind.Markdown, value=aws_context.description(resource_name))
+    completion_item.documentation = MarkupContent(
+        kind=MarkupKind.Markdown, value=aws_context.description(resource_name)
+    )
     return completion_item
 
 
@@ -62,7 +64,9 @@ def resource_snippet(name: AWSResourceName, aws_context: AWSContext) -> str:
     """Return a snippet appropriate for the resource name using aws_context."""
     props = "Properties:\n"
     required_props = (
-        p for p, v in aws_context[name]["properties"].items() if v["required"]
+        p
+        for p, v in aws_context[name][AWSSpecification.PROPERTIES].items()
+        if v[AWSSpecification.REQUIRED]
     )
     for idx, prop in enumerate(required_props):
         props += f"\t{prop}: ${idx + 1}\n"

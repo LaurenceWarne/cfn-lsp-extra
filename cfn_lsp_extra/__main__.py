@@ -5,7 +5,7 @@ import logging
 import click
 from click import Context
 
-from .context import download_context, load_cfn_context, load_sam_context
+from .context import load_cfn_context, load_sam_context
 from .server import server
 
 logger = logging.getLogger(__name__)
@@ -25,12 +25,6 @@ def cli(ctx: Context, verbose: int) -> None:
         sam_aws_context = load_sam_context(cfn_aws_context)
         logger.info("Starting cfn-lsp-extra server")
         server(cfn_aws_context, sam_aws_context).start_io()
-
-
-@cli.command()
-def generate_cache() -> None:
-    """Generate the documentation cache and exit."""
-    download_context()
 
 
 @cli.command()

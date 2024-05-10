@@ -2,20 +2,18 @@
 Tests for resource completions.
 """
 import pytest
+from cfn_lsp_extra.completions.static import static_completions
+from cfn_lsp_extra.decode import decode, decode_unfinished
 from lsprotocol.types import Position
 from pygls.workspace import Document
 
-from cfn_lsp_extra.completions.static import static_completions
-from cfn_lsp_extra.decode import decode
-from cfn_lsp_extra.decode import decode_unfinished
-
-from ..test_aws_data import aws_context
-from ..test_aws_data import aws_context_dct
-from ..test_aws_data import aws_context_map
-from ..test_aws_data import aws_property_string
-from ..test_aws_data import aws_resource_string
-from .test_completions import document
-from .test_completions import resource_position
+from ..test_aws_data import (
+    aws_context,
+    aws_context_resource_dct,
+    aws_property_string,
+    aws_resource_string,
+)
+from .test_completions import document, resource_position
 
 
 def test_static_completions(aws_context):
@@ -32,11 +30,5 @@ Resources:
     document = Document(uri="", source=document_string)
     position = Position(line=6, character=5)
     tree = decode_unfinished(document_string, "file.yaml", position)
-    result = static_completions(
-        tree,
-        aws_context,
-        document,
-        position,
-        False
-    )
+    result = static_completions(tree, aws_context, document, position, False)
     assert "DeletionPolicy" in map(lambda c: c.label, result.items)

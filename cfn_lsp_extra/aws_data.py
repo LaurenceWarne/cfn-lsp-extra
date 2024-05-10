@@ -86,82 +86,6 @@ class AWSPropertyName:
 AWSName = Union[AWSResourceName, AWSPropertyName]
 
 
-class OverridingKeyNotInContextError(Exception):
-    def __init__(self, message: str, path: str):
-        super().__init__(message)
-        self.path = path
-
-
-class AWSContextMap(MutableMapping[AWSName, Tree]):
-    def __init__(self, resources: Tree):
-        self.resources = resources
-
-    def __iter__(self) -> Iterator[AWSName]:
-        for resource in self.resources:
-            yield AWSResourceName(value=resource)
-
-    def __getitem__(self, name: AWSName) -> Tree:
-        resource, *subprops = name.split()
-        prop = self.resources[resource]
-        for subprop in subprops:
-            prop = prop["properties"][subprop]
-        return prop
-
-    def __len__(self) -> int:
-        return len(self.resources)
-
-    def __repr__(self) -> str:
-        return repr(self.resources)
-
-    # https://github.com/microsoft/pylance-release/issues/2097
-
-    def __delitem__(self, key: AWSName) -> None:
-        pass
-
-    def __setitem__(self, key: AWSName, value: Tree) -> None:
-        pass
-
-
-class AWSContext:
-    """A handle on AWS resource data for the lsp server."""
-
-    def __init__(self, resource_map: MutableMapping[AWSName, Tree]):
-        self.resource_map = resource_map
-
-    def __getitem__(self, name: AWSName) -> Tree:
-        try:
-            return self.resource_map[name]
-        except KeyError as e:
-            raise KeyError(f"'{name}' is not a recognised resource or property") from e
-
-    def __contains__(self, name: AWSName) -> bool:
-        return name in self.resource_map
-
-    def description(self, name: AWSName) -> str:
-        """Get the description of obj."""
-        return self[name]["description"]  # type: ignore[no-any-return]
-
-    def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
-        return self[resource].get("return_values", {})  # type: ignore[no-any-return]
-
-    def ref_return_value(self, resource: AWSResourceName) -> str:
-        return self[resource].get("ref_return_value", "unknown")  # type: ignore[no-any-return]
-
-    def allowed_values(self, property_: AWSPropertyName) -> List[str]:
-        return self[property_].get("values", [])  # type: ignore[no-any-return]
-
-    def same_level(self, obj: AWSName) -> List[AWSName]:
-        """Return names at the same (property/resource) level as obj."""
-        if isinstance(obj, AWSResourceName):
-            return list(self.resource_map.keys())
-        if isinstance(obj, AWSPropertyName):
-            try:
-                return [obj.parent / p for p in self[obj.parent]["properties"]]
-            except KeyError:
-                return []
-        raise ValueError(f"obj has to be of type AWSName, but was '{type(obj)}'")
-
-
 class AWSSpecification:
     """Fields from the AWS Cloudformation resource and property specification"""
 
@@ -170,6 +94,7 @@ class AWSSpecification:
     ATTRIBUTES = "Attributes"
     PROPERTIES = "Properties"
     DOCUMENTATION = "Documentation"
+    REQUIRED = "Required"
 
     # Syntethic Fields
     MARKDOWN_DOCUMENTATION = "MarkdownDocumentation"
@@ -177,7 +102,7 @@ class AWSSpecification:
     REF_RETURN_VALUE = "RefReturnValue"
 
 
-class AWSContextV2:
+class AWSContext:
     """A handle on AWS resource data for the lsp server."""
 
     def __init__(self, resource_map: Tree, property_map: Tree):
@@ -195,9 +120,6 @@ class AWSContextV2:
             if "ItemType" in tree:
                 name = name / tree["ItemType"]
         return name
-
-    def enrich_name(self, name: AWSName) -> AWSName:
-        return self.__enrich_name(name)
 
     def __raw_getitem(self, name: AWSName) -> Tree:
         try:
