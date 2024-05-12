@@ -3,13 +3,8 @@ Intrinsic functions, see:
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 For more information.
 """
-from typing import List
 
 from attrs import frozen
-from lsprotocol.types import Position
-from pygls.workspace import position_from_utf16
-
-from .cursor import RE_END_WORD, RE_START_WORD
 
 
 @frozen
