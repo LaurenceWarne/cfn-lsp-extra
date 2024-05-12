@@ -98,26 +98,3 @@ INTRINSIC_FUNCTIONS = [
         documentation="The intrinsic function `Ref` returns the value of the specified *parameter* or  \n*resource*\\. When the [`AWS::LanguageExtensions` transform](transform-aws-languageextensions.md) transform is used, you  \ncan use intrinsic functions as a parameter to [`Ref`](#intrinsic-function-reference-ref) and [`Fn::GetAtt`](intrinsic-function-reference-getatt.md)\\. \n + When you specify a parameter's logical name, it returns the value of the parameter\\.\n + When you specify a resource's logical name, it returns a value that you can  \ntypically use to refer to that resource, such as a [physical ID](resources-section-structure.md)\\. \n + When you specify an intrinsic function, it returns the output of that function\\.",
     ),
 ]
-
-
-#  Slighly modified version of document.word_at_position
-def word_at_position(lines: List[str], position: Position) -> str:
-    """
-    Get the word under the cursor returning the start and end positions.
-    """
-    if position.line >= len(lines):
-        return ""
-
-    pos = position_from_utf16(lines, position)
-    row, col = pos.line, pos.character
-    line = lines[row]
-    # Split word in two
-    start = line[:col]
-    end = line[col:]
-
-    # Take end of start and start of end to find word
-    # These are guaranteed to match, even if they match the empty string
-    m_start = RE_START_WORD.findall(start)
-    m_end = RE_END_WORD.findall(end)
-
-    return m_start[0] + m_end[-1]  # type: ignore[no-any-return]
