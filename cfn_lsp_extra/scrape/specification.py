@@ -18,6 +18,7 @@ from typing import Optional
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md  # type: ignore[import-untyped]
 
+from .. import remove_prefix
 from ..aws_data import AWSContext, AWSResourceName, AWSSpecification, Tree
 
 ALLOWED_VALUES_PREFIX = "*Allowed values*:"
@@ -55,7 +56,7 @@ def to_aws_context(d: Tree, parent: Optional[str], base_directory: str) -> Tree:
             )
             if allowed_values_line and idx:
                 allowed_values = (
-                    allowed_values_line.removeprefix(ALLOWED_VALUES_PREFIX)
+                    remove_prefix(allowed_values_line, ALLOWED_VALUES_PREFIX)
                     .strip("` ")
                     .replace(" | ", "|")
                     .split("|")
@@ -95,8 +96,8 @@ def file_content(
         with open(loc) as f:
             return BeautifulSoup(f.read(), features="lxml")
 
-    location = link.removeprefix(
-        "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide"
+    location = remove_prefix(
+        link, "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide"
     )
     if "#" in link:  # Subprop
         file_, _, id_ = location.partition("#")

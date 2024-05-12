@@ -10,6 +10,7 @@ from typing import Callable, Generic, List, Optional, Set, Tuple, TypeVar, Union
 
 from attrs import frozen
 
+from .. import remove_prefix
 from ..aws_data import (
     AWSLogicalId,
     AWSParameter,
@@ -20,15 +21,6 @@ from ..aws_data import (
 from . import DEBUG_CHAR
 from .position import PositionLookup, Spanning
 from .yaml_decoding import POSITION_PREFIX, VALUES_POSITION_PREFIX
-
-
-# credit https://stackoverflow.com/questions/16891340/remove-a-prefix-from-a-string
-def remove_prefix(text: str, prefix: str) -> str:
-    """Remove prefix from text if necessary."""
-    if text.startswith(prefix):
-        return text[len(prefix) :]
-    return text
-
 
 E = TypeVar("E", covariant=True)
 
