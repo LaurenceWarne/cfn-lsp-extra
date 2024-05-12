@@ -1,17 +1,15 @@
 """
 Utilities for loading the aws cloudformation doc content.
 """
-import asyncio
 import json
 import logging
 from collections import ChainMap
 from pathlib import Path
-from typing import MutableMapping
 
 from importlib_resources import as_file, files
 from platformdirs import PlatformDirs
 
-from .aws_data import AWSContext, AWSName, AWSSpecification, Tree
+from .aws_data import AWSContext, AWSSpecification, Tree
 
 logger = logging.getLogger(__name__)
 dirs = PlatformDirs("cfn-lsp-extra", "cfn-lsp-extra")
@@ -20,9 +18,7 @@ SAM_OVERRIDE_CTX_PATH = Path(dirs.user_config_dir) / "sam_context.json"
 custom_ctx_path = Path(dirs.user_config_dir) / "custom.json"
 
 
-def with_custom(
-    context_map: MutableMapping[AWSName, Tree], custom_path: Path = custom_ctx_path
-) -> AWSContext:
+def with_custom(context_map: Tree, custom_path: Path = custom_ctx_path) -> AWSContext:
     """Overwrite part of context with custom content."""
     logger.info("Updating context using custom file %s", custom_path)
     source = files("cfn_lsp_extra.resources").joinpath("custom.json")

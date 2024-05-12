@@ -13,11 +13,12 @@ import json  # noqa: I001
 import logging
 import os
 import sys
-from typing import Any, Dict, Iterator, List, MutableMapping, Optional, Union
+from typing import Optional
 
 from bs4 import BeautifulSoup
-from cfn_lsp_extra.aws_data import AWSContextV2, AWSResourceName, AWSSpecification, Tree
 from markdownify import markdownify as md  # type: ignore[import-untyped]
+
+from ..aws_data import AWSContext, AWSResourceName, AWSSpecification, Tree
 
 ALLOWED_VALUES_PREFIX = "*Allowed values*:"
 MAX_ALLOWED_VALUES_WIDTH = 30
@@ -176,7 +177,7 @@ def main() -> None:
 def run() -> None:
     with open("new-aws-context.json", "r") as f:
         ctx_map = json.load(f)
-        aws_context = AWSContextV2(ctx_map["ResourceTypes"], ctx_map["PropertyTypes"])
+        aws_context = AWSContext(ctx_map["ResourceTypes"], ctx_map["PropertyTypes"])
     print(
         aws_context.same_level(
             AWSResourceName("AWS::ECS::TaskDefinition")
@@ -190,11 +191,6 @@ def run() -> None:
             / "ContainerDefinitions"
             / "Name"
         ]
-    )
-    print(
-        aws_context.enrich_name(
-            AWSResourceName("AWS::ECS::TaskDefinition") / "ContainerDefinitions"
-        )
     )
 
 
