@@ -44,9 +44,9 @@ jobs:
         run: nox --non-interactive --error-on-missing-interpreter --session "mypy-${{ matrix.python-version }}" -- --full-trace
         
       - name: Create coverage report
-        if: matrix.python-version == 3.10 && matrix.os == 'ubuntu-latest'
-        run: nox --non-interactive --error-on-missing-interpreter --session "coverage-3.10" -- --full-trace 
+        if: matrix.python-version == 3.12 && matrix.os == 'ubuntu-latest'
+        run: nox --non-interactive --error-on-missing-interpreter --session "coverage-3.12" -- --full-trace 
 
       - name: Upload coverage to Codecov
-        if: matrix.python-version == 3.10 && matrix.os == 'ubuntu-latest'
+        if: matrix.python-version == 3.12 && matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v2
