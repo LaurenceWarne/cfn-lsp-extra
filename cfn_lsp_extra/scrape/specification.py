@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-pip-run bs4 lxml markdownify -- bin/parse_resource_specification.py CloudFormationResourceSpecification.json docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide
+cfn-lsp-extra update-specification
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification-format.html
 https://github.com/emacs-lsp/lsp-mode/issues/3676
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplifyuibuilder-component-predicate.html
@@ -18,7 +18,7 @@ from typing import Optional
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md  # type: ignore[import-untyped]
 
-from .. import remove_prefix
+from .. import remove_prefix, remove_suffix
 from ..aws_data import AWSContext, AWSResourceName, AWSSpecification, Tree
 
 ALLOWED_VALUES_PREFIX = "*Allowed values*:"
@@ -148,7 +148,7 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
 
 
 def ref_return_value(content: BeautifulSoup, slug: str) -> str:
-    prefix = slug.removesuffix(".html")
+    prefix = remove_suffix(slug, ".html")
     id_ = f"{prefix}-return-values-ref"
     div = content.find("h3", {"id": id_})
     p_tags, el = [], div
