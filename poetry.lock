@@ -49,13 +49,13 @@ tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "p
 
 [[package]]
 name = "aws-sam-translator"
-version = "1.88.0"
+version = "1.89.0"
 description = "AWS SAM Translator is a library that transform SAM templates into AWS CloudFormation templates"
 optional = false
 python-versions = "!=4.0,<=4.0,>=3.8"
 files = [
-    {file = "aws_sam_translator-1.88.0-py3-none-any.whl", hash = "sha256:aa93d498d8de3fb3d485c316155b1628144b823bbc176099a20de06df666fcac"},
-    {file = "aws_sam_translator-1.88.0.tar.gz", hash = "sha256:e77c65f3488566122277accd44a0f1ec018e37403e0d5fe25120d96e537e91a7"},
+    {file = "aws_sam_translator-1.89.0-py3-none-any.whl", hash = "sha256:843be1b5ca7634f700ad0c844a7e0dc42858f35da502e91691473eadd1731ded"},
+    {file = "aws_sam_translator-1.89.0.tar.gz", hash = "sha256:fff1005d0b1f3cb511d0ac7e85f54af06afc9d9e433df013a2338d7a0168d174"},
 ]
 
 [package.dependencies]
