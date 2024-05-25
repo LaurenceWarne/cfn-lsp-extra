@@ -1096,13 +1096,13 @@ testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
 
 [[package]]
 name = "pytest-lsp"
-version = "0.4.1"
+version = "0.4.2"
 description = "A pytest plugin for end-to-end testing of language servers"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytest_lsp-0.4.1-py3-none-any.whl", hash = "sha256:fe268056687c2ce7d5230435d545878c9560cdeb8c13c3d7405a9c8f386eb6f2"},
-    {file = "pytest_lsp-0.4.1.tar.gz", hash = "sha256:85d6486c581bbcb504201d39e311754a82864e5120b44c16c1fdd8cdda830b9c"},
+    {file = "pytest_lsp-0.4.2-py3-none-any.whl", hash = "sha256:94d4f36cf8629da5ab7616b434beca07c542e0938ec3ad9dc171f2e7e0dfd1fc"},
+    {file = "pytest_lsp-0.4.2.tar.gz", hash = "sha256:716fee29ebaa30cfb7aea72f517383544fb6dd6403bef68dd10d805ac3255555"},
 ]
 
 [package.dependencies]
@@ -1785,4 +1785,4 @@ parse = ["beautifulsoup4", "lxml", "markdownify", "types-beautifulsoup4"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "d4c7e6f4a174f6a92c78dacf048830630c2d441fe36adef14d7186a866f68f8e"
+content-hash = "a2c2bccec929257fb45975cec00d83edc46c4eca09c03aa84fa377e05ba6a3e8"
