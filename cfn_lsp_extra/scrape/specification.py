@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 cfn-lsp-extra update-specification
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification-format.html
