@@ -19,36 +19,46 @@ REF_KEY = "$ref"
 REF_PREFIX = "#/definitions/"
 REQUIRED = "required"
 TYPE_KEY = "type"
+PRIMITIVE_TYPE = "PrimitiveType"
+PROPERTY_SKIP_LIST = (
+    REQUIRED,
+    PRIMITIVE_TYPE,
+    "additionalProperties",
+    PROP_KEY,
+    TYPE_KEY,
+)
+ANY_OF = "anyOf"
 
 
 def to_aws_context(sam_dct: Tree) -> Tree:
     d_ = {}
     base = sam_dct["definitions"]
-    d_["ResourceTypes"] = {k: recurse(v) for k, v in base.items() if "." not in k}
-    d_["PropertyTypes"] = {k: recurse(v) for k, v in base.items() if "." in k}
+    d_["ResourceTypes"] = {
+        k: normalise_resource(v)
+        for k, v in base.items()
+        if "." not in k and "AWS::Serverless" in k
+    }
+    # d_["PropertyTypes"] = {k: recurse(v) for k, v in base.items() if "." in k}
     return d_
 
 
-def recurse(d: Tree) -> Tree:
+def normalise_resource(d: Tree) -> Tree:
     if not isinstance(d, dict):
         return d
-    d_: Tree = {}
-    for k, v in d.items():
-        if isinstance(v, dict) and PROP_KEY in v and isinstance(v[PROP_KEY], dict):
-            required_set = set()
-            if REQUIRED in v:
-                required_set = set(v[REQUIRED])
-            for k2, v2 in v[PROP_KEY].items():
-                if k2 == REQUIRED:
-                    continue
-                d_[k2] = recurse(v2)
-                d_[k2]["Required"] = k2 in required_set
-        # If "properties" is in v, we want to ignore all other keys
-        elif k == REF_KEY:
-            d_["Type"] = v2.partition(".")[-1]
-        elif k == TYPE_KEY:
-            d_["PrimitiveType"] = v2
-        else:
-            d_[k2] = v2
-        d_[k] = recurse({k2: v2 for k2, v2 in v.items() if k2 != PROP_KEY})
+
+    d_ = {}
+    props = d[PROP_KEY][AWSSpecification.PROPERTIES][PROP_KEY]
+    d_[AWSSpecification.PROPERTIES] = props
+
+    required = d[PROP_KEY][AWSSpecification.PROPERTIES].get(REQUIRED, [])
+    for property_name in list(props.keys()):
+        sub_props = d_[AWSSpecification.PROPERTIES][property_name]
+        sub_props[AWSSpecification.REQUIRED] = property_name in required
+        if REF_KEY in sub_props:
+            ref = sub_props.pop(REF_KEY)
+            sub_props["Type"] = ref.split(".")[-1]
+        elif ANY_OF in sub_props:
+            sub_props["Type"] = next(
+                t[REF_KEY].split(".")[-1] for t in sub_props.pop(ANY_OF) if REF_KEY in t
+            )
     return d_
