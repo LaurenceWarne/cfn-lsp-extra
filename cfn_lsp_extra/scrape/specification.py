@@ -174,28 +174,5 @@ def main() -> None:
         json.dump(ctx_map, f_, indent=2)
 
 
-def run() -> None:
-    with open("new-aws-context.json", "r") as f:
-        ctx_map = json.load(f)
-        aws_context = AWSContext(ctx_map["ResourceTypes"], ctx_map["PropertyTypes"])
-    print(
-        aws_context.same_level(
-            AWSResourceName("AWS::ECS::TaskDefinition")
-            / "ContainerDefinitions"
-            / "Name"
-        )
-    )
-    print(
-        aws_context[
-            AWSResourceName("AWS::ECS::TaskDefinition")
-            / "ContainerDefinitions"
-            / "Name"
-        ]
-    )
-
-
 if __name__ == "__main__":
-    if len(sys.argv) > 3:
-        run()
-    else:
-        main()
+    main()

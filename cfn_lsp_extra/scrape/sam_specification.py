@@ -31,7 +31,7 @@ ANY_OF = "anyOf"
 SERVERLESS_PREFIX = "AWS::Serverless"
 
 
-def to_aws_context(sam_dct: Tree) -> Tree:
+def to_aws_context(sam_dct: Tree, base_directory: str) -> Tree:
     d_ = {}
     base = sam_dct["definitions"]
     d_["ResourceTypes"] = {
@@ -84,3 +84,17 @@ def normalise_types(d: Tree) -> Tree:
             (t[REF_KEY].split(".")[-1] for t in d.pop(ANY_OF) if REF_KEY in t), "string"
         )
     return d
+
+
+def main() -> None:
+    f, base_dir = sys.argv[1], sys.argv[2]
+    with open(f, "r") as sam_spec:
+        d = sam_spec.read()
+
+    aws_context = to_aws_context(d, base_dir)
+    with open("new-aws-sam-context.json", "w") as sam_spec_out:
+        json.dump(aws_context, sam_spec_out, indent=2)
+
+
+if __name__ == "__main__":
+    main()
