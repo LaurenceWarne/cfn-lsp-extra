@@ -95,6 +95,9 @@ class AWSSpecification:
     PROPERTIES = "Properties"
     DOCUMENTATION = "Documentation"
     REQUIRED = "Required"
+    TYPE = "Type"
+    PRIMITIVE_TYPE = "Type"
+    ITEM_TYPE = "ItemType"
 
     # Syntethic Fields
     MARKDOWN_DOCUMENTATION = "MarkdownDocumentation"

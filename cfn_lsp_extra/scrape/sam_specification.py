@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from markdownify import markdownify as md  # type: ignore[import-untyped]
 
 from .. import remove_prefix, remove_suffix
-from ..aws_data import AWSContext, AWSResourceName, AWSSpecification, Tree
+from ..aws_data import AWSSpecification, Tree
 
 PROP_KEY = "properties"
 REF_KEY = "$ref"
@@ -78,11 +78,24 @@ def normalise_property(d: Tree) -> Tree:
 def normalise_types(d: Tree) -> Tree:
     if REF_KEY in d:
         ref = d.pop(REF_KEY)
-        d["Type"] = ref.split(".")[-1]
-    elif ANY_OF in d:
-        d["Type"] = next(
-            (t[REF_KEY].split(".")[-1] for t in d.pop(ANY_OF) if REF_KEY in t), "string"
-        )
+        d[AWSSpecification.TYPE] = ref.split(".")[-1]
+    elif ANY_OF in d:  # We just take the first
+        types = d.pop(ANY_OF)
+        find = next((t[REF_KEY].split(".")[-1] for t in types if REF_KEY in t), None)
+        if find:
+            d[AWSSpecification.TYPE] = find
+        else:
+            d[AWSSpecification.PRIMITIVE_TYPE] = types[0]
+    elif TYPE_KEY in d and d[TYPE_KEY] == "array":
+        d.pop(TYPE_KEY)
+        d[AWSSpecification.TYPE] = "List"
+        item_type = d.pop("items")
+        if isinstance(item_type, dict) and REF_KEY in item_type:
+            d[AWSSpecification.ITEM_TYPE] = item_type[REF_KEY].split(".")[-1]
+        else:
+            d[AWSSpecification.ITEM_TYPE] = item_type[TYPE_KEY]
+    elif TYPE_KEY in d:
+        d[AWSSpecification.PRIMITIVE_TYPE] = d.pop(TYPE_KEY)
     return d
 
 

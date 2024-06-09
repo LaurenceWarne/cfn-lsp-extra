@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 from markdownify import markdownify as md  # type: ignore[import-untyped]
 
 from .. import remove_prefix, remove_suffix
-from ..aws_data import AWSContext, AWSResourceName, AWSSpecification, Tree
+from ..aws_data import AWSSpecification, Tree
 
 ALLOWED_VALUES_PREFIX = "*Allowed values*:"
 MAX_ALLOWED_VALUES_WIDTH = 30

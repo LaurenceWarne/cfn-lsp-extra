@@ -17,4 +17,4 @@ def test_to_aws_context():
     content = json.loads(p.read_text("utf-8"))
     from pprint import pprint
 
-    pprint(to_aws_context(content))
+    pprint(to_aws_context(content, "/"))
