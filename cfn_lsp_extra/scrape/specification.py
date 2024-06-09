@@ -166,13 +166,9 @@ def try_download(url: str, out_file_name: str) -> None:
     os.system(f"curl -L -X GET {url} > {out_file_name}")
 
 
-def main() -> None:
-    f, base_dir = sys.argv[1], sys.argv[2]
-    parsed = parse(f)
-    ctx_map = to_aws_context(parsed, None, base_dir)
+def run() -> None:
+    spec_file, base_directory = sys.argv[2:]
+    parsed = parse(spec_file)
+    ctx_map = to_aws_context(parsed, None, base_directory)
     with open("new-aws-context.json", "w") as f_:
         json.dump(ctx_map, f_, indent=2)
-
-
-if __name__ == "__main__":
-    main()

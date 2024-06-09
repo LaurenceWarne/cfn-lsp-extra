@@ -57,4 +57,4 @@ def load_cfn_context() -> AWSContext:
 
 
 def load_sam_context(cfn_context: AWSContext) -> AWSContext:
-    return AWSContext({}, {})
+    return load_context("sam_context.json", SAM_OVERRIDE_CTX_PATH)

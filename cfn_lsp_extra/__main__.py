@@ -28,14 +28,22 @@ def cli(ctx: Context, verbose: int) -> None:
 
 
 @cli.command()
-@click.option("--sam", default=False, help="Update the SAM specification.")
-def update_specification(sam: bool) -> None:
+def update_specification() -> None:
     """Update the specification used by cfn-lsp-extra."""
     try:
-        if sam:
-            from .scrape.sam_specification import run
-        else:
-            from .scrape.specification import run
+        from .scrape.specification import run
+    except ImportError as e:
+        raise Exception(
+            "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
+        ) from e
+    else:
+        run()
+
+
+@cli.command()
+def update_sam_specification() -> None:
+    try:
+        from .scrape.sam_specification import run
     except ImportError as e:
         raise Exception(
             "Please Install cfn-lsp-extra[parse] to run 'update-specification'"

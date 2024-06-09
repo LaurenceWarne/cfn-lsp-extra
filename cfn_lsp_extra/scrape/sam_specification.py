@@ -99,15 +99,11 @@ def normalise_types(d: Tree) -> Tree:
     return d
 
 
-def main() -> None:
-    f, base_dir = sys.argv[1], sys.argv[2]
-    with open(f, "r") as sam_spec:
+def run() -> None:
+    spec_file, base_directory = sys.argv[2:]
+    with open(spec_file, "r") as sam_spec:
         d = sam_spec.read()
 
-    aws_context = to_aws_context(d, base_dir)
+    aws_context = to_aws_context(d, base_directory)
     with open("new-aws-sam-context.json", "w") as sam_spec_out:
         json.dump(aws_context, sam_spec_out, indent=2)
-
-
-if __name__ == "__main__":
-    main()
