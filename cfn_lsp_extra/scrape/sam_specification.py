@@ -102,15 +102,14 @@ def normalise_types(d: Tree) -> Tree:
 
 
 def run(spec_file: Path) -> None:
-    with tempfile.TemporaryDirectory() as base_directory:
-        absolute = spec_file.absolute()
-        os.chdir(base_directory)
-        os.system(
-            "wget --no-parent -r https://docs.aws.amazon.com/serverless-application-model/latest/developerguide"
+    out_file = Path("new-aws-sam-context.json").absolute()
+    with tempfile.TemporaryDirectory() as tmp_directory:
+        d = json.loads(spec_file.read_bytes())
+        os.chdir(tmp_directory)
+        doc_dir = (
+            "docs.aws.amazon.com/serverless-application-model/latest/developerguide"
         )
-        print(absolute)
-        d = json.loads(absolute.read_bytes())
-
-        aws_context = to_aws_context(d, base_directory)
-        with open("new-aws-sam-context.json", "w") as sam_spec_out:
+        os.system(f"wget --no-parent -r https://{doc_dir}")
+        aws_context = to_aws_context(d, doc_dir)
+        with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)

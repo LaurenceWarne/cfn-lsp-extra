@@ -164,10 +164,12 @@ def try_download(url: str, out_file_name: str) -> None:
 
 
 def run(spec_file: Path) -> None:
-    with tempfile.TemporaryDirectory() as base_directory, open(
-        spec_file, "r"
-    ) as sam_spec:
-        parsed = json.load(sam_spec)
-        ctx_map = to_aws_context(parsed, None, base_directory)
-        with open("new-aws-context.json", "w") as f_:
+    out_file = Path("new-aws-context.json").absolute()
+    with tempfile.TemporaryDirectory() as tmp_directory, open(spec_file, "r") as spec:
+        parsed = json.load(spec)
+        os.chdir(tmp_directory)
+        doc_dir = "docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide"
+        os.system(f"wget --no-parent -r https://{doc_dir}")
+        ctx_map = to_aws_context(parsed, None, doc_dir)
+        with open(out_file, "w") as f_:
             json.dump(ctx_map, f_, indent=2)
