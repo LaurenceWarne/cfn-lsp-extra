@@ -6,6 +6,8 @@ import json  # noqa: I001
 import logging
 import os
 import sys
+import tempfile
+from pathlib import Path
 from typing import Optional
 
 from bs4 import BeautifulSoup
@@ -99,11 +101,16 @@ def normalise_types(d: Tree) -> Tree:
     return d
 
 
-def run() -> None:
-    spec_file, base_directory = sys.argv[2:]
-    with open(spec_file, "r") as sam_spec:
-        d = sam_spec.read()
+def run(spec_file: Path) -> None:
+    with tempfile.TemporaryDirectory() as base_directory:
+        absolute = spec_file.absolute()
+        os.chdir(base_directory)
+        os.system(
+            "wget --no-parent -r https://docs.aws.amazon.com/serverless-application-model/latest/developerguide"
+        )
+        print(absolute)
+        d = json.loads(absolute.read_bytes())
 
-    aws_context = to_aws_context(d, base_directory)
-    with open("new-aws-sam-context.json", "w") as sam_spec_out:
-        json.dump(aws_context, sam_spec_out, indent=2)
+        aws_context = to_aws_context(d, base_directory)
+        with open("new-aws-sam-context.json", "w") as sam_spec_out:
+            json.dump(aws_context, sam_spec_out, indent=2)

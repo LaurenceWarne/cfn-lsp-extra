@@ -12,6 +12,8 @@ import json  # noqa: I001
 import logging
 import os
 import sys
+import tempfile
+from pathlib import Path
 from typing import Optional
 
 from bs4 import BeautifulSoup
@@ -24,11 +26,6 @@ ALLOWED_VALUES_PREFIX = "*Allowed values*:"
 MAX_ALLOWED_VALUES_WIDTH = 30
 
 logger = logging.getLogger(__name__)
-
-
-def parse(f: str) -> Tree:
-    with open(f, "r") as f_:
-        return json.load(f_)
 
 
 def to_aws_context(d: Tree, parent: Optional[str], base_directory: str) -> Tree:
@@ -166,9 +163,11 @@ def try_download(url: str, out_file_name: str) -> None:
     os.system(f"curl -L -X GET {url} > {out_file_name}")
 
 
-def run() -> None:
-    spec_file, base_directory = sys.argv[2:]
-    parsed = parse(spec_file)
-    ctx_map = to_aws_context(parsed, None, base_directory)
-    with open("new-aws-context.json", "w") as f_:
-        json.dump(ctx_map, f_, indent=2)
+def run(spec_file: Path) -> None:
+    with tempfile.TemporaryDirectory() as base_directory, open(
+        spec_file, "r"
+    ) as sam_spec:
+        parsed = json.load(sam_spec)
+        ctx_map = to_aws_context(parsed, None, base_directory)
+        with open("new-aws-context.json", "w") as f_:
+            json.dump(ctx_map, f_, indent=2)

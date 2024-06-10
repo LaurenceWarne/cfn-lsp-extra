@@ -1,6 +1,7 @@
 """Command-line interface."""
 
 import logging
+from pathlib import Path
 
 import click
 from click import Context
@@ -28,7 +29,8 @@ def cli(ctx: Context, verbose: int) -> None:
 
 
 @cli.command()
-def update_specification() -> None:
+@click.argument("specification-file", type=click.Path(exists=True))
+def update_specification(specification_file: str) -> None:
     """Update the specification used by cfn-lsp-extra."""
     try:
         from .scrape.specification import run
@@ -37,11 +39,12 @@ def update_specification() -> None:
             "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
         ) from e
     else:
-        run()
+        run(Path(specification_file))
 
 
 @cli.command()
-def update_sam_specification() -> None:
+@click.argument("specification-file", type=click.Path(exists=True))
+def update_sam_specification(specification_file: str) -> None:
     try:
         from .scrape.sam_specification import run
     except ImportError as e:
@@ -49,7 +52,7 @@ def update_sam_specification() -> None:
             "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
         ) from e
     else:
-        run()
+        run(Path(specification_file))
 
 
 def main() -> None:
