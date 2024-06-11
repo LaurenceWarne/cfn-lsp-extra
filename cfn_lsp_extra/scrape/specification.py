@@ -11,7 +11,6 @@ import functools
 import json  # noqa: I001
 import logging
 import os
-import sys
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -28,7 +27,7 @@ MAX_ALLOWED_VALUES_WIDTH = 30
 logger = logging.getLogger(__name__)
 
 
-def to_aws_context(d: Tree, parent: Optional[str], base_directory: str) -> Tree:
+def to_aws_context(d: Tree, parent: Optional[str], base_directory: Path) -> Tree:
     if not isinstance(d, dict):
         return d
     d_: Tree = {}
@@ -86,35 +85,35 @@ def set_attribute_doc(base_link: str, attribs_dct: Tree) -> None:
 
 @functools.lru_cache(maxsize=None)
 def file_content(
-    base_directory: str, link: str, on_fail_try_download: bool = True
+    base_directory: Path, link: str, on_fail_try_download: bool = True
 ) -> BeautifulSoup:
-    def read_file(loc: str) -> BeautifulSoup:
-        with open(loc) as f:
-            return BeautifulSoup(f.read(), features="lxml")
+    def read_file(loc: Path) -> BeautifulSoup:
+        return BeautifulSoup(loc.read_text(), features="lxml")
 
     location = remove_prefix(
-        link, "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide"
+        link, "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/"
     )
     if "#" in link:  # Subprop
-        file_, _, id_ = location.partition("#")
-        file_ = base_directory + file_
+        sub_path, _, id_ = location.partition("#")
+        file_path = base_directory / sub_path
         try:
-            return read_file(file_)
+            return read_file(file_path)
         except FileNotFoundError:
             if on_fail_try_download:
-                try_download(link, file_)
+                try_download(link, file_path)
                 return file_content(base_directory, link, on_fail_try_download=False)
-            logger.info(f"No file found for {link}")
+            logger.info("No file found for %s", link)
             return BeautifulSoup("")
     else:  # resource
-        file_ = base_directory + location
+        file_path = base_directory / location
+        logger.info("Processing %s", file_path)
         try:
-            return read_file(file_)
+            return read_file(file_path)
         except FileNotFoundError:
             if on_fail_try_download:
-                try_download(link, file_)
+                try_download(link, file_path)
                 return file_content(base_directory, link, on_fail_try_download=False)
-            logger.info(f"No file found for {link}")
+            logger.info("No file found for %s", link)
             return BeautifulSoup("")
 
 
@@ -123,7 +122,7 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
         id_ = link.split("#")[-1]
         dt = content.find("dt", {"id": id_})
         if not dt:
-            logger.info(f"No documentation found for {link}")
+            logger.info("No documentation found for %s", link)
             return ""
         dd = dt.findNext("dd")
         doc = md(str(dd)) if dd else ""
@@ -159,17 +158,25 @@ def ref_return_value(content: BeautifulSoup, slug: str) -> str:
     return md("".join(map(str, p_tags))) if p_tags else ""  # type: ignore[no-any-return]
 
 
-def try_download(url: str, out_file_name: str) -> None:
-    os.system(f"curl -L -X GET {url} > {out_file_name}")
+def try_download(url: str, out_file_name: Path) -> None:
+    os.system(f"curl -L -X GET {url} > {out_file_name.absolute()}")
 
 
-def run(spec_file: Path) -> None:
+def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
     out_file = Path("new-aws-context.json").absolute()
     with tempfile.TemporaryDirectory() as tmp_directory, open(spec_file, "r") as spec:
         parsed = json.load(spec)
         os.chdir(tmp_directory)
-        doc_dir = "docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide"
-        os.system(f"wget --no-parent -r https://{doc_dir}")
+        doc_dir = documentation_directory or (
+            Path("docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide")
+        )
+        if not documentation_directory:
+            os.system(f"wget --no-parent -r https://{doc_dir}")
+        else:
+            logger.info(
+                "Not downloading documentation, using existing directory %s",
+                documentation_directory,
+            )
         ctx_map = to_aws_context(parsed, None, doc_dir)
         with open(out_file, "w") as f_:
             json.dump(ctx_map, f_, indent=2)

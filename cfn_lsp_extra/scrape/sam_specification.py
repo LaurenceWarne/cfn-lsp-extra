@@ -33,7 +33,7 @@ ANY_OF = "anyOf"
 SERVERLESS_PREFIX = "AWS::Serverless"
 
 
-def to_aws_context(sam_dct: Tree, base_directory: str) -> Tree:
+def to_aws_context(sam_dct: Tree, base_directory: Path) -> Tree:
     d_ = {}
     base = sam_dct["definitions"]
     d_["ResourceTypes"] = {
@@ -101,15 +101,18 @@ def normalise_types(d: Tree) -> Tree:
     return d
 
 
-def run(spec_file: Path) -> None:
+def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
     out_file = Path("new-aws-sam-context.json").absolute()
     with tempfile.TemporaryDirectory() as tmp_directory:
         d = json.loads(spec_file.read_bytes())
         os.chdir(tmp_directory)
-        doc_dir = (
-            "docs.aws.amazon.com/serverless-application-model/latest/developerguide"
+        doc_dir = documentation_directory or (
+            Path(
+                "docs.aws.amazon.com/serverless-application-model/latest/developerguide"
+            )
         )
-        os.system(f"wget --no-parent -r https://{doc_dir}")
+        if not documentation_directory:
+            os.system(f"wget --no-parent -r https://{doc_dir}")
         aws_context = to_aws_context(d, doc_dir)
         with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)
