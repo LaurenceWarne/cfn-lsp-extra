@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 def cli(ctx: Context, verbose: int) -> None:
     """Start a cfn-lsp-extra server."""
     # This fn is called regardless, so we have to check if a subcommand should be run
+    level = [logging.ERROR, logging.INFO, logging.DEBUG][min(verbose, 2)]
+    logging.basicConfig(level=level)
     if ctx.invoked_subcommand is None:
         cfn_aws_context = load_cfn_context()
         sam_aws_context = load_sam_context(cfn_aws_context)
