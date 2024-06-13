@@ -1,20 +1,19 @@
 """
 https://raw.githubusercontent.com/awslabs/goformation/master/schema/sam.schema.json
 """
-import functools
 import json  # noqa: I001
 import logging
 import os
-import sys
 import tempfile
 from pathlib import Path
 from typing import Optional
 
 from bs4 import BeautifulSoup
-from markdownify import markdownify as md  # type: ignore[import-untyped]
 
-from .. import remove_prefix, remove_suffix
 from ..aws_data import AWSSpecification, Tree
+from .specification import documentation
+
+logger = logging.getLogger(__name__)
 
 PROP_KEY = "properties"
 REF_KEY = "$ref"
@@ -37,7 +36,7 @@ def to_aws_context(sam_dct: Tree, base_directory: Path) -> Tree:
     d_ = {}
     base = sam_dct["definitions"]
     d_["ResourceTypes"] = {
-        k: normalise_resource(v)
+        k: normalise_resource(k, v, base_directory)
         for k, v in base.items()
         if "." not in k and SERVERLESS_PREFIX in k
     }
@@ -49,13 +48,16 @@ def to_aws_context(sam_dct: Tree, base_directory: Path) -> Tree:
     return d_
 
 
-def normalise_resource(d: Tree) -> Tree:
+def normalise_resource(name: str, d: Tree, base_directory: Path) -> Tree:
     if not isinstance(d, dict):
         return d
 
     d_ = {}
     props = d[PROP_KEY][AWSSpecification.PROPERTIES][PROP_KEY]
     d_[AWSSpecification.PROPERTIES] = props
+    doc_path = base_directory / f"sam-resource-{name.split('::')[-1].lower()}"
+    bs = BeautifulSoup(doc_path.read_text())
+    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, "", None)
 
     required = d[PROP_KEY][AWSSpecification.PROPERTIES].get(REQUIRED, [])
     for property_name in list(props.keys()):
