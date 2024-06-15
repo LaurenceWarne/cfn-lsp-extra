@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Optional
 
 from ..aws_data import AWSSpecification, Tree
-from .specification import documentation, file_content
+from .specification import documentation, file_content, run_command
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +35,12 @@ DEFAULT_SPEC_URL = "https://raw.githubusercontent.com/awslabs/goformation/master
 def to_aws_context(sam_dct: Tree, base_directory: Path, base_url: str) -> Tree:
     d_ = {}
     base = sam_dct["definitions"]
-    d_["ResourceTypes"] = {
+    d_[AWSSpecification.RESOURCE_TYPES] = {
         k: normalise_resource(k, v, base_directory, base_url)
         for k, v in base.items()
         if "." not in k and SERVERLESS_PREFIX in k
     }
-    d_["PropertyTypes"] = {
+    d_[AWSSpecification.PROPERTY_TYPES] = {
         k: normalise_property(v)
         for k, v in base.items()
         if "." in k and SERVERLESS_PREFIX in k
@@ -124,7 +124,7 @@ def run(
         )
         base_url = f"https://{doc_dir}"
         if not documentation_directory:
-            os.system(f"wget --no-parent -r {base_url}")
+            run_command(f"wget --no-parent -r {base_url}")
         aws_context = to_aws_context(spec_json, doc_dir, base_url)
         with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)

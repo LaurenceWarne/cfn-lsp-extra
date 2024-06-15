@@ -165,8 +165,13 @@ def ref_return_value(content: BeautifulSoup, slug: str) -> str:
     return md("".join(map(str, p_tags))) if p_tags else ""  # type: ignore[no-any-return]
 
 
+def run_command(cmd: str) -> None:
+    logger.info("Running '%s'", cmd)
+    os.system(cmd)
+
+
 def try_download(url: str, out_file_name: Path) -> None:
-    os.system(f"curl -L -X GET {url} > {out_file_name.absolute()}")
+    run_command(f"curl -L -X GET {url} > {out_file_name.absolute()}")
 
 
 def run(
@@ -186,7 +191,7 @@ def run(
             Path("docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide")
         )
         if not documentation_directory:
-            os.system(f"wget --no-parent -r https://{doc_dir}")
+            run_command(f"wget --no-parent -r https://{doc_dir}")
         else:
             logger.info(
                 "Not downloading documentation, using existing directory %s",

@@ -124,7 +124,8 @@
           "Required": false,
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nCreates a collection of Amazon API Gateway resources and methods that can be invoked through\n HTTPS endpoints.\n\nAn AWS::Serverless::Api resource need not be\n explicitly added to a AWS Serverless Application Definition template. A resource of this type\n is implicitly created from the union of Api events defined on [AWS::Serverless::Function](./sam-resource-function.html) resources defined in\n the template that do not refer to an AWS::Serverless::Api resource.\n\nAn AWS::Serverless::Api resource should be\n used to define and document the API using OpenApi, which provides more ability to configure the\n underlying Amazon API Gateway resources.\n\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify that API Gateway resources have\n authorizers attached to them to control access to them.\n\nFor more information about using AWS CloudFormation hooks, see [Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and\n the [apigw-enforce-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository.\n\nFor more information about using IAM policies, see [Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer Guide*.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     },
     "AWS::Serverless::Application": {
       "Properties": {
@@ -161,7 +162,8 @@
           "Required": false,
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nEmbeds a serverless application from the [AWS Serverless Application Repository](https://serverlessrepo.aws.amazon.com/applications) or from an Amazon S3 bucket as a nested application. Nested applications are deployed as nested [AWS::CloudFormation::Stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-stack.html) resources, which can contain multiple other resources including other AWS::Serverless::Application resources.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources. For more information,\n see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     },
     "AWS::Serverless::Function": {
       "Properties": {
@@ -320,7 +322,8 @@
           "Required": false,
           "Type": "VpcConfig"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nCreates an AWS Lambda function, an AWS Identity and Access Management (IAM) execution role, and event source\n mappings that trigger the function.\n\nThe AWS::Serverless::Function resource\n also supports the `Metadata` resource attribute, so you can instruct AWS SAM to build\n custom runtimes that your application requires. For more information about building custom\n runtimes, see [Building custom runtimes](./building-custom-runtimes.html).\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     },
     "AWS::Serverless::HttpApi": {
       "Properties": {
@@ -392,7 +395,8 @@
           "Required": false,
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nCreates an Amazon API Gateway HTTP API, which enables you to create RESTful APIs with lower latency\n and lower costs than REST APIs. For more information, see [Working with HTTP\n APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) in the *API Gateway Developer Guide*.\n\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify that API Gateway resources have\n authorizers attached to them to control access to them.\n\nFor more information about using AWS CloudFormation hooks, see [Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and\n the [apigw-enforce-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository.\n\nFor more information about using IAM policies, see [Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer Guide*.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     },
     "AWS::Serverless::LayerVersion": {
       "Properties": {
@@ -421,7 +425,8 @@
           "Required": false,
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nCreates a Lambda LayerVersion that contains library or runtime code needed by a Lambda Function.\n\nThe AWS::Serverless::LayerVersion resource also supports the `Metadata` resource attribute, so you can instruct AWS SAM to build layers included in your application. For more information about building layers, see [Building layers](./building-layers.html).\n\n**Important Note**: Since the release of the [UpdateReplacePolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) resource attribute in AWS CloudFormation, [AWS::Lambda::LayerVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversion.html) (recommended) offers the same benefits as AWS::Serverless::LayerVersion.\n\nWhen a Serverless LayerVersion is transformed, SAM also transforms the logical id of the resource so that old LayerVersions are not automatically deleted by CloudFormation when the resource is updated.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources. For more information,\n see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     },
     "AWS::Serverless::SimpleTable": {
       "Properties": {
@@ -451,7 +456,8 @@
           "Required": false,
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nCreates a DynamoDB table with a single attribute primary key. It is useful when data only\n needs to be accessed via a primary key.\n\nTo use the more advanced functionality of DynamoDB, use an [AWS::DynamoDB::Table](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html) resource instead.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     },
     "AWS::Serverless::StateMachine": {
       "Properties": {
@@ -521,7 +527,8 @@
           "Required": false,
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "``\nCreates an AWS Step Functions state machine, which you can use to orchestrate AWS Lambda functions and\n other AWS resources to form complex and robust workflows.\n\nFor more information about Step Functions, see the [AWS Step Functions Developer Guide](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html).\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
     }
   },
   "PropertyTypes": {
