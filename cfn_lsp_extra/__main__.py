@@ -21,7 +21,7 @@ def cli(ctx: Context, verbose: int) -> None:
     """Start a cfn-lsp-extra server."""
     # This fn is called regardless, so we have to check if a subcommand should be run
     level = [logging.ERROR, logging.INFO, logging.DEBUG][min(verbose, 2)]
-    logging.basicConfig(level=level)
+    logging.basicConfig(level=level, force=True)
     if ctx.invoked_subcommand is None:
         cfn_aws_context = load_cfn_context()
         sam_aws_context = load_sam_context(cfn_aws_context)
@@ -36,6 +36,7 @@ def update_specification(
     specification_file: str, documentation_directory: Optional[str] = None
 ) -> None:
     """Update the specification used by cfn-lsp-extra."""
+    logging.basicConfig(level=logging.INFO, force=True)
     try:
         from .scrape.specification import run
     except ImportError as e:
@@ -43,7 +44,6 @@ def update_specification(
             "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
         ) from e
     else:
-        logging.basicConfig(level=logging.INFO)
         run(
             Path(specification_file),
             Path(documentation_directory).absolute()
@@ -58,6 +58,7 @@ def update_specification(
 def update_sam_specification(
     specification_file: str, documentation_directory: Optional[str] = None
 ) -> None:
+    logging.basicConfig(level=logging.INFO, force=True)
     try:
         from .scrape.sam_specification import run
     except ImportError as e:
@@ -65,7 +66,6 @@ def update_sam_specification(
             "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
         ) from e
     else:
-        logging.basicConfig(level=logging.INFO)
         run(
             Path(specification_file),
             Path(documentation_directory).absolute()
