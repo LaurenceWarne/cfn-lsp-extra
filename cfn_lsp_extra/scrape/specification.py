@@ -85,14 +85,15 @@ def set_attribute_doc(base_link: str, attribs_dct: Tree) -> None:
 
 @functools.lru_cache(maxsize=None)
 def file_content(
-    base_directory: Path, link: str, on_fail_try_download: bool = True
+    base_directory: Path,
+    link: str,
+    on_fail_try_download: bool = True,
+    base_url: str = "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/",
 ) -> BeautifulSoup:
     def read_file(loc: Path) -> BeautifulSoup:
         return BeautifulSoup(loc.read_text(), features="lxml")
 
-    location = remove_prefix(
-        link, "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/"
-    )
+    location = remove_prefix(link, base_url).lstrip("/")
     if "#" in link:  # Subprop
         sub_path, _, id_ = location.partition("#")
         file_path = base_directory / sub_path
@@ -101,7 +102,9 @@ def file_content(
         except FileNotFoundError:
             if on_fail_try_download:
                 try_download(link, file_path)
-                return file_content(base_directory, link, on_fail_try_download=False)
+                return file_content(
+                    base_directory, link, on_fail_try_download=False, base_url=base_url
+                )
             logger.info("No file found for %s", link)
             return BeautifulSoup("")
     else:  # resource
@@ -112,7 +115,9 @@ def file_content(
         except FileNotFoundError:
             if on_fail_try_download:
                 try_download(link, file_path)
-                return file_content(base_directory, link, on_fail_try_download=False)
+                return file_content(
+                    base_directory, link, on_fail_try_download=False, base_url=base_url
+                )
             logger.info("No file found for %s", link)
             return BeautifulSoup("")
 
@@ -180,3 +185,4 @@ def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
         ctx_map = to_aws_context(parsed, None, doc_dir)
         with open(out_file, "w") as f_:
             json.dump(ctx_map, f_, indent=2)
+    logger.info("Wrote context to %s", out_file)

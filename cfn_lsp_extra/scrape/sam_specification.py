@@ -8,10 +8,8 @@ import tempfile
 from pathlib import Path
 from typing import Optional
 
-from bs4 import BeautifulSoup
-
 from ..aws_data import AWSSpecification, Tree
-from .specification import documentation
+from .specification import documentation, file_content
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +30,11 @@ ANY_OF = "anyOf"
 SERVERLESS_PREFIX = "AWS::Serverless"
 
 
-def to_aws_context(sam_dct: Tree, base_directory: Path) -> Tree:
+def to_aws_context(sam_dct: Tree, base_directory: Path, base_url: str) -> Tree:
     d_ = {}
     base = sam_dct["definitions"]
     d_["ResourceTypes"] = {
-        k: normalise_resource(k, v, base_directory)
+        k: normalise_resource(k, v, base_directory, base_url)
         for k, v in base.items()
         if "." not in k and SERVERLESS_PREFIX in k
     }
@@ -48,7 +46,7 @@ def to_aws_context(sam_dct: Tree, base_directory: Path) -> Tree:
     return d_
 
 
-def normalise_resource(name: str, d: Tree, base_directory: Path) -> Tree:
+def normalise_resource(name: str, d: Tree, base_directory: Path, base_url: str) -> Tree:
     if not isinstance(d, dict):
         return d
 
@@ -56,8 +54,9 @@ def normalise_resource(name: str, d: Tree, base_directory: Path) -> Tree:
     props = d[PROP_KEY][AWSSpecification.PROPERTIES][PROP_KEY]
     d_[AWSSpecification.PROPERTIES] = props
     doc_path = base_directory / f"sam-resource-{name.split('::')[-1].lower()}"
-    bs = BeautifulSoup(doc_path.read_text())
-    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, "", None)
+    link = f"https://{doc_path}"
+    bs = file_content(base_directory, link, base_url=base_url)
+    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, None)
 
     required = d[PROP_KEY][AWSSpecification.PROPERTIES].get(REQUIRED, [])
     for property_name in list(props.keys()):
@@ -110,11 +109,13 @@ def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
         os.chdir(tmp_directory)
         doc_dir = documentation_directory or (
             Path(
-                "docs.aws.amazon.com/serverless-application-model/latest/developerguide"
+                "docs.aws.amazon.com/serverless-application-model/latest/developerguide/"
             )
         )
+        base_url = f"https://{doc_dir}"
         if not documentation_directory:
-            os.system(f"wget --no-parent -r https://{doc_dir}")
-        aws_context = to_aws_context(d, doc_dir)
+            os.system(f"wget --no-parent -r {base_url}")
+        aws_context = to_aws_context(d, doc_dir, base_url)
         with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)
+    logger.info("Wrote context to %s", out_file)
