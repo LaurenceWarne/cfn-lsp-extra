@@ -12,3 +12,4 @@ __pycache__/
 /bin/parse_links.py
 *~
 /.ropeproject/
+/docs.aws.amazon.com/

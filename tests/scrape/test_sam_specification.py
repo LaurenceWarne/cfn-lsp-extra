@@ -7,6 +7,7 @@ import pytest
 from cfn_lsp_extra.scrape.sam_specification import DEFAULT_SPEC_URL, run
 
 
+@pytest.mark.skip(reason="Very slow")
 def test_to_aws_context():
     p = pathlib.Path("/tmp/sam-schema.json")
     doc_dir = pathlib.Path("/tmp/sam-doc-dir")

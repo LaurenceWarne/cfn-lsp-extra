@@ -58,7 +58,7 @@ def normalise_resource(name: str, d: Tree, base_directory: Path, base_url: str) 
     doc_path = base_directory / f"sam-resource-{name.split('::')[-1].lower()}"
     link = f"https://{doc_path}"
     bs = file_content(base_directory, link, base_url=base_url)
-    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, None)
+    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
 
     required = d[PROP_KEY][AWSSpecification.PROPERTIES].get(REQUIRED, [])
     for property_name in list(props.keys()):
