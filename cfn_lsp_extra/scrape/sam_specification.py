@@ -5,6 +5,7 @@ import json  # noqa: I001
 import logging
 import os
 import tempfile
+import urllib.request
 from pathlib import Path
 from typing import Optional
 
@@ -28,6 +29,7 @@ PROPERTY_SKIP_LIST = (
 )
 ANY_OF = "anyOf"
 SERVERLESS_PREFIX = "AWS::Serverless"
+DEFAULT_SPEC_URL = "https://raw.githubusercontent.com/awslabs/goformation/master/schema/sam.schema.json"
 
 
 def to_aws_context(sam_dct: Tree, base_directory: Path, base_url: str) -> Tree:
@@ -102,10 +104,18 @@ def normalise_types(d: Tree) -> Tree:
     return d
 
 
-def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
+def run(
+    spec_file: Optional[Path],
+    documentation_directory: Optional[Path],
+    out_path: Optional[Path],
+) -> None:
     out_file = Path("new-aws-sam-context.json").absolute()
+    if spec_file:
+        spec_json = json.loads(spec_file.read_bytes())
+    else:
+        with urllib.request.urlopen(DEFAULT_SPEC_URL) as f:
+            spec_json = json.loads(f.read().decode("utf-8"))
     with tempfile.TemporaryDirectory() as tmp_directory:
-        d = json.loads(spec_file.read_bytes())
         os.chdir(tmp_directory)
         doc_dir = documentation_directory or (
             Path(
@@ -115,7 +125,7 @@ def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
         base_url = f"https://{doc_dir}"
         if not documentation_directory:
             os.system(f"wget --no-parent -r {base_url}")
-        aws_context = to_aws_context(d, doc_dir, base_url)
+        aws_context = to_aws_context(spec_json, doc_dir, base_url)
         with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)
     logger.info("Wrote context to %s", out_file)

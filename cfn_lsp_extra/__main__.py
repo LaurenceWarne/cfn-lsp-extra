@@ -30,10 +30,13 @@ def cli(ctx: Context, verbose: int) -> None:
 
 
 @cli.command()
-@click.argument("specification-file", type=click.Path(exists=True))
-@click.argument("documentation-directory", type=click.Path(exists=True), required=False)
+@click.option("-s", "--specification-file", type=click.Path(exists=True))
+@click.option("-d", "--documentation-directory", type=click.Path(exists=True))
+@click.option("-o", "--output-path", type=click.Path(exists=False))
 def update_specification(
-    specification_file: str, documentation_directory: Optional[str] = None
+    specification_file: Optional[str] = None,
+    documentation_directory: Optional[str] = None,
+    output_path: Optional[str] = None,
 ) -> None:
     """Update the specification used by cfn-lsp-extra."""
     logging.basicConfig(level=logging.INFO, force=True)
@@ -45,18 +48,22 @@ def update_specification(
         ) from e
     else:
         run(
-            Path(specification_file),
+            Path(specification_file) if specification_file else None,
             Path(documentation_directory).absolute()
             if documentation_directory
             else None,
+            Path(output_path) if output_path else None,
         )
 
 
 @cli.command()
-@click.argument("specification-file", type=click.Path(exists=True))
-@click.argument("documentation-directory", type=click.Path(exists=True), required=False)
+@click.option("-s", "--specification-file", type=click.Path(exists=True))
+@click.option("-d", "--documentation-directory", type=click.Path(exists=True))
+@click.option("-o", "--output-path", type=click.Path(exists=False))
 def update_sam_specification(
-    specification_file: str, documentation_directory: Optional[str] = None
+    specification_file: Optional[str] = None,
+    documentation_directory: Optional[str] = None,
+    output_path: Optional[str] = None,
 ) -> None:
     logging.basicConfig(level=logging.INFO, force=True)
     try:
@@ -67,10 +74,11 @@ def update_sam_specification(
         ) from e
     else:
         run(
-            Path(specification_file),
+            Path(specification_file) if specification_file else None,
             Path(documentation_directory).absolute()
             if documentation_directory
             else None,
+            Path(output_path) if output_path else None,
         )
 
 

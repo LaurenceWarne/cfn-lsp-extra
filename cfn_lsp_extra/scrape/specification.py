@@ -12,6 +12,7 @@ import json  # noqa: I001
 import logging
 import os
 import tempfile
+import urllib.request
 from pathlib import Path
 from typing import Optional
 
@@ -23,6 +24,7 @@ from ..aws_data import AWSSpecification, Tree
 
 ALLOWED_VALUES_PREFIX = "*Allowed values*:"
 MAX_ALLOWED_VALUES_WIDTH = 30
+DEFAULT_SPEC_URL = "https://dnwj8swjjbsbt.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json"
 
 logger = logging.getLogger(__name__)
 
@@ -167,10 +169,18 @@ def try_download(url: str, out_file_name: Path) -> None:
     os.system(f"curl -L -X GET {url} > {out_file_name.absolute()}")
 
 
-def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
-    out_file = Path("new-aws-context.json").absolute()
-    with tempfile.TemporaryDirectory() as tmp_directory, open(spec_file, "r") as spec:
-        parsed = json.load(spec)
+def run(
+    spec_file: Optional[Path],
+    documentation_directory: Optional[Path],
+    out_path: Optional[Path],
+) -> None:
+    out_path = out_path or Path("new-aws-context.json").absolute()
+    if spec_file:
+        spec_json = json.loads(spec_file.read_bytes())
+    else:
+        with urllib.request.urlopen(DEFAULT_SPEC_URL) as f:
+            spec_json = json.loads(f.read().decode("utf-8"))
+    with tempfile.TemporaryDirectory() as tmp_directory:
         os.chdir(tmp_directory)
         doc_dir = documentation_directory or (
             Path("docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide")
@@ -182,7 +192,7 @@ def run(spec_file: Path, documentation_directory: Optional[Path]) -> None:
                 "Not downloading documentation, using existing directory %s",
                 documentation_directory,
             )
-        ctx_map = to_aws_context(parsed, None, doc_dir)
-        with open(out_file, "w") as f_:
+        ctx_map = to_aws_context(spec_json, None, doc_dir)
+        with open(out_path, "w") as f_:
             json.dump(ctx_map, f_, indent=2)
-    logger.info("Wrote context to %s", out_file)
+    logger.info("Wrote context to %s", out_path)
