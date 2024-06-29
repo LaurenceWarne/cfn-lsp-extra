@@ -120,8 +120,8 @@ class AWSContext:
         for prop in props:
             name = name / prop
             tree = self.__raw_getitem(name)
-            if "ItemType" in tree:
-                name = name / tree["ItemType"]
+            if AWSSpecification.ITEM_TYPE in tree:
+                name = name / tree[AWSSpecification.ITEM_TYPE]
         return name
 
     def __raw_getitem(self, name: AWSName) -> Tree:
@@ -151,7 +151,11 @@ class AWSContext:
             raise KeyError(f"'{name}' is not a recognised resource or property") from e
 
     def __getitem__(self, name: AWSName) -> Tree:
-        return self.__raw_getitem(self.__enrich_name(name))
+        try:
+            return self.__raw_getitem(self.__enrich_name(name))
+        except KeyError:
+            # Sometimes ItemType is something like 'String' or 'Tag', which results in an invalid name
+            return self.__raw_getitem(name)
 
     def __contains__(self, name: AWSName) -> bool:
         try:
