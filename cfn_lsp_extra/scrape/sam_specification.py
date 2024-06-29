@@ -5,9 +5,10 @@ import json  # noqa: I001
 import logging
 import os
 import tempfile
-import urllib.request
 from pathlib import Path
 from typing import Optional
+
+import requests
 
 from ..aws_data import AWSSpecification, Tree
 from .specification import documentation, file_content, run_command
@@ -113,8 +114,8 @@ def run(
     if spec_file:
         spec_json = json.loads(spec_file.read_bytes())
     else:
-        with urllib.request.urlopen(DEFAULT_SPEC_URL) as f:
-            spec_json = json.loads(f.read().decode("utf-8"))
+        logger.info("Downloading spec from %s", DEFAULT_SPEC_URL)
+        spec_json = json.loads(requests.get(DEFAULT_SPEC_URL).text)
     with tempfile.TemporaryDirectory() as tmp_directory:
         os.chdir(tmp_directory)
         doc_dir = documentation_directory or (
