@@ -4,7 +4,7 @@ Utilities for parsing yaml document strings.
 from typing import Any, List, Tuple
 
 from cfnlint.decode.cfn_yaml import FN_PREFIX, UNCONVERTED_SUFFIXES
-from cfnlint.decode.node import dict_node, list_node, sub_node
+from cfnlint.decode.node import dict_node, list_node
 
 try:
     from yaml.cyaml import CSafeLoader as SafeLoader
@@ -34,9 +34,6 @@ def multi_constructor(loader: SafeLoader, tag_suffix: str, node: Node) -> Node:
         constructor = loader.construct_mapping  # type: ignore[assignment]
     else:
         raise Exception(f"Bad tag: !{tag_suffix}")
-
-    if tag_suffix == "Fn::Sub":
-        return sub_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)  # type: ignore[no-any-return]
 
     return dict_node({tag_suffix: constructor(node)}, node.start_mark, node.end_mark)  # type: ignore[no-any-return]
 
