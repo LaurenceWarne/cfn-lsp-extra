@@ -4,10 +4,7 @@ LSP features leveraging cfnlint.
 
 from typing import Dict, List
 
-import cfnlint.config
-import cfnlint.core
-import cfnlint.decode
-import cfnlint.runner
+import cfnlint
 from cfnlint.api import lint_all
 from lsprotocol.types import Diagnostic, DiagnosticSeverity, Position, Range
 
