@@ -125,7 +125,7 @@
           "Type": "object"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Api`\nCreates a collection of Amazon API Gateway resources and methods that can be invoked through\n HTTPS endpoints.\n\nAn AWS::Serverless::Api resource need not be\n explicitly added to a AWS Serverless Application Definition template. A resource of this type\n is implicitly created from the union of Api events defined on [AWS::Serverless::Function](./sam-resource-function.html) resources defined in\n the template that do not refer to an AWS::Serverless::Api resource.\n\nAn AWS::Serverless::Api resource should be\n used to define and document the API using OpenApi, which provides more ability to configure the\n underlying Amazon API Gateway resources.\n\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify that API Gateway resources have\n authorizers attached to them to control access to them.\n\nFor more information about using AWS CloudFormation hooks, see [Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and\n the [apigw-enforce-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository.\n\nFor more information about using IAM policies, see [Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer Guide*.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Api`\nCreates a collection of Amazon API Gateway resources and methods that can be invoked through\n HTTPS endpoints.\nAn AWS::Serverless::Api resource need not be\n explicitly added to a AWS Serverless Application Definition template. A resource of this type\n is implicitly created from the union of Api events defined on [AWS::Serverless::Function](./sam-resource-function.html) resources defined in\n the template that do not refer to an AWS::Serverless::Api resource.\nAn AWS::Serverless::Api resource should be\n used to define and document the API using OpenApi, which provides more ability to configure the\n underlying Amazon API Gateway resources.\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify that API Gateway resources have\n authorizers attached to them to control access to them.\nFor more information about using AWS CloudFormation hooks, see [Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and\n the [apigw-enforce-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository.\nFor more information about using IAM policies, see [Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer Guide*.\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     },
     "AWS::Serverless::Application": {
       "Properties": {
@@ -163,7 +163,7 @@
           "Type": "number"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Application`\nEmbeds a serverless application from the [AWS Serverless Application Repository](https://serverlessrepo.aws.amazon.com/applications) or from an Amazon S3 bucket as a nested application. Nested applications are deployed as nested [AWS::CloudFormation::Stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-stack.html) resources, which can contain multiple other resources including other AWS::Serverless::Application resources.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources. For more information,\n see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Application`\nEmbeds a serverless application from the [AWS Serverless Application Repository](https://serverlessrepo.aws.amazon.com/applications) or from an Amazon S3 bucket as a nested application. Nested applications are deployed as nested [AWS::CloudFormation::Stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-stack.html) resources, which can contain multiple other resources including other AWS::Serverless::Application resources.\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources. For more information,\n see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     },
     "AWS::Serverless::Function": {
       "Properties": {
@@ -323,7 +323,7 @@
           "Type": "VpcConfig"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function`\nCreates an AWS Lambda function, an AWS Identity and Access Management (IAM) execution role, and event source\n mappings that trigger the function.\n\nThe AWS::Serverless::Function resource\n also supports the `Metadata` resource attribute, so you can instruct AWS SAM to build\n custom runtimes that your application requires. For more information about building custom\n runtimes, see [Building custom runtimes](./building-custom-runtimes.html).\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function`\nCreates an AWS Lambda function, an AWS Identity and Access Management (IAM) execution role, and event source\n mappings that trigger the function.\nThe AWS::Serverless::Function resource\n also supports the `Metadata` resource attribute, so you can instruct AWS SAM to build\n custom runtimes that your application requires. For more information about building custom\n runtimes, see [Building Lambda functions with custom runtimes](./building-custom-runtimes.html).\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     },
     "AWS::Serverless::HttpApi": {
       "Properties": {
@@ -396,7 +396,7 @@
           "Type": "object"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::HttpApi`\nCreates an Amazon API Gateway HTTP API, which enables you to create RESTful APIs with lower latency\n and lower costs than REST APIs. For more information, see [Working with HTTP\n APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) in the *API Gateway Developer Guide*.\n\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify that API Gateway resources have\n authorizers attached to them to control access to them.\n\nFor more information about using AWS CloudFormation hooks, see [Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and\n the [apigw-enforce-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository.\n\nFor more information about using IAM policies, see [Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer Guide*.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi`\nCreates an Amazon API Gateway HTTP API, which enables you to create RESTful APIs with lower latency\n and lower costs than REST APIs. For more information, see [Working with HTTP\n APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) in the *API Gateway Developer Guide*.\nWe recommend that you use AWS CloudFormation hooks or IAM policies to verify that API Gateway resources have\n authorizers attached to them to control access to them.\nFor more information about using AWS CloudFormation hooks, see [Registering hooks](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html) in the *AWS CloudFormation CLI user guide* and\n the [apigw-enforce-authorizer](https://github.com/aws-cloudformation/aws-cloudformation-samples/tree/main/hooks/python-hooks/apigw-enforce-authorizer/) GitHub repository.\nFor more information about using IAM policies, see [Require that API routes have authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-require-authorization) in the *API Gateway Developer Guide*.\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     },
     "AWS::Serverless::LayerVersion": {
       "Properties": {
@@ -426,7 +426,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::LayerVersion`\nCreates a Lambda LayerVersion that contains library or runtime code needed by a Lambda Function.\n\nThe AWS::Serverless::LayerVersion resource also supports the `Metadata` resource attribute, so you can instruct AWS SAM to build layers included in your application. For more information about building layers, see [Building layers](./building-layers.html).\n\n**Important Note**: Since the release of the [UpdateReplacePolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) resource attribute in AWS CloudFormation, [AWS::Lambda::LayerVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversion.html) (recommended) offers the same benefits as AWS::Serverless::LayerVersion.\n\nWhen a Serverless LayerVersion is transformed, SAM also transforms the logical id of the resource so that old LayerVersions are not automatically deleted by CloudFormation when the resource is updated.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources. For more information,\n see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::LayerVersion`\nCreates a Lambda LayerVersion that contains library or runtime code needed by a Lambda Function.\nThe AWS::Serverless::LayerVersion resource also supports the `Metadata` resource attribute, so you can instruct AWS SAM to build layers included in your application. For more information about building layers, see [Building Lambda layers](./building-layers.html).\n**Important Note**: Since the release of the [UpdateReplacePolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) resource attribute in AWS CloudFormation, [AWS::Lambda::LayerVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversion.html) (recommended) offers the same benefits as AWS::Serverless::LayerVersion.\nWhen a Serverless LayerVersion is transformed, SAM also transforms the logical id of the resource so that old LayerVersions are not automatically deleted by CloudFormation when the resource is updated.\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources. For more information,\n see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     },
     "AWS::Serverless::SimpleTable": {
       "Properties": {
@@ -457,7 +457,7 @@
           "Type": "object"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::SimpleTable`\nCreates a DynamoDB table with a single attribute primary key. It is useful when data only\n needs to be accessed via a primary key.\n\nTo use the more advanced functionality of DynamoDB, use an [AWS::DynamoDB::Table](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html) resource instead.\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::SimpleTable`\nCreates a DynamoDB table with a single attribute primary key. It is useful when data only\n needs to be accessed via a primary key.\nTo use the more advanced functionality of DynamoDB, use an [AWS::DynamoDB::Table](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html) resource instead.\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     },
     "AWS::Serverless::StateMachine": {
       "Properties": {
@@ -528,7 +528,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::StateMachine`\nCreates an AWS Step Functions state machine, which you can use to orchestrate AWS Lambda functions and\n other AWS resources to form complex and robust workflows.\n\nFor more information about Step Functions, see the [AWS Step Functions Developer Guide](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html).\n\n###### Note\n\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n\n"
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine`\nCreates an AWS Step Functions state machine, which you can use to orchestrate AWS Lambda functions and\n other AWS resources to form complex and robust workflows.\nFor more information about Step Functions, see the [AWS Step Functions Developer Guide](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html).\n###### Note\nWhen you deploy to AWS CloudFormation, AWS SAM transforms your AWS SAM resources into AWS CloudFormation resources.\n For more information, see [Generated AWS CloudFormation resources](./sam-specification-generated-resources.html).\n"
     }
   },
   "PropertyTypes": {
@@ -540,7 +540,8 @@
         "Format": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.AccessLogSetting`\n"
     },
     "AWS::Serverless::Api.Auth": {
       "Properties": {
@@ -553,7 +554,8 @@
         "DefaultAuthorizer": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.Auth`\n"
     },
     "AWS::Serverless::Api.CanarySetting": {
       "Properties": {
@@ -575,7 +577,8 @@
         "UseStageCache": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.CanarySetting`\n"
     },
     "AWS::Serverless::Api.CorsConfiguration": {
       "Properties": {
@@ -594,7 +597,8 @@
         "MaxAge": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.CorsConfiguration`\n"
     },
     "AWS::Serverless::Api.DomainConfiguration": {
       "Properties": {
@@ -623,7 +627,8 @@
         "SecurityPolicy": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.DomainConfiguration`\n"
     },
     "AWS::Serverless::Api.EndpointConfiguration": {
       "Properties": {
@@ -634,7 +639,8 @@
           "Type": "List",
           "ItemType": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.EndpointConfiguration`\n"
     },
     "AWS::Serverless::Api.MutualTlsAuthentication": {
       "Properties": {
@@ -644,7 +650,8 @@
         "TruststoreVersion": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.MutualTlsAuthentication`\n"
     },
     "AWS::Serverless::Api.Route53Configuration": {
       "Properties": {
@@ -663,7 +670,8 @@
         "IpV6": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.Route53Configuration`\n"
     },
     "AWS::Serverless::Api.S3Location": {
       "Properties": {
@@ -676,7 +684,8 @@
         "Version": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Api.S3Location`\n"
     },
     "AWS::Serverless::Application.ApplicationLocation": {
       "Properties": {
@@ -686,14 +695,16 @@
         "SemanticVersion": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Application.ApplicationLocation`\n"
     },
     "AWS::Serverless::Function.AlexaSkillEvent": {
       "Properties": {
         "SkillId": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.AlexaSkillEvent`\n"
     },
     "AWS::Serverless::Function.ApiEvent": {
       "Properties": {
@@ -731,7 +742,8 @@
         "RestApiId": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.ApiEvent`\n"
     },
     "AWS::Serverless::Function.Auth": {
       "Properties": {
@@ -748,7 +760,8 @@
         "ResourcePolicy": {
           "Type": "AuthResourcePolicy"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.Auth`\n"
     },
     "AWS::Serverless::Function.AuthResourcePolicy": {
       "Properties": {
@@ -796,14 +809,16 @@
           "Type": "List",
           "ItemType": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.AuthResourcePolicy`\n"
     },
     "AWS::Serverless::Function.BucketSAMPT": {
       "Properties": {
         "BucketName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.BucketSAMPT`\n"
     },
     "AWS::Serverless::Function.CloudWatchEventEvent": {
       "Properties": {
@@ -816,7 +831,8 @@
         "Pattern": {
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.CloudWatchEventEvent`\n"
     },
     "AWS::Serverless::Function.CloudWatchLogsEvent": {
       "Properties": {
@@ -826,7 +842,8 @@
         "LogGroupName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.CloudWatchLogsEvent`\n"
     },
     "AWS::Serverless::Function.CognitoEvent": {
       "Properties": {
@@ -840,14 +857,16 @@
         "UserPool": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.CognitoEvent`\n"
     },
     "AWS::Serverless::Function.CollectionSAMPT": {
       "Properties": {
         "CollectionId": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.CollectionSAMPT`\n"
     },
     "AWS::Serverless::Function.CorsConfiguration": {
       "Properties": {
@@ -866,7 +885,8 @@
         "MaxAge": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.CorsConfiguration`\n"
     },
     "AWS::Serverless::Function.DeadLetterQueue": {
       "Properties": {
@@ -876,7 +896,8 @@
         "Type": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DeadLetterQueue`\n"
     },
     "AWS::Serverless::Function.DeploymentPreference": {
       "Properties": {
@@ -902,7 +923,8 @@
         "Type": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DeploymentPreference`\n"
     },
     "AWS::Serverless::Function.Destination": {
       "Properties": {
@@ -912,21 +934,24 @@
         "Type": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.Destination`\n"
     },
     "AWS::Serverless::Function.DestinationConfig": {
       "Properties": {
         "OnFailure": {
           "Type": "Destination"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DestinationConfig`\n"
     },
     "AWS::Serverless::Function.DomainSAMPT": {
       "Properties": {
         "DomainName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DomainSAMPT`\n"
     },
     "AWS::Serverless::Function.DynamoDBEvent": {
       "Properties": {
@@ -960,17 +985,20 @@
         "Stream": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DynamoDBEvent`\n"
     },
     "AWS::Serverless::Function.EmptySAMPT": {
-      "Properties": {}
+      "Properties": {},
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EmptySAMPT`\n"
     },
     "AWS::Serverless::Function.EphemeralStorage": {
       "Properties": {
         "Size": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EphemeralStorage`\n"
     },
     "AWS::Serverless::Function.EventBridgeRuleEvent": {
       "Properties": {
@@ -986,7 +1014,8 @@
         "Pattern": {
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EventBridgeRuleEvent`\n"
     },
     "AWS::Serverless::Function.EventInvokeConfig": {
       "Properties": {
@@ -999,7 +1028,8 @@
         "MaximumRetryAttempts": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EventInvokeConfig`\n"
     },
     "AWS::Serverless::Function.EventInvokeDestinationConfig": {
       "Properties": {
@@ -1009,7 +1039,8 @@
         "OnSuccess": {
           "Type": "Destination"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EventInvokeDestinationConfig`\n"
     },
     "AWS::Serverless::Function.EventSource": {
       "Properties": {
@@ -1019,7 +1050,8 @@
         "Type": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EventSource`\n"
     },
     "AWS::Serverless::Function.FileSystemConfig": {
       "Properties": {
@@ -1029,7 +1061,8 @@
         "LocalMountPath": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.FileSystemConfig`\n"
     },
     "AWS::Serverless::Function.FunctionEnvironment": {
       "Properties": {
@@ -1042,14 +1075,16 @@
           },
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.FunctionEnvironment`\n"
     },
     "AWS::Serverless::Function.FunctionSAMPT": {
       "Properties": {
         "FunctionName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.FunctionSAMPT`\n"
     },
     "AWS::Serverless::Function.FunctionUrlConfig": {
       "Properties": {
@@ -1062,7 +1097,8 @@
         "InvokeMode": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.FunctionUrlConfig`\n"
     },
     "AWS::Serverless::Function.HttpApiEvent": {
       "Properties": {
@@ -1087,7 +1123,8 @@
         "TimeoutInMillis": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.HttpApiEvent`\n"
     },
     "AWS::Serverless::Function.HttpApiFunctionAuth": {
       "Properties": {
@@ -1098,7 +1135,8 @@
         "Authorizer": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.HttpApiFunctionAuth`\n"
     },
     "AWS::Serverless::Function.IAMPolicyDocument": {
       "Properties": {
@@ -1109,14 +1147,16 @@
         "Version": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.IAMPolicyDocument`\n"
     },
     "AWS::Serverless::Function.IdentitySAMPT": {
       "Properties": {
         "IdentityName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.IdentitySAMPT`\n"
     },
     "AWS::Serverless::Function.ImageConfig": {
       "Properties": {
@@ -1131,7 +1171,8 @@
         "WorkingDirectory": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.ImageConfig`\n"
     },
     "AWS::Serverless::Function.IoTRuleEvent": {
       "Properties": {
@@ -1141,14 +1182,16 @@
         "Sql": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.IoTRuleEvent`\n"
     },
     "AWS::Serverless::Function.KeySAMPT": {
       "Properties": {
         "KeyId": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.KeySAMPT`\n"
     },
     "AWS::Serverless::Function.KinesisEvent": {
       "Properties": {
@@ -1168,35 +1211,40 @@
         "Stream": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.KinesisEvent`\n"
     },
     "AWS::Serverless::Function.LogGroupSAMPT": {
       "Properties": {
         "LogGroupName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.LogGroupSAMPT`\n"
     },
     "AWS::Serverless::Function.ParameterNameSAMPT": {
       "Properties": {
         "ParameterName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.ParameterNameSAMPT`\n"
     },
     "AWS::Serverless::Function.ProvisionedConcurrencyConfig": {
       "Properties": {
         "ProvisionedConcurrentExecutions": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.ProvisionedConcurrencyConfig`\n"
     },
     "AWS::Serverless::Function.QueueSAMPT": {
       "Properties": {
         "QueueName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.QueueSAMPT`\n"
     },
     "AWS::Serverless::Function.RequestModel": {
       "Properties": {
@@ -1212,7 +1260,8 @@
         "ValidateParameters": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.RequestModel`\n"
     },
     "AWS::Serverless::Function.RequestParameter": {
       "Properties": {
@@ -1222,7 +1271,8 @@
         "Required": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.RequestParameter`\n"
     },
     "AWS::Serverless::Function.RouteSettings": {
       "Properties": {
@@ -1241,7 +1291,8 @@
         "ThrottlingRateLimit": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.RouteSettings`\n"
     },
     "AWS::Serverless::Function.S3Event": {
       "Properties": {
@@ -1258,7 +1309,8 @@
         "Filter": {
           "Type": "S3NotificationFilter"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.S3Event`\n"
     },
     "AWS::Serverless::Function.S3KeyFilter": {
       "Properties": {
@@ -1266,7 +1318,8 @@
           "Type": "List",
           "ItemType": "S3KeyFilterRule"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.S3KeyFilter`\n"
     },
     "AWS::Serverless::Function.S3KeyFilterRule": {
       "Properties": {
@@ -1276,7 +1329,8 @@
         "Value": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.S3KeyFilterRule`\n"
     },
     "AWS::Serverless::Function.S3Location": {
       "Properties": {
@@ -1289,14 +1343,16 @@
         "Version": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.S3Location`\n"
     },
     "AWS::Serverless::Function.S3NotificationFilter": {
       "Properties": {
         "S3Key": {
           "Type": "S3KeyFilter"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.S3NotificationFilter`\n"
     },
     "AWS::Serverless::Function.SAMPolicyTemplate": {
       "Properties": {
@@ -1402,14 +1458,16 @@
         "VPCAccessPolicy": {
           "Type": "EmptySAMPT"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.SAMPolicyTemplate`\n"
     },
     "AWS::Serverless::Function.SNSEvent": {
       "Properties": {
         "Topic": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.SNSEvent`\n"
     },
     "AWS::Serverless::Function.SQSEvent": {
       "Properties": {
@@ -1422,7 +1480,8 @@
         "Queue": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.SQSEvent`\n"
     },
     "AWS::Serverless::Function.ScheduleEvent": {
       "Properties": {
@@ -1441,35 +1500,40 @@
         "Schedule": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.ScheduleEvent`\n"
     },
     "AWS::Serverless::Function.SecretArnSAMPT": {
       "Properties": {
         "SecretArn": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.SecretArnSAMPT`\n"
     },
     "AWS::Serverless::Function.StateMachineSAMPT": {
       "Properties": {
         "StateMachineName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.StateMachineSAMPT`\n"
     },
     "AWS::Serverless::Function.StreamSAMPT": {
       "Properties": {
         "StreamName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.StreamSAMPT`\n"
     },
     "AWS::Serverless::Function.TableSAMPT": {
       "Properties": {
         "TableName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.TableSAMPT`\n"
     },
     "AWS::Serverless::Function.TableStreamSAMPT": {
       "Properties": {
@@ -1479,14 +1543,16 @@
         "TableName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.TableStreamSAMPT`\n"
     },
     "AWS::Serverless::Function.TopicSAMPT": {
       "Properties": {
         "TopicName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.TopicSAMPT`\n"
     },
     "AWS::Serverless::Function.VpcConfig": {
       "Properties": {
@@ -1498,7 +1564,8 @@
           "Type": "List",
           "ItemType": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::Function.VpcConfig`\n"
     },
     "AWS::Serverless::HttpApi.AccessLogSetting": {
       "Properties": {
@@ -1508,7 +1575,8 @@
         "Format": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.AccessLogSetting`\n"
     },
     "AWS::Serverless::HttpApi.CorsConfigurationObject": {
       "Properties": {
@@ -1534,7 +1602,8 @@
         "MaxAge": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.CorsConfigurationObject`\n"
     },
     "AWS::Serverless::HttpApi.HttpApiAuth": {
       "Properties": {
@@ -1544,7 +1613,8 @@
         "DefaultAuthorizer": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.HttpApiAuth`\n"
     },
     "AWS::Serverless::HttpApi.HttpApiDomainConfiguration": {
       "Properties": {
@@ -1569,7 +1639,8 @@
         "SecurityPolicy": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.HttpApiDomainConfiguration`\n"
     },
     "AWS::Serverless::HttpApi.MutualTlsAuthentication": {
       "Properties": {
@@ -1579,7 +1650,8 @@
         "TruststoreVersion": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.MutualTlsAuthentication`\n"
     },
     "AWS::Serverless::HttpApi.Route53Configuration": {
       "Properties": {
@@ -1598,7 +1670,8 @@
         "IpV6": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.Route53Configuration`\n"
     },
     "AWS::Serverless::HttpApi.RouteSettings": {
       "Properties": {
@@ -1617,7 +1690,8 @@
         "ThrottlingRateLimit": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.RouteSettings`\n"
     },
     "AWS::Serverless::HttpApi.S3Location": {
       "Properties": {
@@ -1630,7 +1704,8 @@
         "Version": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.S3Location`\n"
     },
     "AWS::Serverless::LayerVersion.S3Location": {
       "Properties": {
@@ -1643,7 +1718,8 @@
         "Version": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::LayerVersion.S3Location`\n"
     },
     "AWS::Serverless::SimpleTable.PrimaryKey": {
       "Properties": {
@@ -1653,7 +1729,8 @@
         "Type": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::SimpleTable.PrimaryKey`\n"
     },
     "AWS::Serverless::SimpleTable.ProvisionedThroughput": {
       "Properties": {
@@ -1663,14 +1740,16 @@
         "WriteCapacityUnits": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::SimpleTable.ProvisionedThroughput`\n"
     },
     "AWS::Serverless::SimpleTable.SSESpecification": {
       "Properties": {
         "SSEEnabled": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::SimpleTable.SSESpecification`\n"
     },
     "AWS::Serverless::StateMachine.ApiEvent": {
       "Properties": {
@@ -1683,7 +1762,8 @@
         "RestApiId": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.ApiEvent`\n"
     },
     "AWS::Serverless::StateMachine.CloudWatchEventEvent": {
       "Properties": {
@@ -1699,14 +1779,16 @@
         "Pattern": {
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.CloudWatchEventEvent`\n"
     },
     "AWS::Serverless::StateMachine.CloudWatchLogsLogGroup": {
       "Properties": {
         "LogGroupArn": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.CloudWatchLogsLogGroup`\n"
     },
     "AWS::Serverless::StateMachine.EventBridgeRuleEvent": {
       "Properties": {
@@ -1722,7 +1804,8 @@
         "Pattern": {
           "Type": "object"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.EventBridgeRuleEvent`\n"
     },
     "AWS::Serverless::StateMachine.EventSource": {
       "Properties": {
@@ -1732,14 +1815,16 @@
         "Type": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.EventSource`\n"
     },
     "AWS::Serverless::StateMachine.FunctionSAMPT": {
       "Properties": {
         "FunctionName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.FunctionSAMPT`\n"
     },
     "AWS::Serverless::StateMachine.IAMPolicyDocument": {
       "Properties": {
@@ -1750,14 +1835,16 @@
         "Version": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.IAMPolicyDocument`\n"
     },
     "AWS::Serverless::StateMachine.LogDestination": {
       "Properties": {
         "CloudWatchLogsLogGroup": {
           "Type": "CloudWatchLogsLogGroup"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.LogDestination`\n"
     },
     "AWS::Serverless::StateMachine.LoggingConfiguration": {
       "Properties": {
@@ -1771,7 +1858,8 @@
         "Level": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.LoggingConfiguration`\n"
     },
     "AWS::Serverless::StateMachine.S3Location": {
       "Properties": {
@@ -1784,7 +1872,8 @@
         "Version": {
           "Type": "number"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.S3Location`\n"
     },
     "AWS::Serverless::StateMachine.SAMPolicyTemplate": {
       "Properties": {
@@ -1794,7 +1883,8 @@
         "StepFunctionsExecutionPolicy": {
           "Type": "StateMachineSAMPT"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.SAMPolicyTemplate`\n"
     },
     "AWS::Serverless::StateMachine.ScheduleEvent": {
       "Properties": {
@@ -1804,21 +1894,24 @@
         "Schedule": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.ScheduleEvent`\n"
     },
     "AWS::Serverless::StateMachine.StateMachineSAMPT": {
       "Properties": {
         "StateMachineName": {
           "Type": "string"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.StateMachineSAMPT`\n"
     },
     "AWS::Serverless::StateMachine.TracingConfiguration": {
       "Properties": {
         "Enabled": {
           "Type": "boolean"
         }
-      }
+      },
+      "MarkdownDocumentation": "`AWS::Serverless::StateMachine.TracingConfiguration`\n"
     }
   }
 }

@@ -42,7 +42,7 @@ def to_aws_context(sam_dct: Tree, base_directory: Path, base_url: str) -> Tree:
         if "." not in k and SERVERLESS_PREFIX in k
     }
     d_[AWSSpecification.PROPERTY_TYPES] = {
-        k: normalise_property(v)
+        k: normalise_property(k, v, base_directory, base_url)
         for k, v in base.items()
         if "." in k and SERVERLESS_PREFIX in k
     }
@@ -69,12 +69,19 @@ def normalise_resource(name: str, d: Tree, base_directory: Path, base_url: str) 
     return d_
 
 
-def normalise_property(d: Tree) -> Tree:
+def normalise_property(name: str, d: Tree, base_directory: Path, base_url: str) -> Tree:
     if not isinstance(d, dict):
         return d
 
+    parent, _, prop = name.partition(".")
+    resource = parent.split("::")[-1]
+
     d_ = {}
     d_[AWSSpecification.PROPERTIES] = d[PROP_KEY]
+    doc_path = base_directory / f"sam-property-{resource}-{prop.lower()}"
+    link = f"https://{doc_path}"
+    bs = file_content(base_directory, link, base_url=base_url)
+    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
 
     for v in d_[AWSSpecification.PROPERTIES].values():
         normalise_types(v)
