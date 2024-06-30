@@ -65,6 +65,9 @@ def normalise_resource(name: str, d: Tree, base_directory: Path, base_url: str) 
     for property_name in list(props.keys()):
         sub_props = d_[AWSSpecification.PROPERTIES][property_name]
         sub_props[AWSSpecification.REQUIRED] = property_name in required
+        sub_props[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(
+            bs, link, property_name
+        )
         normalise_types(sub_props)
     return d_
 
