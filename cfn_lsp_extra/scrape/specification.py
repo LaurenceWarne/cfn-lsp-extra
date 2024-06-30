@@ -33,16 +33,21 @@ def md_(s: str) -> str:
     return md(s).replace("\n\n", "\n")  # type: ignore[no-any-return]
 
 
-def to_aws_context(d: Tree, parent: Optional[str], base_directory: Path) -> Tree:
+def to_aws_context(
+    d: Tree, parent: Optional[str], base_directory: Path
+) -> tuple[Tree, int, int]:
     if not isinstance(d, dict):
-        return d
+        return d, 0, 0
     d_: Tree = {}
+    md_doc_fails = md_doc_succ = 0
     for k, v in d.items():
         if k == AWSSpecification.DOCUMENTATION:
             content = file_content(base_directory, v)
             doc = d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(
                 content, v, parent
             )
+            md_doc_fails += doc == ""
+            md_doc_succ += doc != ""
             d_[AWSSpecification.REF_RETURN_VALUE] = ref_return_value(
                 content, v.split("/")[-1]
             )
@@ -79,8 +84,10 @@ def to_aws_context(d: Tree, parent: Optional[str], base_directory: Path) -> Tree
                 v[AWSSpecification.DOCUMENTATION],
                 v[AWSSpecification.ATTRIBUTES],
             )
-        d_[k] = to_aws_context(v, k, base_directory)
-    return d_
+        d_[k], sub_md_doc_fails, sub_md_doc_succ = to_aws_context(v, k, base_directory)
+        md_doc_fails += sub_md_doc_fails
+        md_doc_succ += sub_md_doc_succ
+    return d_, md_doc_fails, md_doc_succ
 
 
 def set_attribute_doc(base_link: str, attribs_dct: Tree) -> None:
@@ -217,7 +224,8 @@ def run(
                 "Not downloading documentation, using existing directory %s",
                 documentation_directory,
             )
-        ctx_map = to_aws_context(spec_json, None, doc_dir)
+        ctx_map, md_fails, md_succ = to_aws_context(spec_json, None, doc_dir)
+        logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)
         with open(out_path, "w") as f_:
             json.dump(ctx_map, f_, indent=2)
     logger.info("Wrote context to %s", out_path)
