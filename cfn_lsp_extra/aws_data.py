@@ -167,11 +167,15 @@ class AWSContext:
 
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
-        return self[name][AWSSpecification.MARKDOWN_DOCUMENTATION]  # type: ignore[no-any-return]
+        # Be a bit forgiving here a la SAM specification
+        return self[name].get(AWSSpecification.MARKDOWN_DOCUMENTATION, "")  # type: ignore[no-any-return]
 
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
         dcts = self[resource].get(AWSSpecification.ATTRIBUTES, {})
-        return {k: v[AWSSpecification.MARKDOWN_DOCUMENTATION] for k, v in dcts.items()}
+        return {
+            k: v.get(AWSSpecification.MARKDOWN_DOCUMENTATION, "")
+            for k, v in dcts.items()
+        }
 
     def ref_return_value(self, resource: AWSResourceName) -> str:
         return self[resource].get(AWSSpecification.REF_RETURN_VALUE, "unknown")  # type: ignore[no-any-return]
