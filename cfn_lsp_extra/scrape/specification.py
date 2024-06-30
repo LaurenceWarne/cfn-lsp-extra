@@ -13,7 +13,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -115,7 +115,7 @@ def file_content(
             return BeautifulSoup("")
     else:  # resource
         file_path = base_directory / location
-        logger.info("Processing %s", file_path)
+        logger.debug("Processing %s", file_path)
         try:
             return read_file(file_path)
         except FileNotFoundError:
@@ -133,12 +133,13 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
         # Sometimes the link is out of date (redirect), we guess the true id link using the h1 attrib
         split = link.split("#")
         id_, url_split = split[-1], split[0].split("/")
-        old_id_prefix = remove_suffix(url_split[-1], ".html").replace(
+        replace: Callable[[str], str] = lambda s: s.replace(
             "aws-properties", "cfn"
-        )
+        ).replace("aws-resource", "cfn")
+        old_id_prefix = replace(remove_suffix(url_split[-1], ".html"))
         header = content.find("h1")
         if header and hasattr(header, "attrs"):
-            true_id_prefix = header.attrs["id"].replace("aws-properties", "cfn")
+            true_id_prefix = replace(header.attrs["id"])
             true_id = id_.replace(old_id_prefix, true_id_prefix)
             if true_id != id_:
                 logger.info("Replaced %s with %s", id_, true_id)
@@ -146,7 +147,7 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
             true_id = id_
         dt = content.find("dt", {"id": true_id})
         if not dt:
-            logger.info("No documentation found for %s", link)
+            logger.error("No documentation found for %s", link)
             return ""
         dd = dt.findNext("dd")
         doc = md_(str(dd)) if dd else ""
