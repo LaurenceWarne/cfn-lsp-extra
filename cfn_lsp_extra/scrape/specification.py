@@ -133,8 +133,8 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
         # Sometimes the link is out of date (redirect), we guess the true id link using the h1 attrib
         split = link.split("#")
         id_, url_split = split[-1], split[0].split("/")
-        old_id_prefix = (
-            url_split[-1].removesuffix(".html").replace("aws-properties", "cfn")
+        old_id_prefix = remove_suffix(url_split[-1], ".html").replace(
+            "aws-properties", "cfn"
         )
         header = content.find("h1")
         if header and hasattr(header, "attrs"):

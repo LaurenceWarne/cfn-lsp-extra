@@ -31,6 +31,7 @@ PROPERTY_SKIP_LIST = (
 ANY_OF = "anyOf"
 SERVERLESS_PREFIX = "AWS::Serverless"
 DEFAULT_SPEC_URL = "https://raw.githubusercontent.com/awslabs/goformation/master/schema/sam.schema.json"
+DOC_URL = "docs.aws.amazon.com/serverless-application-model/latest/developerguide/"
 
 
 def to_aws_context(sam_dct: Tree, base_directory: Path, base_url: str) -> Tree:
@@ -56,8 +57,7 @@ def normalise_resource(name: str, d: Tree, base_directory: Path, base_url: str) 
     d_ = {}
     props = d[PROP_KEY][AWSSpecification.PROPERTIES][PROP_KEY]
     d_[AWSSpecification.PROPERTIES] = props
-    doc_path = base_directory / f"sam-resource-{name.split('::')[-1].lower()}"
-    link = f"https://{doc_path}"
+    link = f"{base_url}sam-resource-{name.split('::')[-1].lower()}"
     bs = file_content(base_directory, link, base_url=base_url)
     d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
 
@@ -78,8 +78,7 @@ def normalise_property(name: str, d: Tree, base_directory: Path, base_url: str) 
 
     d_ = {}
     d_[AWSSpecification.PROPERTIES] = d[PROP_KEY]
-    doc_path = base_directory / f"sam-property-{resource}-{prop.lower()}"
-    link = f"https://{doc_path}"
+    link = f"{base_url}sam-property-{resource}-{prop.lower()}"
     bs = file_content(base_directory, link, base_url=base_url)
     d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
 
@@ -125,12 +124,8 @@ def run(
         spec_json = json.loads(requests.get(DEFAULT_SPEC_URL).text)
     with tempfile.TemporaryDirectory() as tmp_directory:
         os.chdir(tmp_directory)
-        doc_dir = documentation_directory or (
-            Path(
-                "docs.aws.amazon.com/serverless-application-model/latest/developerguide/"
-            )
-        )
-        base_url = f"https://{doc_dir}"
+        doc_dir = documentation_directory or Path(DOC_URL)
+        base_url = f"https://{DOC_URL}"
         if not documentation_directory:
             run_command(f"wget --no-parent -r {base_url}")
         aws_context = to_aws_context(spec_json, doc_dir, base_url)
