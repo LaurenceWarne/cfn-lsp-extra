@@ -21,7 +21,6 @@ PyYAML = "^6.0.1"
 types-PyYAML = "^6.0.1"
 platformdirs = "^4.2.0"
 attrs = "^23.1"
-aws-sam-translator = "^1.84.0"
 importlib_resources = "^6.0"
 
 # Optional: https://python-poetry.org/docs/pyproject/#extras
@@ -30,6 +29,7 @@ markdownify = { version = "^0.12.1", optional = true }
 beautifulsoup4 = { version = "^4.12.3", optional = true }
 types-beautifulsoup4 = { version = "^4.12.0", optional = true }
 requests = { version = "^2.32.3", optional = true }
+types-requests = { version = "^2", optional = true }
 
 [tool.poetry.dev-dependencies]
 coverage = {extras = ["toml"], version = ">=6.2"}
@@ -51,7 +51,8 @@ parse = [
   "markdownify",
   "beautifulsoup4",
   "types-beautifulsoup4",
-  "requests"
+  "requests",
+  "types-requests"
 ]
 
 [tool.poetry.scripts]

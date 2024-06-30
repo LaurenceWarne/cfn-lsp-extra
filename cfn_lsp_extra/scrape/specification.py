@@ -29,6 +29,10 @@ DEFAULT_SPEC_URL = "https://dnwj8swjjbsbt.cloudfront.net/latest/gzip/CloudFormat
 logger = logging.getLogger(__name__)
 
 
+def md_(s: str) -> str:
+    return md(s).replace("\n\n", "\n")  # type: ignore[no-any-return]
+
+
 def to_aws_context(d: Tree, parent: Optional[str], base_directory: Path) -> Tree:
     if not isinstance(d, dict):
         return d
@@ -126,14 +130,14 @@ def file_content(
 
 def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> str:
     if "#" in link:  # Subprop
-        # sometimes the link is wrong and there is a redirect, we guess the true id link using the h1 attrib
+        # Sometimes the link is out of date (redirect), we guess the true id link using the h1 attrib
         split = link.split("#")
         id_, url_split = split[-1], split[0].split("/")
         old_id_prefix = (
             url_split[-1].removesuffix(".html").replace("aws-properties", "cfn")
         )
         header = content.find("h1")
-        if header:
+        if header and hasattr(header, "attrs"):
             true_id_prefix = header.attrs["id"].replace("aws-properties", "cfn")
             true_id = id_.replace(old_id_prefix, true_id_prefix)
             if true_id != id_:
@@ -145,7 +149,7 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
             logger.info("No documentation found for %s", link)
             return ""
         dd = dt.findNext("dd")
-        doc = md(str(dd)) if dd else ""
+        doc = md_(str(dd)) if dd else ""
     else:  # resource
         div = content.find("div", {"class": "awsdocs-page-header-container"})
         tags, el = [], div
@@ -158,7 +162,7 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
                 tags.append(el)
             else:
                 break
-        doc = md("".join(map(str, tags))) if tags else ""
+        doc = md_("".join(map(str, tags))) if tags else ""
     return f"`{parent if parent else ''}`\n{doc}"
 
 
@@ -175,7 +179,7 @@ def ref_return_value(content: BeautifulSoup, slug: str) -> str:
             p_tags.append(el)
         else:
             break
-    return md("".join(map(str, p_tags))) if p_tags else ""  # type: ignore[no-any-return]
+    return md_("".join(map(str, p_tags))) if p_tags else ""
 
 
 def run_command(cmd: str) -> None:
