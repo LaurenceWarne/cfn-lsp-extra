@@ -1,4 +1,3 @@
-# type: ignore
 """
 LSP features leveraging cfnlint.
 """

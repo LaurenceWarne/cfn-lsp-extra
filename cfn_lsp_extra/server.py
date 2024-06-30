@@ -36,7 +36,7 @@ from pygls.server import LanguageServer
 from pygls.workspace import Document
 
 from .aws_data import AWSContext, AWSPropertyName, AWSResourceName
-from .cfnlint_integration import diagnostics  # type: ignore[attr-defined]
+from .cfnlint_integration import diagnostics
 from .completions import TRIGGER_CHARACTERS, completions_for
 from .completions.resources import resolve_resource_completion_item
 from .config.user_configuration import (
