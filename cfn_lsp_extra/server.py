@@ -36,7 +36,7 @@ from pygls.server import LanguageServer
 from pygls.workspace import Document
 
 from .aws_data import AWSContext, AWSPropertyName, AWSResourceName
-from .cfnlint_integration import diagnostics
+from .cfnlint_integration import diagnostics, load_cfnlint_config
 from .completions import TRIGGER_CHARACTERS, completions_for
 from .completions.resources import resolve_resource_completion_item
 from .config.user_configuration import (
@@ -66,6 +66,8 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         ResourcePropertyExtractor(), ResourceExtractor()
     )
     config = UserConfiguration()
+    logger.info("Test loading cfnlint configuration...")
+    load_cfnlint_config(log_exceptions=True)
 
     @server.thread()
     @server.feature(INITIALIZED)

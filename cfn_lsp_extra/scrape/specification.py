@@ -13,7 +13,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -35,7 +35,7 @@ def md_(s: str) -> str:
 
 def to_aws_context(
     d: Tree, parent: Optional[str], base_directory: Path
-) -> tuple[Tree, int, int]:
+) -> Tuple[Tree, int, int]:
     if not isinstance(d, dict):
         return d, 0, 0
     d_: Tree = {}

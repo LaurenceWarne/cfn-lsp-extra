@@ -1,18 +1,28 @@
 """
 LSP features leveraging cfnlint.
-"""
 
+https://github.com/aws-cloudformation/cfn-lint/blob/main/docs/getting_started/integration.md
+"""
+import logging
 from typing import Dict, List
 
 import cfnlint
-from cfnlint.api import lint_all
+from cfnlint.api import lint
+from cfnlint.config import ConfigFileArgs
 from lsprotocol.types import Diagnostic, DiagnosticSeverity, Position, Range
+
+logger = logging.getLogger(__name__)
 
 
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     """Return diagnostics for the template file at file_path."""
 
-    matches = lint_all(yaml_content)
+    try:
+        config = load_cfnlint_config(log_exceptions=False)
+    except Exception:
+        config = {}
+
+    matches = lint(yaml_content, config=config)
 
     severity_mapping: Dict[str, DiagnosticSeverity] = {
         "informational": DiagnosticSeverity.Information,
@@ -33,6 +43,18 @@ def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
         )
         for m in filter(match_filter, matches)
     ]
+
+
+def load_cfnlint_config(log_exceptions: bool) -> Dict[str, str]:
+    try:
+        # https://github.com/aws-cloudformation/cfn-lint/blob/main/src/cfnlint/config.py
+        config = ConfigFileArgs()
+        config.load()
+        return config.file_args  # type: ignore[no-any-return]
+    except Exception as e:
+        if log_exceptions:
+            logger.error("Error reading cfnlint configuration %s", e)
+        return {}
 
 
 def match_filter(rule_match: cfnlint.rules.Match) -> bool:
