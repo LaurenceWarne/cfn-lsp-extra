@@ -699,7 +699,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Api.CorsConfiguration`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Api.CorsConfiguration`\nManage cross-origin resource sharing (CORS) for your API Gateway APIs. Specify the domain to allow as a string or specify a dictionary with additional Cors configuration.\n###### Note\nCORS requires AWS SAM to modify your OpenAPI definition. Create an inline OpenAPI\n definition in the `DefinitionBody` to turn on CORS. If the `CorsConfiguration` is\n set in the OpenAPI definition and also at the property level, AWS SAM merges them. The\n property level takes precedence over the OpenAPI definition.\nFor more information about CORS, see [Enable CORS for\n an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer Guide*.\n"
     },
     "AWS::Serverless::Api.DomainConfiguration": {
       "Properties": {
@@ -729,7 +729,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Api.DomainConfiguration`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Api.DomainConfiguration`\nConfigures a custom domain for an API.\n"
     },
     "AWS::Serverless::Api.EndpointConfiguration": {
       "Properties": {
@@ -741,7 +741,7 @@
           "ItemType": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Api.EndpointConfiguration`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Api.EndpointConfiguration`\nThe endpoint type of a REST API.\n"
     },
     "AWS::Serverless::Api.MutualTlsAuthentication": {
       "Properties": {
@@ -772,7 +772,7 @@
           "Type": "boolean"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Api.Route53Configuration`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Api.Route53Configuration`\nConfigures the Route53 record sets for an API.\n"
     },
     "AWS::Serverless::Api.S3Location": {
       "Properties": {
@@ -998,7 +998,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.DeadLetterQueue`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DeadLetterQueue`\nSpecifies an SQS queue or SNS topic that AWS Lambda (Lambda) sends events to when it can't process them. For more information about dead letter queue functionality, see \n [Dead-letter queues](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-dlq) in the *AWS Lambda Developer Guide*.\nSAM will automatically add appropriate permission to your Lambda function execution role to give Lambda service access to the resource. sqs:SendMessage will be added for SQS queues and sns:Publish for SNS topics.\n"
     },
     "AWS::Serverless::Function.DeploymentPreference": {
       "Properties": {
@@ -1025,7 +1025,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.DeploymentPreference`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.DeploymentPreference`\nSpecifies the configurations to enable gradual Lambda deployments. For more information about configuring gradual Lambda deployments, see [Deploying serverless applications\n gradually](./automating-updates-to-serverless-apps.html).\n###### Note\nYou must specify an `AutoPublishAlias` in your [AWS::Serverless::Function](./sam-resource-function.html) to use a `DeploymentPreference` object, otherwise an error will result.\n"
     },
     "AWS::Serverless::Function.Destination": {
       "Properties": {
@@ -1152,7 +1152,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.EventSource`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.EventSource`\nThe object describing the source of events which trigger the function. Each event consists\n of a type and a set of properties that depend on that type. For more information about the\n properties of each event source, see the topic corresponding to that type.\n"
     },
     "AWS::Serverless::Function.FileSystemConfig": {
       "Properties": {
@@ -1199,7 +1199,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.FunctionUrlConfig`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.FunctionUrlConfig`\nCreates an AWS Lambda function URL with the specified configuration parameters. A Lambda\n function URL is an HTTPS endpoint that you can use to invoke your function.\nBy default, the function URL that you create uses the `$LATEST` version of your\n Lambda function. If you specify an `AutoPublishAlias` for your Lambda function, the\n endpoint connects to the specified function alias.\nFor more information, see [Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) in the *AWS Lambda Developer Guide*.\n"
     },
     "AWS::Serverless::Function.HttpApiEvent": {
       "Properties": {
@@ -1237,7 +1237,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.HttpApiFunctionAuth`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.HttpApiFunctionAuth`\nConfigures authorization at the event level.\nConfigure Auth for a specific API + Path + Method\n"
     },
     "AWS::Serverless::Function.IAMPolicyDocument": {
       "Properties": {
@@ -1362,7 +1362,7 @@
           "Type": "boolean"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.RequestModel`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.RequestModel`\nConfigures a Request Model for a specific Api+Path+Method.\n"
     },
     "AWS::Serverless::Function.RequestParameter": {
       "Properties": {
@@ -1373,7 +1373,7 @@
           "Type": "boolean"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::Function.RequestParameter`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::Function.RequestParameter`\nConfigure Request Parameter for a specific Api+Path+Method.\nEither `Required` or `Caching` property needs to be specified for request parameter\n"
     },
     "AWS::Serverless::Function.RouteSettings": {
       "Properties": {
@@ -1715,7 +1715,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.HttpApiAuth`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.HttpApiAuth`\nConfigure authorization to control access to your Amazon API Gateway HTTP API.\nFor more information about configuring access to HTTP APIs, see [Controlling and managing access to an HTTP API in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) in the *API Gateway Developer Guide*.\n"
     },
     "AWS::Serverless::HttpApi.HttpApiDomainConfiguration": {
       "Properties": {
@@ -1741,7 +1741,7 @@
           "Type": "string"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.HttpApiDomainConfiguration`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.HttpApiDomainConfiguration`\nConfigures a custom domain for an API.\n"
     },
     "AWS::Serverless::HttpApi.MutualTlsAuthentication": {
       "Properties": {
@@ -1772,7 +1772,7 @@
           "Type": "boolean"
         }
       },
-      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.Route53Configuration`\n"
+      "MarkdownDocumentation": "`AWS::Serverless::HttpApi.Route53Configuration`\nConfigures the Route53 record sets for an API.\n"
     },
     "AWS::Serverless::HttpApi.RouteSettings": {
       "Properties": {

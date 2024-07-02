@@ -81,7 +81,7 @@ def normalise_property(name: str, d: Tree, base_directory: Path, base_url: str) 
 
     d_ = {}
     d_[AWSSpecification.PROPERTIES] = d[PROP_KEY]
-    link = f"{base_url}sam-property-{resource}-{prop.lower()}"
+    link = f"{base_url}sam-property-{resource.lower()}-{prop.lower()}"
     bs = file_content(base_directory, link, base_url=base_url)
     d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
 
