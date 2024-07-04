@@ -636,9 +636,11 @@
     "AWS::Serverless::Api.AccessLogSetting": {
       "Properties": {
         "DestinationArn": {
+          "MarkdownDocumentation": "`DestinationArn`\n",
           "Type": "string"
         },
         "Format": {
+          "MarkdownDocumentation": "`Format`\n",
           "Type": "string"
         }
       },
@@ -647,12 +649,15 @@
     "AWS::Serverless::Api.Auth": {
       "Properties": {
         "AddDefaultAuthorizerToCorsPreflight": {
+          "MarkdownDocumentation": "`AddDefaultAuthorizerToCorsPreflight`\n",
           "Type": "boolean"
         },
         "Authorizers": {
+          "MarkdownDocumentation": "`Authorizers`\n",
           "Type": "object"
         },
         "DefaultAuthorizer": {
+          "MarkdownDocumentation": "`DefaultAuthorizer`\n",
           "Type": "string"
         }
       },
@@ -661,9 +666,11 @@
     "AWS::Serverless::Api.CanarySetting": {
       "Properties": {
         "DeploymentId": {
+          "MarkdownDocumentation": "`DeploymentId`\n",
           "Type": "string"
         },
         "PercentTraffic": {
+          "MarkdownDocumentation": "`PercentTraffic`\n",
           "Type": "number"
         },
         "StageVariableOverrides": {
@@ -673,9 +680,11 @@
               "type": "string"
             }
           },
+          "MarkdownDocumentation": "`StageVariableOverrides`\n",
           "Type": "object"
         },
         "UseStageCache": {
+          "MarkdownDocumentation": "`UseStageCache`\n",
           "Type": "boolean"
         }
       },
@@ -684,18 +693,23 @@
     "AWS::Serverless::Api.CorsConfiguration": {
       "Properties": {
         "AllowCredentials": {
+          "MarkdownDocumentation": "`AllowCredentials`\nManage cross-origin resource sharing (CORS) for your API Gateway APIs. Specify the domain to allow as a string or specify a dictionary with additional Cors configuration.\n###### Note\nCORS requires AWS SAM to modify your OpenAPI definition. Create an inline OpenAPI\n definition in the `DefinitionBody` to turn on CORS. If the `CorsConfiguration` is\n set in the OpenAPI definition and also at the property level, AWS SAM merges them. The\n property level takes precedence over the OpenAPI definition.\nFor more information about CORS, see [Enable CORS for\n an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer Guide*.\n",
           "Type": "boolean"
         },
         "AllowHeaders": {
+          "MarkdownDocumentation": "`AllowHeaders`\nManage cross-origin resource sharing (CORS) for your API Gateway APIs. Specify the domain to allow as a string or specify a dictionary with additional Cors configuration.\n###### Note\nCORS requires AWS SAM to modify your OpenAPI definition. Create an inline OpenAPI\n definition in the `DefinitionBody` to turn on CORS. If the `CorsConfiguration` is\n set in the OpenAPI definition and also at the property level, AWS SAM merges them. The\n property level takes precedence over the OpenAPI definition.\nFor more information about CORS, see [Enable CORS for\n an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer Guide*.\n",
           "Type": "string"
         },
         "AllowMethods": {
+          "MarkdownDocumentation": "`AllowMethods`\nManage cross-origin resource sharing (CORS) for your API Gateway APIs. Specify the domain to allow as a string or specify a dictionary with additional Cors configuration.\n###### Note\nCORS requires AWS SAM to modify your OpenAPI definition. Create an inline OpenAPI\n definition in the `DefinitionBody` to turn on CORS. If the `CorsConfiguration` is\n set in the OpenAPI definition and also at the property level, AWS SAM merges them. The\n property level takes precedence over the OpenAPI definition.\nFor more information about CORS, see [Enable CORS for\n an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer Guide*.\n",
           "Type": "string"
         },
         "AllowOrigin": {
+          "MarkdownDocumentation": "`AllowOrigin`\nManage cross-origin resource sharing (CORS) for your API Gateway APIs. Specify the domain to allow as a string or specify a dictionary with additional Cors configuration.\n###### Note\nCORS requires AWS SAM to modify your OpenAPI definition. Create an inline OpenAPI\n definition in the `DefinitionBody` to turn on CORS. If the `CorsConfiguration` is\n set in the OpenAPI definition and also at the property level, AWS SAM merges them. The\n property level takes precedence over the OpenAPI definition.\nFor more information about CORS, see [Enable CORS for\n an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer Guide*.\n",
           "Type": "string"
         },
         "MaxAge": {
+          "MarkdownDocumentation": "`MaxAge`\nManage cross-origin resource sharing (CORS) for your API Gateway APIs. Specify the domain to allow as a string or specify a dictionary with additional Cors configuration.\n###### Note\nCORS requires AWS SAM to modify your OpenAPI definition. Create an inline OpenAPI\n definition in the `DefinitionBody` to turn on CORS. If the `CorsConfiguration` is\n set in the OpenAPI definition and also at the property level, AWS SAM merges them. The\n property level takes precedence over the OpenAPI definition.\nFor more information about CORS, see [Enable CORS for\n an API Gateway REST API Resource](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html) in the *API Gateway Developer Guide*.\n",
           "Type": "string"
         }
       },
@@ -704,28 +718,36 @@
     "AWS::Serverless::Api.DomainConfiguration": {
       "Properties": {
         "BasePath": {
+          "MarkdownDocumentation": "`BasePath`\nConfigures a custom domain for an API.\n",
           "Type": "List",
           "ItemType": "string"
         },
         "CertificateArn": {
+          "MarkdownDocumentation": "`CertificateArn`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "DomainName": {
+          "MarkdownDocumentation": "`DomainName`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "EndpointConfiguration": {
+          "MarkdownDocumentation": "`EndpointConfiguration`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "MutualTlsAuthentication": {
+          "MarkdownDocumentation": "`MutualTlsAuthentication`\nConfigures a custom domain for an API.\n",
           "Type": "MutualTlsAuthentication"
         },
         "OwnershipVerificationCertificateArn": {
+          "MarkdownDocumentation": "`OwnershipVerificationCertificateArn`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "Route53": {
+          "MarkdownDocumentation": "`Route53`\nConfigures a custom domain for an API.\n",
           "Type": "Route53Configuration"
         },
         "SecurityPolicy": {
+          "MarkdownDocumentation": "`SecurityPolicy`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         }
       },
@@ -734,9 +756,11 @@
     "AWS::Serverless::Api.EndpointConfiguration": {
       "Properties": {
         "Type": {
+          "MarkdownDocumentation": "`Type`\nThe endpoint type of a REST API.\n",
           "Type": "string"
         },
         "VpcEndpointIds": {
+          "MarkdownDocumentation": "`VpcEndpointIds`\nThe endpoint type of a REST API.\n",
           "Type": "List",
           "ItemType": "string"
         }
@@ -746,9 +770,11 @@
     "AWS::Serverless::Api.MutualTlsAuthentication": {
       "Properties": {
         "TruststoreUri": {
+          "MarkdownDocumentation": "`TruststoreUri`\n",
           "Type": "string"
         },
         "TruststoreVersion": {
+          "MarkdownDocumentation": "`TruststoreVersion`\n",
           "Type": "string"
         }
       },
@@ -757,18 +783,23 @@
     "AWS::Serverless::Api.Route53Configuration": {
       "Properties": {
         "DistributedDomainName": {
+          "MarkdownDocumentation": "`DistributedDomainName`\nConfigures the Route53 record sets for an API.\n",
           "Type": "string"
         },
         "EvaluateTargetHealth": {
+          "MarkdownDocumentation": "`EvaluateTargetHealth`\nConfigures the Route53 record sets for an API.\n",
           "Type": "boolean"
         },
         "HostedZoneId": {
+          "MarkdownDocumentation": "`HostedZoneId`\nConfigures the Route53 record sets for an API.\n",
           "Type": "string"
         },
         "HostedZoneName": {
+          "MarkdownDocumentation": "`HostedZoneName`\nConfigures the Route53 record sets for an API.\n",
           "Type": "string"
         },
         "IpV6": {
+          "MarkdownDocumentation": "`IpV6`\nConfigures the Route53 record sets for an API.\n",
           "Type": "boolean"
         }
       },
@@ -777,12 +808,15 @@
     "AWS::Serverless::Api.S3Location": {
       "Properties": {
         "Bucket": {
+          "MarkdownDocumentation": "`Bucket`\n",
           "Type": "string"
         },
         "Key": {
+          "MarkdownDocumentation": "`Key`\n",
           "Type": "string"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "number"
         }
       },
@@ -791,9 +825,11 @@
     "AWS::Serverless::Application.ApplicationLocation": {
       "Properties": {
         "ApplicationId": {
+          "MarkdownDocumentation": "`ApplicationId`\n",
           "Type": "string"
         },
         "SemanticVersion": {
+          "MarkdownDocumentation": "`SemanticVersion`\n",
           "Type": "string"
         }
       },
@@ -802,6 +838,7 @@
     "AWS::Serverless::Function.AlexaSkillEvent": {
       "Properties": {
         "SkillId": {
+          "MarkdownDocumentation": "`SkillId`\n",
           "Type": "string"
         }
       },
@@ -810,18 +847,23 @@
     "AWS::Serverless::Function.ApiEvent": {
       "Properties": {
         "Auth": {
+          "MarkdownDocumentation": "`Auth`\n",
           "Type": "Auth"
         },
         "Method": {
+          "MarkdownDocumentation": "`Method`\n",
           "Type": "string"
         },
         "Path": {
+          "MarkdownDocumentation": "`Path`\n",
           "Type": "string"
         },
         "RequestModel": {
+          "MarkdownDocumentation": "`RequestModel`\n",
           "Type": "RequestModel"
         },
         "RequestParameters": {
+          "MarkdownDocumentation": "`RequestParameters`\n",
           "Type": {
             "items": {
               "anyOf": [
@@ -841,6 +883,7 @@
           }
         },
         "RestApiId": {
+          "MarkdownDocumentation": "`RestApiId`\n",
           "Type": "string"
         }
       },
@@ -849,16 +892,20 @@
     "AWS::Serverless::Function.Auth": {
       "Properties": {
         "ApiKeyRequired": {
+          "MarkdownDocumentation": "`ApiKeyRequired`\n",
           "Type": "boolean"
         },
         "AuthorizationScopes": {
+          "MarkdownDocumentation": "`AuthorizationScopes`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "Authorizer": {
+          "MarkdownDocumentation": "`Authorizer`\n",
           "Type": "string"
         },
         "ResourcePolicy": {
+          "MarkdownDocumentation": "`ResourcePolicy`\n",
           "Type": "AuthResourcePolicy"
         }
       },
@@ -867,46 +914,57 @@
     "AWS::Serverless::Function.AuthResourcePolicy": {
       "Properties": {
         "AwsAccountBlacklist": {
+          "MarkdownDocumentation": "`AwsAccountBlacklist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "AwsAccountWhitelist": {
+          "MarkdownDocumentation": "`AwsAccountWhitelist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "CustomStatements": {
+          "MarkdownDocumentation": "`CustomStatements`\n",
           "Type": "List",
           "ItemType": "object"
         },
         "IntrinsicVpcBlacklist": {
+          "MarkdownDocumentation": "`IntrinsicVpcBlacklist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "IntrinsicVpcWhitelist": {
+          "MarkdownDocumentation": "`IntrinsicVpcWhitelist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "IntrinsicVpceBlacklist": {
+          "MarkdownDocumentation": "`IntrinsicVpceBlacklist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "IntrinsicVpceWhitelist": {
+          "MarkdownDocumentation": "`IntrinsicVpceWhitelist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "IpRangeBlacklist": {
+          "MarkdownDocumentation": "`IpRangeBlacklist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "IpRangeWhitelist": {
+          "MarkdownDocumentation": "`IpRangeWhitelist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "SourceVpcBlacklist": {
+          "MarkdownDocumentation": "`SourceVpcBlacklist`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "SourceVpcWhitelist": {
+          "MarkdownDocumentation": "`SourceVpcWhitelist`\n",
           "Type": "List",
           "ItemType": "string"
         }
@@ -916,6 +974,7 @@
     "AWS::Serverless::Function.BucketSAMPT": {
       "Properties": {
         "BucketName": {
+          "MarkdownDocumentation": "`BucketName`\n",
           "Type": "string"
         }
       },
@@ -924,12 +983,15 @@
     "AWS::Serverless::Function.CloudWatchEventEvent": {
       "Properties": {
         "Input": {
+          "MarkdownDocumentation": "`Input`\n",
           "Type": "string"
         },
         "InputPath": {
+          "MarkdownDocumentation": "`InputPath`\n",
           "Type": "string"
         },
         "Pattern": {
+          "MarkdownDocumentation": "`Pattern`\n",
           "Type": "object"
         }
       },
@@ -938,9 +1000,11 @@
     "AWS::Serverless::Function.CloudWatchLogsEvent": {
       "Properties": {
         "FilterPattern": {
+          "MarkdownDocumentation": "`FilterPattern`\n",
           "Type": "string"
         },
         "LogGroupName": {
+          "MarkdownDocumentation": "`LogGroupName`\n",
           "Type": "string"
         }
       },
@@ -949,6 +1013,7 @@
     "AWS::Serverless::Function.CognitoEvent": {
       "Properties": {
         "Trigger": {
+          "MarkdownDocumentation": "`Trigger`\n",
           "Type": {
             "type": [
               "string"
@@ -956,6 +1021,7 @@
           }
         },
         "UserPool": {
+          "MarkdownDocumentation": "`UserPool`\n",
           "Type": "string"
         }
       },
@@ -964,6 +1030,7 @@
     "AWS::Serverless::Function.CollectionSAMPT": {
       "Properties": {
         "CollectionId": {
+          "MarkdownDocumentation": "`CollectionId`\n",
           "Type": "string"
         }
       },
@@ -972,18 +1039,23 @@
     "AWS::Serverless::Function.CorsConfiguration": {
       "Properties": {
         "AllowCredentials": {
+          "MarkdownDocumentation": "`AllowCredentials`\n",
           "Type": "boolean"
         },
         "AllowHeaders": {
+          "MarkdownDocumentation": "`AllowHeaders`\n",
           "Type": "string"
         },
         "AllowMethods": {
+          "MarkdownDocumentation": "`AllowMethods`\n",
           "Type": "string"
         },
         "AllowOrigin": {
+          "MarkdownDocumentation": "`AllowOrigin`\n",
           "Type": "string"
         },
         "MaxAge": {
+          "MarkdownDocumentation": "`MaxAge`\n",
           "Type": "string"
         }
       },
@@ -992,9 +1064,11 @@
     "AWS::Serverless::Function.DeadLetterQueue": {
       "Properties": {
         "TargetArn": {
+          "MarkdownDocumentation": "`TargetArn`\nSpecifies an SQS queue or SNS topic that AWS Lambda (Lambda) sends events to when it can't process them. For more information about dead letter queue functionality, see \n [Dead-letter queues](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-dlq) in the *AWS Lambda Developer Guide*.\nSAM will automatically add appropriate permission to your Lambda function execution role to give Lambda service access to the resource. sqs:SendMessage will be added for SQS queues and sns:Publish for SNS topics.\n",
           "Type": "string"
         },
         "Type": {
+          "MarkdownDocumentation": "`Type`\nSpecifies an SQS queue or SNS topic that AWS Lambda (Lambda) sends events to when it can't process them. For more information about dead letter queue functionality, see \n [Dead-letter queues](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-dlq) in the *AWS Lambda Developer Guide*.\nSAM will automatically add appropriate permission to your Lambda function execution role to give Lambda service access to the resource. sqs:SendMessage will be added for SQS queues and sns:Publish for SNS topics.\n",
           "Type": "string"
         }
       },
@@ -1003,10 +1077,12 @@
     "AWS::Serverless::Function.DeploymentPreference": {
       "Properties": {
         "Alarms": {
+          "MarkdownDocumentation": "`Alarms`\nSpecifies the configurations to enable gradual Lambda deployments. For more information about configuring gradual Lambda deployments, see [Deploying serverless applications\n gradually](./automating-updates-to-serverless-apps.html).\n###### Note\nYou must specify an `AutoPublishAlias` in your [AWS::Serverless::Function](./sam-resource-function.html) to use a `DeploymentPreference` object, otherwise an error will result.\n",
           "Type": "List",
           "ItemType": "string"
         },
         "Enabled": {
+          "MarkdownDocumentation": "`Enabled`\nSpecifies the configurations to enable gradual Lambda deployments. For more information about configuring gradual Lambda deployments, see [Deploying serverless applications\n gradually](./automating-updates-to-serverless-apps.html).\n###### Note\nYou must specify an `AutoPublishAlias` in your [AWS::Serverless::Function](./sam-resource-function.html) to use a `DeploymentPreference` object, otherwise an error will result.\n",
           "Type": "boolean"
         },
         "Hooks": {
@@ -1016,12 +1092,15 @@
               "type": "string"
             }
           },
+          "MarkdownDocumentation": "`Hooks`\nSpecifies the configurations to enable gradual Lambda deployments. For more information about configuring gradual Lambda deployments, see [Deploying serverless applications\n gradually](./automating-updates-to-serverless-apps.html).\n###### Note\nYou must specify an `AutoPublishAlias` in your [AWS::Serverless::Function](./sam-resource-function.html) to use a `DeploymentPreference` object, otherwise an error will result.\n",
           "Type": "object"
         },
         "Role": {
+          "MarkdownDocumentation": "`Role`\nSpecifies the configurations to enable gradual Lambda deployments. For more information about configuring gradual Lambda deployments, see [Deploying serverless applications\n gradually](./automating-updates-to-serverless-apps.html).\n###### Note\nYou must specify an `AutoPublishAlias` in your [AWS::Serverless::Function](./sam-resource-function.html) to use a `DeploymentPreference` object, otherwise an error will result.\n",
           "Type": "string"
         },
         "Type": {
+          "MarkdownDocumentation": "`Type`\nSpecifies the configurations to enable gradual Lambda deployments. For more information about configuring gradual Lambda deployments, see [Deploying serverless applications\n gradually](./automating-updates-to-serverless-apps.html).\n###### Note\nYou must specify an `AutoPublishAlias` in your [AWS::Serverless::Function](./sam-resource-function.html) to use a `DeploymentPreference` object, otherwise an error will result.\n",
           "Type": "string"
         }
       },
@@ -1030,9 +1109,11 @@
     "AWS::Serverless::Function.Destination": {
       "Properties": {
         "Destination": {
+          "MarkdownDocumentation": "`Destination`\n",
           "Type": "string"
         },
         "Type": {
+          "MarkdownDocumentation": "`Type`\n",
           "Type": "string"
         }
       },
@@ -1041,6 +1122,7 @@
     "AWS::Serverless::Function.DestinationConfig": {
       "Properties": {
         "OnFailure": {
+          "MarkdownDocumentation": "`OnFailure`\n",
           "Type": "Destination"
         }
       },
@@ -1049,6 +1131,7 @@
     "AWS::Serverless::Function.DomainSAMPT": {
       "Properties": {
         "DomainName": {
+          "MarkdownDocumentation": "`DomainName`\n",
           "Type": "string"
         }
       },
@@ -1057,33 +1140,43 @@
     "AWS::Serverless::Function.DynamoDBEvent": {
       "Properties": {
         "BatchSize": {
+          "MarkdownDocumentation": "`BatchSize`\n",
           "Type": "number"
         },
         "BisectBatchOnFunctionError": {
+          "MarkdownDocumentation": "`BisectBatchOnFunctionError`\n",
           "Type": "boolean"
         },
         "DestinationConfig": {
+          "MarkdownDocumentation": "`DestinationConfig`\n",
           "Type": "DestinationConfig"
         },
         "Enabled": {
+          "MarkdownDocumentation": "`Enabled`\n",
           "Type": "boolean"
         },
         "MaximumBatchingWindowInSeconds": {
+          "MarkdownDocumentation": "`MaximumBatchingWindowInSeconds`\n",
           "Type": "number"
         },
         "MaximumRecordAgeInSeconds": {
+          "MarkdownDocumentation": "`MaximumRecordAgeInSeconds`\n",
           "Type": "number"
         },
         "MaximumRetryAttempts": {
+          "MarkdownDocumentation": "`MaximumRetryAttempts`\n",
           "Type": "number"
         },
         "ParallelizationFactor": {
+          "MarkdownDocumentation": "`ParallelizationFactor`\n",
           "Type": "number"
         },
         "StartingPosition": {
+          "MarkdownDocumentation": "`StartingPosition`\n",
           "Type": "string"
         },
         "Stream": {
+          "MarkdownDocumentation": "`Stream`\n",
           "Type": "string"
         }
       },
@@ -1096,6 +1189,7 @@
     "AWS::Serverless::Function.EphemeralStorage": {
       "Properties": {
         "Size": {
+          "MarkdownDocumentation": "`Size`\n",
           "Type": "number"
         }
       },
@@ -1104,15 +1198,19 @@
     "AWS::Serverless::Function.EventBridgeRuleEvent": {
       "Properties": {
         "EventBusName": {
+          "MarkdownDocumentation": "`EventBusName`\n",
           "Type": "string"
         },
         "Input": {
+          "MarkdownDocumentation": "`Input`\n",
           "Type": "string"
         },
         "InputPath": {
+          "MarkdownDocumentation": "`InputPath`\n",
           "Type": "string"
         },
         "Pattern": {
+          "MarkdownDocumentation": "`Pattern`\n",
           "Type": "object"
         }
       },
@@ -1121,12 +1219,15 @@
     "AWS::Serverless::Function.EventInvokeConfig": {
       "Properties": {
         "DestinationConfig": {
+          "MarkdownDocumentation": "`DestinationConfig`\n",
           "Type": "EventInvokeDestinationConfig"
         },
         "MaximumEventAgeInSeconds": {
+          "MarkdownDocumentation": "`MaximumEventAgeInSeconds`\n",
           "Type": "number"
         },
         "MaximumRetryAttempts": {
+          "MarkdownDocumentation": "`MaximumRetryAttempts`\n",
           "Type": "number"
         }
       },
@@ -1135,9 +1236,11 @@
     "AWS::Serverless::Function.EventInvokeDestinationConfig": {
       "Properties": {
         "OnFailure": {
+          "MarkdownDocumentation": "`OnFailure`\n",
           "Type": "Destination"
         },
         "OnSuccess": {
+          "MarkdownDocumentation": "`OnSuccess`\n",
           "Type": "Destination"
         }
       },
@@ -1146,9 +1249,11 @@
     "AWS::Serverless::Function.EventSource": {
       "Properties": {
         "Properties": {
+          "MarkdownDocumentation": "`Properties`\nThe object describing the source of events which trigger the function. Each event consists\n of a type and a set of properties that depend on that type. For more information about the\n properties of each event source, see the topic corresponding to that type.\n",
           "Type": "S3Event"
         },
         "Type": {
+          "MarkdownDocumentation": "`Type`\nThe object describing the source of events which trigger the function. Each event consists\n of a type and a set of properties that depend on that type. For more information about the\n properties of each event source, see the topic corresponding to that type.\n",
           "Type": "string"
         }
       },
@@ -1157,9 +1262,11 @@
     "AWS::Serverless::Function.FileSystemConfig": {
       "Properties": {
         "Arn": {
+          "MarkdownDocumentation": "`Arn`\n",
           "Type": "string"
         },
         "LocalMountPath": {
+          "MarkdownDocumentation": "`LocalMountPath`\n",
           "Type": "string"
         }
       },
@@ -1174,6 +1281,7 @@
               "type": "string"
             }
           },
+          "MarkdownDocumentation": "`Variables`\n",
           "Type": "object"
         }
       },
@@ -1182,6 +1290,7 @@
     "AWS::Serverless::Function.FunctionSAMPT": {
       "Properties": {
         "FunctionName": {
+          "MarkdownDocumentation": "`FunctionName`\n",
           "Type": "string"
         }
       },
@@ -1190,12 +1299,15 @@
     "AWS::Serverless::Function.FunctionUrlConfig": {
       "Properties": {
         "AuthType": {
+          "MarkdownDocumentation": "`AuthType`\nCreates an AWS Lambda function URL with the specified configuration parameters. A Lambda\n function URL is an HTTPS endpoint that you can use to invoke your function.\nBy default, the function URL that you create uses the `$LATEST` version of your\n Lambda function. If you specify an `AutoPublishAlias` for your Lambda function, the\n endpoint connects to the specified function alias.\nFor more information, see [Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) in the *AWS Lambda Developer Guide*.\n",
           "Type": "string"
         },
         "Cors": {
+          "MarkdownDocumentation": "`Cors`\nCreates an AWS Lambda function URL with the specified configuration parameters. A Lambda\n function URL is an HTTPS endpoint that you can use to invoke your function.\nBy default, the function URL that you create uses the `$LATEST` version of your\n Lambda function. If you specify an `AutoPublishAlias` for your Lambda function, the\n endpoint connects to the specified function alias.\nFor more information, see [Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) in the *AWS Lambda Developer Guide*.\n",
           "Type": "CorsConfiguration"
         },
         "InvokeMode": {
+          "MarkdownDocumentation": "`InvokeMode`\nCreates an AWS Lambda function URL with the specified configuration parameters. A Lambda\n function URL is an HTTPS endpoint that you can use to invoke your function.\nBy default, the function URL that you create uses the `$LATEST` version of your\n Lambda function. If you specify an `AutoPublishAlias` for your Lambda function, the\n endpoint connects to the specified function alias.\nFor more information, see [Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html) in the *AWS Lambda Developer Guide*.\n",
           "Type": "string"
         }
       },
@@ -1204,24 +1316,31 @@
     "AWS::Serverless::Function.HttpApiEvent": {
       "Properties": {
         "ApiId": {
+          "MarkdownDocumentation": "`ApiId`\n",
           "Type": "string"
         },
         "Auth": {
+          "MarkdownDocumentation": "`Auth`\n",
           "Type": "HttpApiFunctionAuth"
         },
         "Method": {
+          "MarkdownDocumentation": "`Method`\n",
           "Type": "string"
         },
         "Path": {
+          "MarkdownDocumentation": "`Path`\n",
           "Type": "string"
         },
         "PayloadFormatVersion": {
+          "MarkdownDocumentation": "`PayloadFormatVersion`\n",
           "Type": "string"
         },
         "RouteSettings": {
+          "MarkdownDocumentation": "`RouteSettings`\n",
           "Type": "RouteSettings"
         },
         "TimeoutInMillis": {
+          "MarkdownDocumentation": "`TimeoutInMillis`\n",
           "Type": "number"
         }
       },
@@ -1230,10 +1349,12 @@
     "AWS::Serverless::Function.HttpApiFunctionAuth": {
       "Properties": {
         "AuthorizationScopes": {
+          "MarkdownDocumentation": "`AuthorizationScopes`\nConfigures authorization at the event level.\nConfigure Auth for a specific API + Path + Method\n",
           "Type": "List",
           "ItemType": "string"
         },
         "Authorizer": {
+          "MarkdownDocumentation": "`Authorizer`\nConfigures authorization at the event level.\nConfigure Auth for a specific API + Path + Method\n",
           "Type": "string"
         }
       },
@@ -1242,10 +1363,12 @@
     "AWS::Serverless::Function.IAMPolicyDocument": {
       "Properties": {
         "Statement": {
+          "MarkdownDocumentation": "`Statement`\n",
           "Type": "List",
           "ItemType": "object"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "string"
         }
       },
@@ -1254,6 +1377,7 @@
     "AWS::Serverless::Function.IdentitySAMPT": {
       "Properties": {
         "IdentityName": {
+          "MarkdownDocumentation": "`IdentityName`\n",
           "Type": "string"
         }
       },
@@ -1262,14 +1386,17 @@
     "AWS::Serverless::Function.ImageConfig": {
       "Properties": {
         "Command": {
+          "MarkdownDocumentation": "`Command`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "EntryPoint": {
+          "MarkdownDocumentation": "`EntryPoint`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "WorkingDirectory": {
+          "MarkdownDocumentation": "`WorkingDirectory`\n",
           "Type": "string"
         }
       },
@@ -1278,9 +1405,11 @@
     "AWS::Serverless::Function.IoTRuleEvent": {
       "Properties": {
         "AwsIotSqlVersion": {
+          "MarkdownDocumentation": "`AwsIotSqlVersion`\n",
           "Type": "string"
         },
         "Sql": {
+          "MarkdownDocumentation": "`Sql`\n",
           "Type": "string"
         }
       },
@@ -1289,6 +1418,7 @@
     "AWS::Serverless::Function.KeySAMPT": {
       "Properties": {
         "KeyId": {
+          "MarkdownDocumentation": "`KeyId`\n",
           "Type": "string"
         }
       },
@@ -1297,19 +1427,24 @@
     "AWS::Serverless::Function.KinesisEvent": {
       "Properties": {
         "BatchSize": {
+          "MarkdownDocumentation": "`BatchSize`\n",
           "Type": "number"
         },
         "Enabled": {
+          "MarkdownDocumentation": "`Enabled`\n",
           "Type": "boolean"
         },
         "FunctionResponseTypes": {
+          "MarkdownDocumentation": "`FunctionResponseTypes`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "StartingPosition": {
+          "MarkdownDocumentation": "`StartingPosition`\n",
           "Type": "string"
         },
         "Stream": {
+          "MarkdownDocumentation": "`Stream`\n",
           "Type": "string"
         }
       },
@@ -1318,6 +1453,7 @@
     "AWS::Serverless::Function.LogGroupSAMPT": {
       "Properties": {
         "LogGroupName": {
+          "MarkdownDocumentation": "`LogGroupName`\n",
           "Type": "string"
         }
       },
@@ -1326,6 +1462,7 @@
     "AWS::Serverless::Function.ParameterNameSAMPT": {
       "Properties": {
         "ParameterName": {
+          "MarkdownDocumentation": "`ParameterName`\n",
           "Type": "string"
         }
       },
@@ -1334,6 +1471,7 @@
     "AWS::Serverless::Function.ProvisionedConcurrencyConfig": {
       "Properties": {
         "ProvisionedConcurrentExecutions": {
+          "MarkdownDocumentation": "`ProvisionedConcurrentExecutions`\n",
           "Type": "string"
         }
       },
@@ -1342,6 +1480,7 @@
     "AWS::Serverless::Function.QueueSAMPT": {
       "Properties": {
         "QueueName": {
+          "MarkdownDocumentation": "`QueueName`\n",
           "Type": "string"
         }
       },
@@ -1350,15 +1489,19 @@
     "AWS::Serverless::Function.RequestModel": {
       "Properties": {
         "Model": {
+          "MarkdownDocumentation": "`Model`\nConfigures a Request Model for a specific Api+Path+Method.\n",
           "Type": "string"
         },
         "Required": {
+          "MarkdownDocumentation": "`Required`\nConfigures a Request Model for a specific Api+Path+Method.\n",
           "Type": "boolean"
         },
         "ValidateBody": {
+          "MarkdownDocumentation": "`ValidateBody`\nConfigures a Request Model for a specific Api+Path+Method.\n",
           "Type": "boolean"
         },
         "ValidateParameters": {
+          "MarkdownDocumentation": "`ValidateParameters`\nConfigures a Request Model for a specific Api+Path+Method.\n",
           "Type": "boolean"
         }
       },
@@ -1367,9 +1510,11 @@
     "AWS::Serverless::Function.RequestParameter": {
       "Properties": {
         "Caching": {
+          "MarkdownDocumentation": "`Caching`\nConfigure Request Parameter for a specific Api+Path+Method.\nEither `Required` or `Caching` property needs to be specified for request parameter\n",
           "Type": "boolean"
         },
         "Required": {
+          "MarkdownDocumentation": "`Required`\nConfigure Request Parameter for a specific Api+Path+Method.\nEither `Required` or `Caching` property needs to be specified for request parameter\n",
           "Type": "boolean"
         }
       },
@@ -1378,18 +1523,23 @@
     "AWS::Serverless::Function.RouteSettings": {
       "Properties": {
         "DataTraceEnabled": {
+          "MarkdownDocumentation": "`DataTraceEnabled`\n",
           "Type": "boolean"
         },
         "DetailedMetricsEnabled": {
+          "MarkdownDocumentation": "`DetailedMetricsEnabled`\n",
           "Type": "boolean"
         },
         "LoggingLevel": {
+          "MarkdownDocumentation": "`LoggingLevel`\n",
           "Type": "string"
         },
         "ThrottlingBurstLimit": {
+          "MarkdownDocumentation": "`ThrottlingBurstLimit`\n",
           "Type": "number"
         },
         "ThrottlingRateLimit": {
+          "MarkdownDocumentation": "`ThrottlingRateLimit`\n",
           "Type": "number"
         }
       },
@@ -1398,9 +1548,11 @@
     "AWS::Serverless::Function.S3Event": {
       "Properties": {
         "Bucket": {
+          "MarkdownDocumentation": "`Bucket`\n",
           "Type": "string"
         },
         "Events": {
+          "MarkdownDocumentation": "`Events`\n",
           "Type": {
             "type": [
               "string"
@@ -1408,6 +1560,7 @@
           }
         },
         "Filter": {
+          "MarkdownDocumentation": "`Filter`\n",
           "Type": "S3NotificationFilter"
         }
       },
@@ -1416,6 +1569,7 @@
     "AWS::Serverless::Function.S3KeyFilter": {
       "Properties": {
         "Rules": {
+          "MarkdownDocumentation": "`Rules`\n",
           "Type": "List",
           "ItemType": "S3KeyFilterRule"
         }
@@ -1425,9 +1579,11 @@
     "AWS::Serverless::Function.S3KeyFilterRule": {
       "Properties": {
         "Name": {
+          "MarkdownDocumentation": "`Name`\n",
           "Type": "string"
         },
         "Value": {
+          "MarkdownDocumentation": "`Value`\n",
           "Type": "string"
         }
       },
@@ -1436,12 +1592,15 @@
     "AWS::Serverless::Function.S3Location": {
       "Properties": {
         "Bucket": {
+          "MarkdownDocumentation": "`Bucket`\n",
           "Type": "string"
         },
         "Key": {
+          "MarkdownDocumentation": "`Key`\n",
           "Type": "string"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "number"
         }
       },
@@ -1450,6 +1609,7 @@
     "AWS::Serverless::Function.S3NotificationFilter": {
       "Properties": {
         "S3Key": {
+          "MarkdownDocumentation": "`S3Key`\n",
           "Type": "S3KeyFilter"
         }
       },
@@ -1458,105 +1618,139 @@
     "AWS::Serverless::Function.SAMPolicyTemplate": {
       "Properties": {
         "AMIDescribePolicy": {
+          "MarkdownDocumentation": "`AMIDescribePolicy`\n",
           "Type": "EmptySAMPT"
         },
         "AWSSecretsManagerGetSecretValuePolicy": {
+          "MarkdownDocumentation": "`AWSSecretsManagerGetSecretValuePolicy`\n",
           "Type": "SecretArnSAMPT"
         },
         "CloudFormationDescribeStacksPolicy": {
+          "MarkdownDocumentation": "`CloudFormationDescribeStacksPolicy`\n",
           "Type": "EmptySAMPT"
         },
         "CloudWatchPutMetricPolicy": {
+          "MarkdownDocumentation": "`CloudWatchPutMetricPolicy`\n",
           "Type": "EmptySAMPT"
         },
         "DynamoDBCrudPolicy": {
+          "MarkdownDocumentation": "`DynamoDBCrudPolicy`\n",
           "Type": "TableSAMPT"
         },
         "DynamoDBReadPolicy": {
+          "MarkdownDocumentation": "`DynamoDBReadPolicy`\n",
           "Type": "TableSAMPT"
         },
         "DynamoDBStreamReadPolicy": {
+          "MarkdownDocumentation": "`DynamoDBStreamReadPolicy`\n",
           "Type": "TableStreamSAMPT"
         },
         "DynamoDBWritePolicy": {
+          "MarkdownDocumentation": "`DynamoDBWritePolicy`\n",
           "Type": "TableSAMPT"
         },
         "EC2DescribePolicy": {
+          "MarkdownDocumentation": "`EC2DescribePolicy`\n",
           "Type": "EmptySAMPT"
         },
         "ElasticsearchHttpPostPolicy": {
+          "MarkdownDocumentation": "`ElasticsearchHttpPostPolicy`\n",
           "Type": "DomainSAMPT"
         },
         "FilterLogEventsPolicy": {
+          "MarkdownDocumentation": "`FilterLogEventsPolicy`\n",
           "Type": "LogGroupSAMPT"
         },
         "KMSDecryptPolicy": {
+          "MarkdownDocumentation": "`KMSDecryptPolicy`\n",
           "Type": "KeySAMPT"
         },
         "KinesisCrudPolicy": {
+          "MarkdownDocumentation": "`KinesisCrudPolicy`\n",
           "Type": "StreamSAMPT"
         },
         "KinesisStreamReadPolicy": {
+          "MarkdownDocumentation": "`KinesisStreamReadPolicy`\n",
           "Type": "StreamSAMPT"
         },
         "LambdaInvokePolicy": {
+          "MarkdownDocumentation": "`LambdaInvokePolicy`\n",
           "Type": "FunctionSAMPT"
         },
         "RekognitionDetectOnlyPolicy": {
+          "MarkdownDocumentation": "`RekognitionDetectOnlyPolicy`\n",
           "Type": "EmptySAMPT"
         },
         "RekognitionLabelsPolicy": {
+          "MarkdownDocumentation": "`RekognitionLabelsPolicy`\n",
           "Type": "EmptySAMPT"
         },
         "RekognitionNoDataAccessPolicy": {
+          "MarkdownDocumentation": "`RekognitionNoDataAccessPolicy`\n",
           "Type": "CollectionSAMPT"
         },
         "RekognitionReadPolicy": {
+          "MarkdownDocumentation": "`RekognitionReadPolicy`\n",
           "Type": "CollectionSAMPT"
         },
         "RekognitionWriteOnlyAccessPolicy": {
+          "MarkdownDocumentation": "`RekognitionWriteOnlyAccessPolicy`\n",
           "Type": "CollectionSAMPT"
         },
         "S3CrudPolicy": {
+          "MarkdownDocumentation": "`S3CrudPolicy`\n",
           "Type": "BucketSAMPT"
         },
         "S3ReadPolicy": {
+          "MarkdownDocumentation": "`S3ReadPolicy`\n",
           "Type": "BucketSAMPT"
         },
         "S3WritePolicy": {
+          "MarkdownDocumentation": "`S3WritePolicy`\n",
           "Type": "BucketSAMPT"
         },
         "SESBulkTemplatedCrudPolicy": {
+          "MarkdownDocumentation": "`SESBulkTemplatedCrudPolicy`\n",
           "Type": "IdentitySAMPT"
         },
         "SESCrudPolicy": {
+          "MarkdownDocumentation": "`SESCrudPolicy`\n",
           "Type": "IdentitySAMPT"
         },
         "SESEmailTemplateCrudPolicy": {
+          "MarkdownDocumentation": "`SESEmailTemplateCrudPolicy`\n",
           "Type": "EmptySAMPT"
         },
         "SESSendBouncePolicy": {
+          "MarkdownDocumentation": "`SESSendBouncePolicy`\n",
           "Type": "IdentitySAMPT"
         },
         "SNSCrudPolicy": {
+          "MarkdownDocumentation": "`SNSCrudPolicy`\n",
           "Type": "TopicSAMPT"
         },
         "SNSPublishMessagePolicy": {
+          "MarkdownDocumentation": "`SNSPublishMessagePolicy`\n",
           "Type": "TopicSAMPT"
         },
         "SQSPollerPolicy": {
+          "MarkdownDocumentation": "`SQSPollerPolicy`\n",
           "Type": "QueueSAMPT"
         },
         "SQSSendMessagePolicy": {
+          "MarkdownDocumentation": "`SQSSendMessagePolicy`\n",
           "Type": "QueueSAMPT"
         },
         "SSMParameterReadPolicy": {
+          "MarkdownDocumentation": "`SSMParameterReadPolicy`\n",
           "Type": "ParameterNameSAMPT"
         },
         "StepFunctionsExecutionPolicy": {
+          "MarkdownDocumentation": "`StepFunctionsExecutionPolicy`\n",
           "Type": "StateMachineSAMPT"
         },
         "VPCAccessPolicy": {
+          "MarkdownDocumentation": "`VPCAccessPolicy`\n",
           "Type": "EmptySAMPT"
         }
       },
@@ -1565,6 +1759,7 @@
     "AWS::Serverless::Function.SNSEvent": {
       "Properties": {
         "Topic": {
+          "MarkdownDocumentation": "`Topic`\n",
           "Type": "string"
         }
       },
@@ -1573,12 +1768,15 @@
     "AWS::Serverless::Function.SQSEvent": {
       "Properties": {
         "BatchSize": {
+          "MarkdownDocumentation": "`BatchSize`\n",
           "Type": "number"
         },
         "Enabled": {
+          "MarkdownDocumentation": "`Enabled`\n",
           "Type": "boolean"
         },
         "Queue": {
+          "MarkdownDocumentation": "`Queue`\n",
           "Type": "string"
         }
       },
@@ -1587,18 +1785,23 @@
     "AWS::Serverless::Function.ScheduleEvent": {
       "Properties": {
         "Description": {
+          "MarkdownDocumentation": "`Description`\n",
           "Type": "string"
         },
         "Enabled": {
+          "MarkdownDocumentation": "`Enabled`\n",
           "Type": "boolean"
         },
         "Input": {
+          "MarkdownDocumentation": "`Input`\n",
           "Type": "string"
         },
         "Name": {
+          "MarkdownDocumentation": "`Name`\n",
           "Type": "string"
         },
         "Schedule": {
+          "MarkdownDocumentation": "`Schedule`\n",
           "Type": "string"
         }
       },
@@ -1607,6 +1810,7 @@
     "AWS::Serverless::Function.SecretArnSAMPT": {
       "Properties": {
         "SecretArn": {
+          "MarkdownDocumentation": "`SecretArn`\n",
           "Type": "string"
         }
       },
@@ -1615,6 +1819,7 @@
     "AWS::Serverless::Function.StateMachineSAMPT": {
       "Properties": {
         "StateMachineName": {
+          "MarkdownDocumentation": "`StateMachineName`\n",
           "Type": "string"
         }
       },
@@ -1623,6 +1828,7 @@
     "AWS::Serverless::Function.StreamSAMPT": {
       "Properties": {
         "StreamName": {
+          "MarkdownDocumentation": "`StreamName`\n",
           "Type": "string"
         }
       },
@@ -1631,6 +1837,7 @@
     "AWS::Serverless::Function.TableSAMPT": {
       "Properties": {
         "TableName": {
+          "MarkdownDocumentation": "`TableName`\n",
           "Type": "string"
         }
       },
@@ -1639,9 +1846,11 @@
     "AWS::Serverless::Function.TableStreamSAMPT": {
       "Properties": {
         "StreamName": {
+          "MarkdownDocumentation": "`StreamName`\n",
           "Type": "string"
         },
         "TableName": {
+          "MarkdownDocumentation": "`TableName`\n",
           "Type": "string"
         }
       },
@@ -1650,6 +1859,7 @@
     "AWS::Serverless::Function.TopicSAMPT": {
       "Properties": {
         "TopicName": {
+          "MarkdownDocumentation": "`TopicName`\n",
           "Type": "string"
         }
       },
@@ -1658,10 +1868,12 @@
     "AWS::Serverless::Function.VpcConfig": {
       "Properties": {
         "SecurityGroupIds": {
+          "MarkdownDocumentation": "`SecurityGroupIds`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "SubnetIds": {
+          "MarkdownDocumentation": "`SubnetIds`\n",
           "Type": "List",
           "ItemType": "string"
         }
@@ -1671,9 +1883,11 @@
     "AWS::Serverless::HttpApi.AccessLogSetting": {
       "Properties": {
         "DestinationArn": {
+          "MarkdownDocumentation": "`DestinationArn`\n",
           "Type": "string"
         },
         "Format": {
+          "MarkdownDocumentation": "`Format`\n",
           "Type": "string"
         }
       },
@@ -1682,25 +1896,31 @@
     "AWS::Serverless::HttpApi.CorsConfigurationObject": {
       "Properties": {
         "AllowCredentials": {
+          "MarkdownDocumentation": "`AllowCredentials`\n",
           "Type": "boolean"
         },
         "AllowHeaders": {
+          "MarkdownDocumentation": "`AllowHeaders`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "AllowMethods": {
+          "MarkdownDocumentation": "`AllowMethods`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "AllowOrigins": {
+          "MarkdownDocumentation": "`AllowOrigins`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "ExposeHeaders": {
+          "MarkdownDocumentation": "`ExposeHeaders`\n",
           "Type": "List",
           "ItemType": "string"
         },
         "MaxAge": {
+          "MarkdownDocumentation": "`MaxAge`\n",
           "Type": "number"
         }
       },
@@ -1709,9 +1929,11 @@
     "AWS::Serverless::HttpApi.HttpApiAuth": {
       "Properties": {
         "Authorizers": {
+          "MarkdownDocumentation": "`Authorizers`\nConfigure authorization to control access to your Amazon API Gateway HTTP API.\nFor more information about configuring access to HTTP APIs, see [Controlling and managing access to an HTTP API in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) in the *API Gateway Developer Guide*.\n",
           "Type": "object"
         },
         "DefaultAuthorizer": {
+          "MarkdownDocumentation": "`DefaultAuthorizer`\nConfigure authorization to control access to your Amazon API Gateway HTTP API.\nFor more information about configuring access to HTTP APIs, see [Controlling and managing access to an HTTP API in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) in the *API Gateway Developer Guide*.\n",
           "Type": "string"
         }
       },
@@ -1720,24 +1942,31 @@
     "AWS::Serverless::HttpApi.HttpApiDomainConfiguration": {
       "Properties": {
         "BasePath": {
+          "MarkdownDocumentation": "`BasePath`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "CertificateArn": {
+          "MarkdownDocumentation": "`CertificateArn`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "DomainName": {
+          "MarkdownDocumentation": "`DomainName`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "EndpointConfiguration": {
+          "MarkdownDocumentation": "`EndpointConfiguration`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         },
         "MutualTlsAuthentication": {
+          "MarkdownDocumentation": "`MutualTlsAuthentication`\nConfigures a custom domain for an API.\n",
           "Type": "MutualTlsAuthentication"
         },
         "Route53": {
+          "MarkdownDocumentation": "`Route53`\nConfigures a custom domain for an API.\n",
           "Type": "Route53Configuration"
         },
         "SecurityPolicy": {
+          "MarkdownDocumentation": "`SecurityPolicy`\nConfigures a custom domain for an API.\n",
           "Type": "string"
         }
       },
@@ -1746,9 +1975,11 @@
     "AWS::Serverless::HttpApi.MutualTlsAuthentication": {
       "Properties": {
         "TruststoreUri": {
+          "MarkdownDocumentation": "`TruststoreUri`\n",
           "Type": "string"
         },
         "TruststoreVersion": {
+          "MarkdownDocumentation": "`TruststoreVersion`\n",
           "Type": "boolean"
         }
       },
@@ -1757,18 +1988,23 @@
     "AWS::Serverless::HttpApi.Route53Configuration": {
       "Properties": {
         "DistributedDomainName": {
+          "MarkdownDocumentation": "`DistributedDomainName`\nConfigures the Route53 record sets for an API.\n",
           "Type": "string"
         },
         "EvaluateTargetHealth": {
+          "MarkdownDocumentation": "`EvaluateTargetHealth`\nConfigures the Route53 record sets for an API.\n",
           "Type": "boolean"
         },
         "HostedZoneId": {
+          "MarkdownDocumentation": "`HostedZoneId`\nConfigures the Route53 record sets for an API.\n",
           "Type": "string"
         },
         "HostedZoneName": {
+          "MarkdownDocumentation": "`HostedZoneName`\nConfigures the Route53 record sets for an API.\n",
           "Type": "string"
         },
         "IpV6": {
+          "MarkdownDocumentation": "`IpV6`\nConfigures the Route53 record sets for an API.\n",
           "Type": "boolean"
         }
       },
@@ -1777,18 +2013,23 @@
     "AWS::Serverless::HttpApi.RouteSettings": {
       "Properties": {
         "DataTraceEnabled": {
+          "MarkdownDocumentation": "`DataTraceEnabled`\n",
           "Type": "boolean"
         },
         "DetailedMetricsEnabled": {
+          "MarkdownDocumentation": "`DetailedMetricsEnabled`\n",
           "Type": "boolean"
         },
         "LoggingLevel": {
+          "MarkdownDocumentation": "`LoggingLevel`\n",
           "Type": "string"
         },
         "ThrottlingBurstLimit": {
+          "MarkdownDocumentation": "`ThrottlingBurstLimit`\n",
           "Type": "number"
         },
         "ThrottlingRateLimit": {
+          "MarkdownDocumentation": "`ThrottlingRateLimit`\n",
           "Type": "number"
         }
       },
@@ -1797,12 +2038,15 @@
     "AWS::Serverless::HttpApi.S3Location": {
       "Properties": {
         "Bucket": {
+          "MarkdownDocumentation": "`Bucket`\n",
           "Type": "string"
         },
         "Key": {
+          "MarkdownDocumentation": "`Key`\n",
           "Type": "string"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "number"
         }
       },
@@ -1811,12 +2055,15 @@
     "AWS::Serverless::LayerVersion.S3Location": {
       "Properties": {
         "Bucket": {
+          "MarkdownDocumentation": "`Bucket`\n",
           "Type": "string"
         },
         "Key": {
+          "MarkdownDocumentation": "`Key`\n",
           "Type": "string"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "number"
         }
       },
@@ -1825,9 +2072,11 @@
     "AWS::Serverless::SimpleTable.PrimaryKey": {
       "Properties": {
         "Name": {
+          "MarkdownDocumentation": "`Name`\n",
           "Type": "string"
         },
         "Type": {
+          "MarkdownDocumentation": "`Type`\n",
           "Type": "string"
         }
       },
@@ -1836,9 +2085,11 @@
     "AWS::Serverless::SimpleTable.ProvisionedThroughput": {
       "Properties": {
         "ReadCapacityUnits": {
+          "MarkdownDocumentation": "`ReadCapacityUnits`\n",
           "Type": "number"
         },
         "WriteCapacityUnits": {
+          "MarkdownDocumentation": "`WriteCapacityUnits`\n",
           "Type": "number"
         }
       },
@@ -1847,6 +2098,7 @@
     "AWS::Serverless::SimpleTable.SSESpecification": {
       "Properties": {
         "SSEEnabled": {
+          "MarkdownDocumentation": "`SSEEnabled`\n",
           "Type": "boolean"
         }
       },
@@ -1855,12 +2107,15 @@
     "AWS::Serverless::StateMachine.ApiEvent": {
       "Properties": {
         "Method": {
+          "MarkdownDocumentation": "`Method`\n",
           "Type": "string"
         },
         "Path": {
+          "MarkdownDocumentation": "`Path`\n",
           "Type": "string"
         },
         "RestApiId": {
+          "MarkdownDocumentation": "`RestApiId`\n",
           "Type": "string"
         }
       },
@@ -1869,15 +2124,19 @@
     "AWS::Serverless::StateMachine.CloudWatchEventEvent": {
       "Properties": {
         "EventBusName": {
+          "MarkdownDocumentation": "`EventBusName`\n",
           "Type": "string"
         },
         "Input": {
+          "MarkdownDocumentation": "`Input`\n",
           "Type": "string"
         },
         "InputPath": {
+          "MarkdownDocumentation": "`InputPath`\n",
           "Type": "string"
         },
         "Pattern": {
+          "MarkdownDocumentation": "`Pattern`\n",
           "Type": "object"
         }
       },
@@ -1886,6 +2145,7 @@
     "AWS::Serverless::StateMachine.CloudWatchLogsLogGroup": {
       "Properties": {
         "LogGroupArn": {
+          "MarkdownDocumentation": "`LogGroupArn`\n",
           "Type": "string"
         }
       },
@@ -1894,15 +2154,19 @@
     "AWS::Serverless::StateMachine.EventBridgeRuleEvent": {
       "Properties": {
         "EventBusName": {
+          "MarkdownDocumentation": "`EventBusName`\n",
           "Type": "string"
         },
         "Input": {
+          "MarkdownDocumentation": "`Input`\n",
           "Type": "string"
         },
         "InputPath": {
+          "MarkdownDocumentation": "`InputPath`\n",
           "Type": "string"
         },
         "Pattern": {
+          "MarkdownDocumentation": "`Pattern`\n",
           "Type": "object"
         }
       },
@@ -1911,9 +2175,11 @@
     "AWS::Serverless::StateMachine.EventSource": {
       "Properties": {
         "Properties": {
+          "MarkdownDocumentation": "`Properties`\n",
           "Type": "CloudWatchEventEvent"
         },
         "Type": {
+          "MarkdownDocumentation": "`Type`\n",
           "Type": "string"
         }
       },
@@ -1922,6 +2188,7 @@
     "AWS::Serverless::StateMachine.FunctionSAMPT": {
       "Properties": {
         "FunctionName": {
+          "MarkdownDocumentation": "`FunctionName`\n",
           "Type": "string"
         }
       },
@@ -1930,10 +2197,12 @@
     "AWS::Serverless::StateMachine.IAMPolicyDocument": {
       "Properties": {
         "Statement": {
+          "MarkdownDocumentation": "`Statement`\n",
           "Type": "List",
           "ItemType": "object"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "string"
         }
       },
@@ -1942,6 +2211,7 @@
     "AWS::Serverless::StateMachine.LogDestination": {
       "Properties": {
         "CloudWatchLogsLogGroup": {
+          "MarkdownDocumentation": "`CloudWatchLogsLogGroup`\n",
           "Type": "CloudWatchLogsLogGroup"
         }
       },
@@ -1950,13 +2220,16 @@
     "AWS::Serverless::StateMachine.LoggingConfiguration": {
       "Properties": {
         "Destinations": {
+          "MarkdownDocumentation": "`Destinations`\n",
           "Type": "List",
           "ItemType": "LogDestination"
         },
         "IncludeExecutionData": {
+          "MarkdownDocumentation": "`IncludeExecutionData`\n",
           "Type": "boolean"
         },
         "Level": {
+          "MarkdownDocumentation": "`Level`\n",
           "Type": "string"
         }
       },
@@ -1965,12 +2238,15 @@
     "AWS::Serverless::StateMachine.S3Location": {
       "Properties": {
         "Bucket": {
+          "MarkdownDocumentation": "`Bucket`\n",
           "Type": "string"
         },
         "Key": {
+          "MarkdownDocumentation": "`Key`\n",
           "Type": "string"
         },
         "Version": {
+          "MarkdownDocumentation": "`Version`\n",
           "Type": "number"
         }
       },
@@ -1979,9 +2255,11 @@
     "AWS::Serverless::StateMachine.SAMPolicyTemplate": {
       "Properties": {
         "LambdaInvokePolicy": {
+          "MarkdownDocumentation": "`LambdaInvokePolicy`\n",
           "Type": "FunctionSAMPT"
         },
         "StepFunctionsExecutionPolicy": {
+          "MarkdownDocumentation": "`StepFunctionsExecutionPolicy`\n",
           "Type": "StateMachineSAMPT"
         }
       },
@@ -1990,9 +2268,11 @@
     "AWS::Serverless::StateMachine.ScheduleEvent": {
       "Properties": {
         "Input": {
+          "MarkdownDocumentation": "`Input`\n",
           "Type": "string"
         },
         "Schedule": {
+          "MarkdownDocumentation": "`Schedule`\n",
           "Type": "string"
         }
       },
@@ -2001,6 +2281,7 @@
     "AWS::Serverless::StateMachine.StateMachineSAMPT": {
       "Properties": {
         "StateMachineName": {
+          "MarkdownDocumentation": "`StateMachineName`\n",
           "Type": "string"
         }
       },
@@ -2009,6 +2290,7 @@
     "AWS::Serverless::StateMachine.TracingConfiguration": {
       "Properties": {
         "Enabled": {
+          "MarkdownDocumentation": "`Enabled`\n",
           "Type": "boolean"
         }
       },

@@ -85,8 +85,13 @@ def normalise_property(name: str, d: Tree, base_directory: Path, base_url: str) 
     bs = file_content(base_directory, link, base_url=base_url)
     d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
 
-    for v in d_[AWSSpecification.PROPERTIES].values():
-        normalise_types(v)
+    print(d_[AWSSpecification.PROPERTIES])
+    for property_name, sub_props in d_[AWSSpecification.PROPERTIES].items():
+        # property_name = 'Type', v =  {'type': 'string'}
+        sub_props[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(
+            bs, link, property_name
+        )
+        normalise_types(sub_props)
     return d_
 
 
