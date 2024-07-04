@@ -7,15 +7,18 @@ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-am
 Not in the spec are attribute descriptions, and allowed values.
 """
 
+from __future__ import annotations
+
 import functools
 import json  # noqa: I001
 import logging
 import os
 import tempfile
 from pathlib import Path
-from typing import Callable, Optional, Tuple
+from typing import Callable, Generic, Optional, Tuple, TypeVar
 
 import requests
+from attrs import frozen
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md  # type: ignore[import-untyped]
 
@@ -29,26 +32,71 @@ DEFAULT_SPEC_URL = "https://dnwj8swjjbsbt.cloudfront.net/latest/gzip/CloudFormat
 logger = logging.getLogger(__name__)
 
 
+E = TypeVar("E")
+E2 = TypeVar("E2")
+
+
+@frozen
+class WithSuccessFailureCount(Generic[E]):
+    """Wraps an object along with a success/failure count.
+
+    Attributes
+    ----------
+    value : E
+        The wrapped value
+    successes : int
+        The number of successes.
+    failures : int
+        The number of failures."""
+
+    value: E
+    successes: int
+    failures: int
+
+    @classmethod
+    def zero(cls, e: E) -> WithSuccessFailureCount[E]:
+        return WithSuccessFailureCount(e, 0, 0)
+
+    @classmethod
+    def success(cls, e: E) -> WithSuccessFailureCount[E]:
+        return WithSuccessFailureCount(e, 1, 0)
+
+    @classmethod
+    def failure(cls, e: E) -> WithSuccessFailureCount[E]:
+        return WithSuccessFailureCount(e, 0, 1)
+
+    def add_counts(
+        self, other: WithSuccessFailureCount[E2]
+    ) -> WithSuccessFailureCount[E]:
+        return WithSuccessFailureCount(
+            self.value,
+            self.successes + other.successes,
+            self.failures + other.failures,
+        )
+
+    def to_tuple(self) -> Tuple[E, int, int]:
+        return (self.value, self.successes, self.failures)
+
+
 def md_(s: str) -> str:
     return md(s).replace("\n\n", "\n")  # type: ignore[no-any-return]
 
 
 def to_aws_context(
     d: Tree, parent: Optional[str], base_directory: Path
-) -> Tuple[Tree, int, int]:
+) -> WithSuccessFailureCount[Tree]:
     if not isinstance(d, dict):
-        return d, 0, 0
-    d_: Tree = {}
-    md_doc_fails = md_doc_succ = 0
+        return WithSuccessFailureCount.zero(d)
+    d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero({})
     for k, v in d.items():
         if k == AWSSpecification.DOCUMENTATION:
             content = file_content(base_directory, v)
-            doc = d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(
-                content, v, parent
-            )
-            md_doc_fails += doc == ""
-            md_doc_succ += doc != ""
-            d_[AWSSpecification.REF_RETURN_VALUE] = ref_return_value(
+            doc_with_counts = documentation(content, v, parent)
+            doc = d_.value[
+                AWSSpecification.MARKDOWN_DOCUMENTATION
+            ] = doc_with_counts.value
+            d_ = d_.add_counts(doc_with_counts)
+            d_.value[AWSSpecification.REF_RETURN_VALUE] = ref_return_value(
                 content, v.split("/")[-1]
             )
             lines = doc.splitlines()
@@ -67,14 +115,14 @@ def to_aws_context(
                     .replace(" | ", "|")
                     .split("|")
                 )
-                d_[AWSSpecification.ALLOWED_VALUES] = allowed_values
+                d_.value[AWSSpecification.ALLOWED_VALUES] = allowed_values
                 if len(allowed_values_line) > MAX_ALLOWED_VALUES_WIDTH:
                     new_line = (
                         " | ".join(allowed_values)[: MAX_ALLOWED_VALUES_WIDTH - 3]
                         + "..."
                     )
                     lines[idx] = f"{ALLOWED_VALUES_PREFIX} `{new_line}`"
-                    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = "\n".join(lines)
+                    d_.value[AWSSpecification.MARKDOWN_DOCUMENTATION] = "\n".join(lines)
         if (
             isinstance(v, dict)
             and AWSSpecification.ATTRIBUTES in v
@@ -84,10 +132,10 @@ def to_aws_context(
                 v[AWSSpecification.DOCUMENTATION],
                 v[AWSSpecification.ATTRIBUTES],
             )
-        d_[k], sub_md_doc_fails, sub_md_doc_succ = to_aws_context(v, k, base_directory)
-        md_doc_fails += sub_md_doc_fails
-        md_doc_succ += sub_md_doc_succ
-    return d_, md_doc_fails, md_doc_succ
+        sub_d_with_counts = to_aws_context(v, k, base_directory)
+        d_.value[k] = sub_d_with_counts.value
+        d_.add_counts(sub_d_with_counts)
+    return d_
 
 
 def set_attribute_doc(base_link: str, attribs_dct: Tree) -> None:
@@ -135,7 +183,9 @@ def file_content(
             return BeautifulSoup("")
 
 
-def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> str:
+def documentation(
+    content: BeautifulSoup, link: str, parent: Optional[str]
+) -> WithSuccessFailureCount[str]:
     if "#" in link:  # Subprop
         # Sometimes the link is out of date (redirect), we guess the true id link using the h1 attrib
         split = link.split("#")
@@ -155,7 +205,7 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
         dt = content.find("dt", {"id": true_id})
         if not dt:
             logger.error("No documentation found for %s", link)
-            return ""
+            return WithSuccessFailureCount.failure("")
         dd = dt.findNext("dd")
         doc = md_(str(dd)) if dd else ""
     else:  # resource
@@ -171,7 +221,11 @@ def documentation(content: BeautifulSoup, link: str, parent: Optional[str]) -> s
             else:
                 break
         doc = md_("".join(map(str, tags))) if tags else ""
-    return f"`{parent if parent else ''}`\n{doc}"
+
+    s = f"`{parent if parent else ''}`\n{doc}"
+    if doc:
+        return WithSuccessFailureCount.success(s)
+    return WithSuccessFailureCount.failure(s)
 
 
 def ref_return_value(content: BeautifulSoup, slug: str) -> str:
@@ -224,7 +278,7 @@ def run(
                 "Not downloading documentation, using existing directory %s",
                 documentation_directory,
             )
-        ctx_map, md_fails, md_succ = to_aws_context(spec_json, None, doc_dir)
+        ctx_map, md_fails, md_succ = to_aws_context(spec_json, None, doc_dir).to_tuple()
         logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)
         with open(out_path, "w") as f_:
             json.dump(ctx_map, f_, indent=2)

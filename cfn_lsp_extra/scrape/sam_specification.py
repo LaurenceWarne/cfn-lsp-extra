@@ -11,7 +11,12 @@ from typing import Optional
 import requests
 
 from ..aws_data import AWSSpecification, Tree
-from .specification import documentation, file_content, run_command
+from .specification import (
+    WithSuccessFailureCount,
+    documentation,
+    file_content,
+    run_command,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,63 +39,71 @@ DEFAULT_SPEC_URL = "https://raw.githubusercontent.com/awslabs/goformation/master
 DOC_URL = "docs.aws.amazon.com/serverless-application-model/latest/developerguide/"
 
 
-def to_aws_context(sam_dct: Tree, base_directory: Path, base_url: str) -> Tree:
-    d_ = {}
+def to_aws_context(
+    sam_dct: Tree, base_directory: Path, base_url: str
+) -> WithSuccessFailureCount[Tree]:
+    d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero({})
     base = sam_dct["definitions"]
-    d_[AWSSpecification.RESOURCE_TYPES] = {
-        k: normalise_resource(k, v, base_directory, base_url)
-        for k, v in base.items()
-        if "." not in k and SERVERLESS_PREFIX in k
-    }
-    d_[AWSSpecification.PROPERTY_TYPES] = {
-        k: normalise_property(k, v, base_directory, base_url)
-        for k, v in base.items()
-        if "." in k and SERVERLESS_PREFIX in k
-    }
+    for k, v in base.items():
+        if "." not in k and SERVERLESS_PREFIX in k:
+            res_with_counts = normalise_resource(k, v, base_directory, base_url)
+            d_.value[k] = res_with_counts.value
+            d_ = d_.add_counts(res_with_counts)
+        elif SERVERLESS_PREFIX in k:
+            res_with_counts = normalise_property(k, v, base_directory, base_url)
+            d_.value[k] = res_with_counts.value
+            d_ = d_.add_counts(res_with_counts)
     return d_
 
 
-def normalise_resource(name: str, d: Tree, base_directory: Path, base_url: str) -> Tree:
+def normalise_resource(
+    name: str, d: Tree, base_directory: Path, base_url: str
+) -> WithSuccessFailureCount[Tree]:
     if not isinstance(d, dict):
-        return d
+        return WithSuccessFailureCount.zero(d)
 
-    d_ = {}
+    d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero({})
     props = d[PROP_KEY][AWSSpecification.PROPERTIES][PROP_KEY]
-    d_[AWSSpecification.PROPERTIES] = props
+    d_.value[AWSSpecification.PROPERTIES] = props
     link = f"{base_url}sam-resource-{name.split('::')[-1].lower()}"
     bs = file_content(base_directory, link, base_url=base_url)
-    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
+    doc_with_counts = documentation(bs, link, name)
+    d_.value[AWSSpecification.MARKDOWN_DOCUMENTATION] = doc_with_counts.value
+    d_ = d_.add_counts(doc_with_counts)
 
     required = d[PROP_KEY][AWSSpecification.PROPERTIES].get(REQUIRED, [])
     for property_name in list(props.keys()):
-        sub_props = d_[AWSSpecification.PROPERTIES][property_name]
+        sub_props = d_.value[AWSSpecification.PROPERTIES][property_name]
         sub_props[AWSSpecification.REQUIRED] = property_name in required
-        sub_props[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(
-            bs, link, property_name
-        )
+        sub_doc_with_counts = documentation(bs, link, property_name)
+        sub_props[AWSSpecification.MARKDOWN_DOCUMENTATION] = sub_doc_with_counts.value
+        d_ = d_.add_counts(sub_doc_with_counts)
         normalise_types(sub_props)
     return d_
 
 
-def normalise_property(name: str, d: Tree, base_directory: Path, base_url: str) -> Tree:
+def normalise_property(
+    name: str, d: Tree, base_directory: Path, base_url: str
+) -> WithSuccessFailureCount[Tree]:
     if not isinstance(d, dict):
-        return d
+        return WithSuccessFailureCount.zero(d)
 
     parent, _, prop = name.partition(".")
     resource = parent.split("::")[-1]
 
-    d_ = {}
-    d_[AWSSpecification.PROPERTIES] = d[PROP_KEY]
+    d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero({})
+    d_.value[AWSSpecification.PROPERTIES] = d[PROP_KEY]
     link = f"{base_url}sam-property-{resource.lower()}-{prop.lower()}"
     bs = file_content(base_directory, link, base_url=base_url)
-    d_[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(bs, link, name)
+    doc_with_counts = documentation(bs, link, name)
+    d_.value[AWSSpecification.MARKDOWN_DOCUMENTATION] = doc_with_counts.value
+    d_ = d_.add_counts(doc_with_counts)
 
-    print(d_[AWSSpecification.PROPERTIES])
-    for property_name, sub_props in d_[AWSSpecification.PROPERTIES].items():
+    for property_name, sub_props in d_.value[AWSSpecification.PROPERTIES].items():
         # property_name = 'Type', v =  {'type': 'string'}
-        sub_props[AWSSpecification.MARKDOWN_DOCUMENTATION] = documentation(
-            bs, link, property_name
-        )
+        sub_doc_with_counts = documentation(bs, link, property_name)
+        sub_props[AWSSpecification.MARKDOWN_DOCUMENTATION] = sub_doc_with_counts.value
+        d_ = d_.add_counts(sub_doc_with_counts)
         normalise_types(sub_props)
     return d_
 
@@ -136,7 +149,10 @@ def run(
         base_url = f"https://{DOC_URL}"
         if not documentation_directory:
             run_command(f"wget --no-parent -r {base_url}")
-        aws_context = to_aws_context(spec_json, doc_dir, base_url)
+        aws_context, md_fails, md_succ = to_aws_context(
+            spec_json, doc_dir, base_url
+        ).to_tuple()
+        logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)
         with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)
     logger.info("Wrote context to %s", out_file)
