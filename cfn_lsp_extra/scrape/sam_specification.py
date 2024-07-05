@@ -149,7 +149,7 @@ def run(
         base_url = f"https://{DOC_URL}"
         if not documentation_directory:
             run_command(f"wget --no-parent -r {base_url}")
-        aws_context, md_fails, md_succ = to_aws_context(
+        aws_context, md_succ, md_fails = to_aws_context(
             spec_json, doc_dir, base_url
         ).to_tuple()
         logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)

@@ -134,7 +134,7 @@ def to_aws_context(
             )
         sub_d_with_counts = to_aws_context(v, k, base_directory)
         d_.value[k] = sub_d_with_counts.value
-        d_.add_counts(sub_d_with_counts)
+        d_ = d_.add_counts(sub_d_with_counts)
     return d_
 
 
@@ -278,7 +278,7 @@ def run(
                 "Not downloading documentation, using existing directory %s",
                 documentation_directory,
             )
-        ctx_map, md_fails, md_succ = to_aws_context(spec_json, None, doc_dir).to_tuple()
+        ctx_map, md_succ, md_fails = to_aws_context(spec_json, None, doc_dir).to_tuple()
         logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)
         with open(out_path, "w") as f_:
             json.dump(ctx_map, f_, indent=2)
