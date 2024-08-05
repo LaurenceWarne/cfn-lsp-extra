@@ -2,11 +2,12 @@
 Tests for ref hovers.
 """
 import pytest
+from lsprotocol.types import Position
+from pygls.workspace import Document
+
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.decode import decode
 from cfn_lsp_extra.hovers.refs import ref_hover
-from lsprotocol.types import Position
-from pygls.workspace import Document
 
 from ..test_aws_data import full_aws_context
 
@@ -51,20 +52,16 @@ def document(document_string):
     return Document(uri="", source=document_string)
 
 
-@pytest.fixture
-def document_tree(document):
-    return decode(document_string, "file.yaml")
-
-
 def test_ref_resource_hover(
     full_aws_context,
-    document_tree,
+    document_string,
     document,
 ):
     line, char = 25, 18
+    tree = decode(document_string, "file.yaml")
 
     result = ref_hover(
-        document_tree,
+        tree,
         Position(line=line, character=char),
         full_aws_context,
         document,
@@ -75,13 +72,14 @@ def test_ref_resource_hover(
 
 def test_parameter_resource_hover(
     full_aws_context,
-    document_tree,
+    document_string,
     document,
 ):
     line, char = 17, 25
+    tree = decode(document_string, "file.yaml")
 
     result = ref_hover(
-        document_tree,
+        tree,
         Position(line=line, character=char),
         full_aws_context,
         document,
@@ -93,10 +91,12 @@ def test_parameter_resource_hover(
 def test_no_ref_hover(
     full_aws_context,
     document_string,
-    document_tree,
+    document,
 ):
+    tree = decode(document_string, "file.yaml")
+
     result = ref_hover(
-        document_tree,
+        tree,
         Position(line=42, character=8),
         full_aws_context,
         document,
