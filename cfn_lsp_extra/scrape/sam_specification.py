@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+from bs4 import BeautifulSoup
 
 from ..aws_data import AWSSpecification, Tree
 from .specification import (
@@ -66,7 +67,7 @@ def normalise_resource(
     props = d[PROP_KEY][AWSSpecification.PROPERTIES][PROP_KEY]
     d_.value[AWSSpecification.PROPERTIES] = props
     link = f"{base_url}sam-resource-{name.split('::')[-1].lower()}"
-    bs = file_content(base_directory, link, base_url=base_url)
+    bs = file_content(base_directory, link)
     doc_with_counts = documentation(bs, link, name)
     d_.value[AWSSpecification.MARKDOWN_DOCUMENTATION] = doc_with_counts.value
     d_ = d_.add_counts(doc_with_counts)
@@ -93,8 +94,21 @@ def normalise_property(
 
     d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero({})
     d_.value[AWSSpecification.PROPERTIES] = d[PROP_KEY]
-    link = f"{base_url}sam-property-{resource.lower()}-{prop.lower()}"
-    bs = file_content(base_directory, link, base_url=base_url)
+
+    parent_link = f"{base_url}sam-resource-{parent.split('::')[-1].lower()}"
+    parent_bs = file_content(base_directory, parent_link)
+    a_element = parent_bs.find(
+        "a",
+        string=lambda x: x and x.lower() == prop.lower(),
+        href=lambda h: not h.startswith("#") and "#" in h,
+    )
+    if a_element:
+        link_val = a_element if isinstance(a_element, str) else a_element["href"]
+        link = link_val[0] if isinstance(link_val, list) else link_val
+        logger.info("Found replacement URL for %s: %s", name, link)
+    else:
+        link = f"{base_url}sam-property-{resource.lower()}-{prop.lower()}"
+    bs = file_content(base_directory, link)
     doc_with_counts = documentation(bs, link, name)
     d_.value[AWSSpecification.MARKDOWN_DOCUMENTATION] = doc_with_counts.value
     d_ = d_.add_counts(doc_with_counts)
@@ -149,8 +163,9 @@ def run(
         base_url = f"https://{DOC_URL}"
         if not documentation_directory:
             run_command(f"wget --no-parent -r {base_url}")
+        logger.info("Using base URL: %s", base_url)
         aws_context, md_succ, md_fails = to_aws_context(
-            spec_json, doc_dir, base_url
+            sam_dct=spec_json, base_directory=doc_dir, base_url=base_url
         ).to_tuple()
         logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)
         with open(out_file, "w") as sam_spec_out:

@@ -149,12 +149,11 @@ def file_content(
     base_directory: Path,
     link: str,
     on_fail_try_download: bool = True,
-    base_url: str = "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/",
 ) -> BeautifulSoup:
     def read_file(loc: Path) -> BeautifulSoup:
         return BeautifulSoup(loc.read_text(), features="lxml")
 
-    location = remove_prefix(link, base_url).lstrip("/")
+    location = link.split("/")[-1].lstrip("/")
     if "#" in link:  # Subprop
         sub_path, _, id_ = location.partition("#")
         file_path = base_directory / sub_path
@@ -163,9 +162,7 @@ def file_content(
         except FileNotFoundError:
             if on_fail_try_download:
                 try_download(link, file_path)
-                return file_content(
-                    base_directory, link, on_fail_try_download=False, base_url=base_url
-                )
+                return file_content(base_directory, link, on_fail_try_download=False)
             logger.info("No file found for %s", link)
             return BeautifulSoup("")
     else:  # resource
@@ -176,9 +173,7 @@ def file_content(
         except FileNotFoundError:
             if on_fail_try_download:
                 try_download(link, file_path)
-                return file_content(
-                    base_directory, link, on_fail_try_download=False, base_url=base_url
-                )
+                return file_content(base_directory, link, on_fail_try_download=False)
             logger.info("No file found for %s", link)
             return BeautifulSoup("")
 
@@ -204,7 +199,9 @@ def documentation(
             true_id = id_
         dt = content.find("dt", {"id": true_id})
         if not dt:
-            logger.error("No documentation found for %s", link)
+            logger.error(
+                "No documentation found for prop %s using id %s", link, true_id
+            )
             return WithSuccessFailureCount.failure("")
         dd = dt.findNext("dd")
         doc = md_(str(dd)) if dd else ""
@@ -225,6 +222,7 @@ def documentation(
     s = f"`{parent if parent else ''}`\n{doc}"
     if doc:
         return WithSuccessFailureCount.success(s)
+    logger.error("Documentation for %s was found to be empty", link)
     return WithSuccessFailureCount.failure(s)
 
 
