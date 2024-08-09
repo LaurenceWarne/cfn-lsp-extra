@@ -43,16 +43,18 @@ DOC_URL = "docs.aws.amazon.com/serverless-application-model/latest/developerguid
 def to_aws_context(
     sam_dct: Tree, base_directory: Path, base_url: str
 ) -> WithSuccessFailureCount[Tree]:
-    d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero({})
+    d_: WithSuccessFailureCount[Tree] = WithSuccessFailureCount.zero(
+        {AWSSpecification.RESOURCE_TYPES: {}, AWSSpecification.PROPERTY_TYPES: {}}
+    )
     base = sam_dct["definitions"]
     for k, v in base.items():
         if "." not in k and SERVERLESS_PREFIX in k:
             res_with_counts = normalise_resource(k, v, base_directory, base_url)
-            d_.value[k] = res_with_counts.value
+            d_.value[AWSSpecification.RESOURCE_TYPES][k] = res_with_counts.value
             d_ = d_.add_counts(res_with_counts)
         elif SERVERLESS_PREFIX in k:
             res_with_counts = normalise_property(k, v, base_directory, base_url)
-            d_.value[k] = res_with_counts.value
+            d_.value[AWSSpecification.PROPERTY_TYPES][k] = res_with_counts.value
             d_ = d_.add_counts(res_with_counts)
     return d_
 
