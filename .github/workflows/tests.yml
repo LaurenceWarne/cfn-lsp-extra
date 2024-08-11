@@ -14,6 +14,7 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -33,9 +34,6 @@ jobs:
       - name: Run integration tests on ${{ matrix.os }}
         # not entirely sure why installing the package isn't required here
         run: nox --non-interactive --error-on-missing-interpreter --session "integration-tests-${{ matrix.python-version }}" -- --full-trace
-
-      - name: Run isort on ${{ matrix.os }}
-        run: nox --non-interactive --error-on-missing-interpreter --session "lint-${{ matrix.python-version }}" -- --full-trace
 
       - name: Run linting on ${{ matrix.os }}
         run: nox --non-interactive --error-on-missing-interpreter --session "lint-${{ matrix.python-version }}" -- --full-trace

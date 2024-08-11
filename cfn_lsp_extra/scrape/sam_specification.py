@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional
 
 import requests
-from bs4 import BeautifulSoup
 
 from ..aws_data import AWSSpecification, Tree
 from .specification import (
