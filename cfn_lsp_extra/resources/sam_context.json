@@ -2296,5 +2296,6 @@
       },
       "MarkdownDocumentation": "`AWS::Serverless::StateMachine.TracingConfiguration`\n\nSelects whether or not the state machine's AWS X-Ray tracing is enabled.\n\n*Required*: No\n*Type*: [TracingConfiguration](./aws-properties-stepfunctions-statemachine-tracingconfiguration.html)\n*Update requires*: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)\n"
     }
-  }
+  },
+  "parse_success_ratio": 0.4306
 }

@@ -12,11 +12,12 @@ import requests
 
 from ..aws_data import AWSSpecification, Tree
 from .specification import (
-    WithSuccessFailureCount,
+    PARSE_SUCCESS_RATIO_KEY,
     documentation,
     file_content,
     run_command,
 )
+from .with_success_failure_count import WithSuccessFailureCount
 
 logger = logging.getLogger(__name__)
 
@@ -169,6 +170,7 @@ def run(
             sam_dct=spec_json, base_directory=doc_dir, base_url=base_url
         ).to_tuple()
         logger.info("Failed getting markdown: %d/%d", md_fails, md_fails + md_succ)
+        aws_context[PARSE_SUCCESS_RATIO_KEY] = round(md_succ / (md_fails + md_succ), 4)
         with open(out_file, "w") as sam_spec_out:
             json.dump(aws_context, sam_spec_out, indent=2)
     logger.info("Wrote context to %s", out_file)
