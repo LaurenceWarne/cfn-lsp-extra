@@ -15,13 +15,15 @@ Changelog = "https://github.com/laurencewarne/cfn-lsp-extra/releases"
 [tool.poetry.dependencies]
 python = "^3.8"
 click = "^8.1.3"
-cfn-lint = "^1.4.2"
-pygls = "^1.3.0"  # pygls = { path = "../pygls/", develop = false }
+cfn-lint = "^1.10.3"
+pygls = "^1.3.1"  # pygls = { path = "../pygls/", develop = false }
 PyYAML = "^6.0.1"
 types-PyYAML = "^6.0.1"
 platformdirs = "^4.2.0"
-attrs = "^23.1"
+attrs = "^24.2"
 importlib_resources = "^6.0"
+# Need to pin a version otherwise 'poetry update' goes crazy
+aws-sam-translator = "^1.91.0"
 
 # Optional: https://python-poetry.org/docs/pyproject/#extras
 lxml = { version = "^5.2.1", optional = true }
