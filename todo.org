@@ -27,3 +27,4 @@
 ** TODO return_values are not parsed for some resources, for example [[https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/aws-resource-dynamodb-table.md]]
 ** TODO when a property expects a list, we allow completion even without a '-' (note under the hood we don't differentiate between a property taking a List[T] or T)
 ** DONE pygls: client blows up when configuration requested
+** TODO `VpcEndpointIds` has wrong capitalisation in https://raw.githubusercontent.com/awslabs/goformation/master/schema/sam.schema.json

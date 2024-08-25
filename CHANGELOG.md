@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.0
+No new features, the main change is an overhaul of how completions and hovers are sourced due to the deprecation of https://github.com/awsdocs/aws-cloudformation-user-guide and https://github.com/awsdocs/aws-sam-developer-guide.
+
 ## v0.6.0
 - [2b45847](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/2b4584776dba08d47e3f6f9bef410fecd0a00ac8) Implement completions for static keys, e.g. `Type`/`Properties`/`DeletionPolicy`/... for resources, `Description`/`Value`/`Export`/... for outputs
 - [adf8ba4](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/adf8ba426fd900849b72c9245195f4f71cc780b0) Hovers for intrinsic functions
