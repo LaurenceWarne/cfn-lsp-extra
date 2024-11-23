@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.1
+Mainly dependency updates.
+
 ## v0.7.0
 No new features, the main change is an overhaul of how completions and hovers are sourced due to the deprecation of https://github.com/awsdocs/aws-cloudformation-user-guide and https://github.com/awsdocs/aws-sam-developer-guide.
 
