@@ -37,6 +37,16 @@ Updating:
 pipx upgrade cfn-lsp-extra
 ```
 
+### Keeping `cfnlint` Up to Date
+
+Updates to `cfn-lsp-extra` typically lag behind [cfnlint](https://github.com/aws-cloudformation/cfn-lint) which it uses for diagnostics, which can become an irritation when it leads diagnostics from `cfn-lsp-extra` becoming outdated and new desirable lint rules not showing.  Assuming you installed `cfnlint` using `pipx`, you can use:
+
+```bash
+alias cfn-lsp-extra='env PYTHONPATH=$HOME/.local/pipx/venvs/cfn-lint/lib/python<PYTHON_VERSION>/site-packages/ cfn-lsp-extra'
+```
+
+To ensure `cfn-lsp-extra` uses your system `cfnlint` version.  **Note** This comes with some risk with respect to clashing dependencies, but I would expect it to generally work as long as `cfnlint` and `cfn-lsp-extra` aren't wildly out of date.
+
 ### Emacs
 
 Install the [lsp-cfn.el](https://github.com/LaurenceWarne/lsp-cfn.el) package.
