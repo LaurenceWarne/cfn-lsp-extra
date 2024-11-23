@@ -5,7 +5,9 @@ https://microsoft.github.io/language-server-protocol/specifications/specificatio
 """
 
 import logging
+import os
 import re
+import sys
 from typing import Optional, Union
 
 from lsprotocol.types import (
@@ -36,7 +38,7 @@ from pygls.server import LanguageServer
 from pygls.workspace import Document
 
 from .aws_data import AWSContext, AWSPropertyName, AWSResourceName
-from .cfnlint_integration import diagnostics, load_cfnlint_config
+from .cfnlint_integration import CFNLINT_VERSION, diagnostics, load_cfnlint_config
 from .completions import TRIGGER_CHARACTERS, completions_for
 from .completions.resources import resolve_resource_completion_item
 from .config.user_configuration import (
@@ -66,6 +68,9 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         ResourcePropertyExtractor(), ResourceExtractor()
     )
     config = UserConfiguration()
+    logger.info("PYTHONPATH: %s", os.environ.get("PYTHONPATH"))
+    logger.info("sys.path: %s", sys.path)
+    logger.info("cfnlint version: %s", CFNLINT_VERSION)
     logger.info("Test loading cfnlint configuration...")
     load_cfnlint_config(log_exceptions=True)
 
@@ -92,7 +97,6 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
         uri = params.text_document.uri
-        ls.show_message("Text Document Did Open")
         text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
         logger.debug("Is template SAM: %s", is_document_sam(text_doc))
         file_path = text_doc.path

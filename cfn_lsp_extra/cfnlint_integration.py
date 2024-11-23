@@ -13,6 +13,8 @@ from lsprotocol.types import Diagnostic, DiagnosticSeverity, Position, Range
 
 logger = logging.getLogger(__name__)
 
+CFNLINT_VERSION = cfnlint.version.__version__
+
 
 def diagnostics(yaml_content: str, file_path: str) -> List[Diagnostic]:
     """Return diagnostics for the template file at file_path."""
