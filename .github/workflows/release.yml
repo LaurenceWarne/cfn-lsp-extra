@@ -38,6 +38,7 @@ jobs:
         with:
           name: package-build
           if-no-files-found: error
+          overwrite: true
           path: |
             dist/*.whl
             dist/*.tar.gz 
@@ -58,6 +59,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package-build
+          path: ./dist/
+          merge-multiple: true
 
       # https://github.com/pypa/gh-action-pypi-publish
       - name: Publish package on TestPyPI
@@ -81,6 +84,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package-build
+          path: ./dist/
+          merge-multiple: true
 
       - name: Publish package on PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
