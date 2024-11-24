@@ -37,9 +37,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: package-build
+          if-no-files-found: error
           path: |
-            *.whl
-            *.tar.gz 
+            dist/*.whl
+            dist/*.tar.gz 
 
   test-pypi-publish:
     name: Publish to test PyPI
