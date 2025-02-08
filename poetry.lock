@@ -1328,18 +1328,18 @@ dev = ["pre-commit", "pytest"]
 
 [[package]]
 name = "python-lsp-server"
-version = "1.12.0"
+version = "1.12.1"
 description = "Python Language Server for the Language Server Protocol"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python_lsp_server-1.12.0-py3-none-any.whl", hash = "sha256:2e912c661881d85f67f2076e4e66268b695b62bf127e07e81f58b187d4bb6eda"},
-    {file = "python_lsp_server-1.12.0.tar.gz", hash = "sha256:b6a336f128da03bd9bac1e61c3acca6e84242b8b31055a1ccf49d83df9dc053b"},
+    {file = "python_lsp_server-1.12.1-py3-none-any.whl", hash = "sha256:812f874253e74982a634eeec885ef4136ae03cc557ec15a9ece6a094e35a0be7"},
+    {file = "python_lsp_server-1.12.1.tar.gz", hash = "sha256:bd90fcabf53066f0a66e4246767e96cd99c13ad16e61b95fd3ab622821ea048c"},
 ]
 
 [package.dependencies]
 docstring-to-markdown = "*"
-importlib-metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""}
+importlib_metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""}
 jedi = ">=0.17.2,<0.20.0"
 pluggy = ">=1.0.0"
 python-lsp-jsonrpc = ">=1.1.0,<2.0.0"
@@ -2033,4 +2033,4 @@ parse = ["beautifulsoup4", "lxml", "markdownify", "requests", "types-beautifulso
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "c49cdf0e6138f8405b88941ac9973f775661edd6cf11cd784e7f84f57ac8aa95"
+content-hash = "c84e44b20b07e87a528ff4fd87fd34a66f83f422ca45b44434130b67e6935260"
