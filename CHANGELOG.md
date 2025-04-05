@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.7.1 / v0.7.2
+## v0.7.1 / v0.7.2 / v0.7.3
 Mainly dependency updates.
 
 ## v0.7.0
