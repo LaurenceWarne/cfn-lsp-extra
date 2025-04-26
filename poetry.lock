@@ -1224,14 +1224,14 @@ ws = ["websockets (>=11.0.3)"]
 
 [[package]]
 name = "pylsp-mypy"
-version = "0.6.9"
+version = "0.7.0"
 description = "Mypy linter for the Python LSP Server"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "pylsp_mypy-0.6.9-py3-none-any.whl", hash = "sha256:9b73ece2977b22b5fc75dfec1cc491bf2031955e3da4062d924a5cc22a278151"},
-    {file = "pylsp_mypy-0.6.9.tar.gz", hash = "sha256:d28994a6ba123c3918ce3274a5cad768418650e575001002101c425ad6c7bbaa"},
+    {file = "pylsp_mypy-0.7.0-py3-none-any.whl", hash = "sha256:756377d05d251d2e31d1963397654149b9c1ea5b0ba1aedd74adef76decd32e9"},
+    {file = "pylsp_mypy-0.7.0.tar.gz", hash = "sha256:e94f531d4ce523222c2af7471abe396cfeb4cc3c4b181d54462fb6d553e1e0b3"},
 ]
 
 [package.dependencies]
@@ -2115,4 +2115,4 @@ parse = ["beautifulsoup4", "lxml", "markdownify", "requests", "types-beautifulso
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "7438a4152fa2e82e2c841fceb375ec456a0282da9682c3574d453771cb532104"
+content-hash = "1d79cd3bfb99b405e42dbc04f503ecd3b6d6be178aaf56ad1172bdf1ba18db8a"
