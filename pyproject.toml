@@ -48,7 +48,7 @@ pytest-asyncio = "^0.24.0"
 pytest-mock = "^3.14"
 # https://github.com/swyddfa/lsp-devtools
 pytest-lsp = "^0.4.3" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
-python-lsp-server = "^1.12.1"
+python-lsp-server = "^1.12.2"
 pylsp-mypy = "^0.7.0"
 python-lsp-ruff = "^2.2.1"
 nox = "^2025.5.1"
