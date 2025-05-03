@@ -1377,14 +1377,14 @@ dev = ["pre-commit", "pytest"]
 
 [[package]]
 name = "python-lsp-server"
-version = "1.12.1"
+version = "1.12.2"
 description = "Python Language Server for the Language Server Protocol"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "python_lsp_server-1.12.1-py3-none-any.whl", hash = "sha256:812f874253e74982a634eeec885ef4136ae03cc557ec15a9ece6a094e35a0be7"},
-    {file = "python_lsp_server-1.12.1.tar.gz", hash = "sha256:bd90fcabf53066f0a66e4246767e96cd99c13ad16e61b95fd3ab622821ea048c"},
+    {file = "python_lsp_server-1.12.2-py3-none-any.whl", hash = "sha256:750116459449184ba20811167cdf96f91296ae12f1f65ebd975c5c159388111b"},
+    {file = "python_lsp_server-1.12.2.tar.gz", hash = "sha256:fea039a36b3132774d0f803671184cf7dde0c688e7b924f23a6359a66094126d"},
 ]
 
 [package.dependencies]
@@ -2115,4 +2115,4 @@ parse = ["beautifulsoup4", "lxml", "markdownify", "requests", "types-beautifulso
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "2c8bc1a93fae731bce138a1ffcff6ab89dd10429ae23f78c68fe928490471402"
+content-hash = "8113bf909ea23f0ac60f3708d4fac988c6d365f21523c67ce1e88250ffae62e4"
