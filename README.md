@@ -80,7 +80,21 @@ vim.filetype.add {
 
 Then you can use one of:
 
-1. Neovim's [built-in LSP client](https://neovim.io/doc/user/lsp.html):
+1. Neovim's [built-in LSP client](https://neovim.io/doc/user/lsp.html) (requires 0.11.0 or greater):
+
+```lua
+vim.lsp.config("cfn-lsp-extra", {
+  cmd = { os.getenv("HOME") .. '/.local/bin/cfn-lsp-extra' },
+  filetypes = { 'yaml.cloudformation', 'json.cloudformation' },
+  root_markers = { '.git' },
+  settings = {
+    documentFormatting = false,
+  },
+})
+vim.lsp.enable("cfn-lsp-extra")
+```
+
+2. [`nvim-lspconfig`](https://github.com/neovim/nvim-lspconfig), which is required for neovim below version 0.11.0:
 
 ```lua
 require('lspconfig.configs').cfn_lsp = {
@@ -98,7 +112,7 @@ require('lspconfig.configs').cfn_lsp = {
 require('lspconfig').cfn_lsp.setup{}
 ```
 
-2. [LanguageClient-neovim](https://github.com/autozimu/LanguageClient-neovim):
+3. [LanguageClient-neovim](https://github.com/autozimu/LanguageClient-neovim):
 
 ```vim
 let g:LanguageClient_serverCommands = {
