@@ -65,12 +65,13 @@ def update_sam_specification(
     documentation_directory: Optional[str] = None,
     output_path: Optional[str] = None,
 ) -> None:
+    """Update the SAM specification used by cfn-lsp-extra."""
     logging.basicConfig(level=logging.INFO, force=True)
     try:
         from .scrape.sam_specification import run
     except ImportError as e:
         raise Exception(
-            "Please Install cfn-lsp-extra[parse] to run 'update-specification'"
+            "Please Install cfn-lsp-extra[parse] to run 'update-sam-specification'"
         ) from e
     else:
         run(
