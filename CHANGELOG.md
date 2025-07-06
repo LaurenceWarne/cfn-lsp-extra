@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.4
+- [965c8cb](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/965c8cbdfe10b8548249e3f37edd8db164aba0eb) Update of the AWS specification used by `cfn-lsp-extra`
+
 ## v0.7.1 / v0.7.2 / v0.7.3
 Mainly dependency updates.
 
