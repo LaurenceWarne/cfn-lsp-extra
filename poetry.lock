@@ -1499,14 +1499,14 @@ dev = ["pre-commit", "pytest"]
 
 [[package]]
 name = "python-lsp-server"
-version = "1.13.0"
+version = "1.13.1"
 description = "Python Language Server for the Language Server Protocol"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "python_lsp_server-1.13.0-py3-none-any.whl", hash = "sha256:ad3a8f792915706dc65ce1ffcbaed361e5e648c973cd05e5c7a4a94c678fef97"},
-    {file = "python_lsp_server-1.13.0.tar.gz", hash = "sha256:378f26b63ecf4c10864de31de5e6da7ad639de9bd60a75d4110fea36fb8d0d69"},
+    {file = "python_lsp_server-1.13.1-py3-none-any.whl", hash = "sha256:fadf45275d12a9d9a13e36717a8383cee8e7cffe8a30698d38bfb3fe71b5cdcd"},
+    {file = "python_lsp_server-1.13.1.tar.gz", hash = "sha256:bfa3d6bbca3fc3e6d0137b27cd1eabee65783a8d4314c36e1e230c603419afa3"},
 ]
 
 [package.dependencies]
@@ -1528,7 +1528,7 @@ pydocstyle = ["pydocstyle (>=6.3.0,<6.4.0)"]
 pyflakes = ["pyflakes (>=3.2.0,<3.3.0)"]
 pylint = ["pylint (>=3.1,<4)"]
 rope = ["rope (>=1.11.0)"]
-test = ["coverage", "flaky", "matplotlib", "numpy", "pandas", "pylint (>=3.1,<4)", "pyqt5", "pytest", "pytest-cov", "websockets (>=10.3)"]
+test = ["coverage", "flaky", "matplotlib", "numpy", "pandas", "pylint (>=3.1,<4)", "pyqt6", "pytest", "pytest-cov", "websockets (>=10.3)"]
 websockets = ["websockets (>=10.3)"]
 yapf = ["whatthepatch (>=1.0.2,<2.0.0)", "yapf (>=0.33.0)"]
 
@@ -2239,4 +2239,4 @@ parse = ["beautifulsoup4", "lxml", "markdownify", "requests", "types-beautifulso
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "6003035414d431c1a5e27964c65db034869c80201b3cc25a79e08eeab76cfc15"
+content-hash = "e521a5ffb2ae3339f9be3b81670b41b2ba21aef8b0cbc27b59642f6610b9053e"
