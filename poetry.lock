@@ -1493,14 +1493,14 @@ test = ["coverage", "pycodestyle", "pyflakes", "pylint", "pytest", "pytest-cov"]
 
 [[package]]
 name = "python-lsp-ruff"
-version = "2.2.2"
+version = "2.3.0"
 description = "Ruff linting plugin for pylsp"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "python_lsp_ruff-2.2.2-py3-none-any.whl", hash = "sha256:7034d16c5cfdf07e932195649ebef569a7ddfcc5853fb2fee05fa7fc739afe3a"},
-    {file = "python_lsp_ruff-2.2.2.tar.gz", hash = "sha256:3f80bdb0b4a8ee24624596a1cff60b28cc37771773730f9bf7d946ddff9f0cac"},
+    {file = "python_lsp_ruff-2.3.0-py3-none-any.whl", hash = "sha256:b858b698fbaff5670f6d5e6c66afc632908f78639d73dc85dedd33ae5fdd204f"},
+    {file = "python_lsp_ruff-2.3.0.tar.gz", hash = "sha256:647745b7f3010ac101e3c53a797b8f9deb1f52228b608d70ad0e8e056978c3b7"},
 ]
 
 [package.dependencies]
@@ -2255,4 +2255,4 @@ parse = ["beautifulsoup4", "lxml", "markdownify", "requests", "types-beautifulso
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "08f0746df193e66b27d634690d0bf2ca300712faa6b13b6f8a4e8825dd48a608"
+content-hash = "60acc97cdf736abeb4262a6b3965283deb7b99aae4b33a06a45315622daabac2"
