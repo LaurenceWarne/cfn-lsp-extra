@@ -51,7 +51,7 @@ pytest-lsp = "^0.4.3" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
 python-lsp-server = "^1.13.1"
 pylsp-mypy = "^0.7.0"
 python-lsp-ruff = "^2.3.0"
-nox = "^2025.5.1"
+nox = "^2025.10.16"
 
 # Optional: https://python-poetry.org/docs/pyproject/#optional-dependencies
 [project.optional-dependencies]
