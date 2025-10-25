@@ -134,7 +134,7 @@ Patches documenting integration for other editors are very welcome!
 
 `cfn-lsp-extra` uses [uv](https://github.com/astral-sh/uv) for virtualenv and general project management.
 
-Common commands (switching `3.9` for whichever Python version):
+Common commands:
 
 ```bash
 uv run pytest                    # unit tests
