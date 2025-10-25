@@ -45,14 +45,16 @@ parse = [
 # https://docs.astral.sh/uv/concepts/projects/dependencies/
 [dependency-groups]
 dev = [
-  {include-group = "lint"},
-  {include-group = "test"}
+    {include-group = "lint"},
+    {include-group = "test"}
 ]
 lint = [
+    {include-group = "duplicated"},
     "ruff (>=0.13.3)",
     "mypy (>=1.18.1)",
 ]
 test = [
+    {include-group = "duplicated"},
     "coverage[toml] (>=6.2)",
     "pytest (>=8.4.2)",
     "pytest-asyncio (>=1.2.0)",
@@ -62,6 +64,15 @@ test = [
     "python-lsp-server (>=1.13.1)",
     "pylsp-mypy (>=0.7.0)",
     "python-lsp-ruff (>=2.3.0)"
+]
+# TODO: find out how to reference these from optional-dependencies above
+duplicated = [
+    "lxml (>=6.0.0)",
+    "markdownify (>=0.12.1,<0.15.0)",
+    "beautifulsoup4 (>=4.12.3,<5.0.0)",
+    "types-beautifulsoup4 (>=4.12.0,<5.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "types-requests (>2,<3.0.0)"
 ]
 
 [project.scripts]

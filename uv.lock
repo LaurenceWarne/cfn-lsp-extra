@@ -206,8 +206,11 @@ parse = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "beautifulsoup4" },
     { name = "coverage", version = "7.10.7", source = { registry = "https://pypi.org/simple" }, extra = ["toml"], marker = "python_full_version < '3.10'" },
     { name = "coverage", version = "7.11.0", source = { registry = "https://pypi.org/simple" }, extra = ["toml"], marker = "python_full_version >= '3.10'" },
+    { name = "lxml" },
+    { name = "markdownify" },
     { name = "mypy" },
     { name = "pylsp-mypy" },
     { name = "pytest" },
@@ -216,15 +219,38 @@ dev = [
     { name = "pytest-mock" },
     { name = "python-lsp-ruff" },
     { name = "python-lsp-server" },
+    { name = "requests" },
     { name = "ruff" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-requests", version = "2.31.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "types-requests", version = "2.32.4.20250913", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+duplicated = [
+    { name = "beautifulsoup4" },
+    { name = "lxml" },
+    { name = "markdownify" },
+    { name = "requests" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-requests", version = "2.31.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "types-requests", version = "2.32.4.20250913", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 lint = [
+    { name = "beautifulsoup4" },
+    { name = "lxml" },
+    { name = "markdownify" },
     { name = "mypy" },
+    { name = "requests" },
     { name = "ruff" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-requests", version = "2.31.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "types-requests", version = "2.32.4.20250913", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 test = [
+    { name = "beautifulsoup4" },
     { name = "coverage", version = "7.10.7", source = { registry = "https://pypi.org/simple" }, extra = ["toml"], marker = "python_full_version < '3.10'" },
     { name = "coverage", version = "7.11.0", source = { registry = "https://pypi.org/simple" }, extra = ["toml"], marker = "python_full_version >= '3.10'" },
+    { name = "lxml" },
+    { name = "markdownify" },
     { name = "pylsp-mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -232,6 +258,10 @@ test = [
     { name = "pytest-mock" },
     { name = "python-lsp-ruff" },
     { name = "python-lsp-server" },
+    { name = "requests" },
+    { name = "types-beautifulsoup4" },
+    { name = "types-requests", version = "2.31.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "types-requests", version = "2.32.4.20250913", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 
 [package.metadata]
@@ -257,7 +287,10 @@ provides-extras = ["parse"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "beautifulsoup4", specifier = ">=4.12.3,<5.0.0" },
     { name = "coverage", extras = ["toml"], specifier = ">=6.2" },
+    { name = "lxml", specifier = ">=6.0.0" },
+    { name = "markdownify", specifier = ">=0.12.1,<0.15.0" },
     { name = "mypy", specifier = ">=1.18.1" },
     { name = "pylsp-mypy", specifier = ">=0.7.0" },
     { name = "pytest", specifier = ">=8.4.2" },
@@ -266,14 +299,34 @@ dev = [
     { name = "pytest-mock", specifier = ">=3.15" },
     { name = "python-lsp-ruff", specifier = ">=2.3.0" },
     { name = "python-lsp-server", specifier = ">=1.13.1" },
+    { name = "requests", specifier = ">=2.32.3,<3.0.0" },
     { name = "ruff", specifier = ">=0.13.3" },
+    { name = "types-beautifulsoup4", specifier = ">=4.12.0,<5.0.0" },
+    { name = "types-requests", specifier = ">2,<3.0.0" },
+]
+duplicated = [
+    { name = "beautifulsoup4", specifier = ">=4.12.3,<5.0.0" },
+    { name = "lxml", specifier = ">=6.0.0" },
+    { name = "markdownify", specifier = ">=0.12.1,<0.15.0" },
+    { name = "requests", specifier = ">=2.32.3,<3.0.0" },
+    { name = "types-beautifulsoup4", specifier = ">=4.12.0,<5.0.0" },
+    { name = "types-requests", specifier = ">2,<3.0.0" },
 ]
 lint = [
+    { name = "beautifulsoup4", specifier = ">=4.12.3,<5.0.0" },
+    { name = "lxml", specifier = ">=6.0.0" },
+    { name = "markdownify", specifier = ">=0.12.1,<0.15.0" },
     { name = "mypy", specifier = ">=1.18.1" },
+    { name = "requests", specifier = ">=2.32.3,<3.0.0" },
     { name = "ruff", specifier = ">=0.13.3" },
+    { name = "types-beautifulsoup4", specifier = ">=4.12.0,<5.0.0" },
+    { name = "types-requests", specifier = ">2,<3.0.0" },
 ]
 test = [
+    { name = "beautifulsoup4", specifier = ">=4.12.3,<5.0.0" },
     { name = "coverage", extras = ["toml"], specifier = ">=6.2" },
+    { name = "lxml", specifier = ">=6.0.0" },
+    { name = "markdownify", specifier = ">=0.12.1,<0.15.0" },
     { name = "pylsp-mypy", specifier = ">=0.7.0" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.2.0" },
@@ -281,6 +334,9 @@ test = [
     { name = "pytest-mock", specifier = ">=3.15" },
     { name = "python-lsp-ruff", specifier = ">=2.3.0" },
     { name = "python-lsp-server", specifier = ">=1.13.1" },
+    { name = "requests", specifier = ">=2.32.3,<3.0.0" },
+    { name = "types-beautifulsoup4", specifier = ">=4.12.0,<5.0.0" },
+    { name = "types-requests", specifier = ">2,<3.0.0" },
 ]
 
 [[package]]
