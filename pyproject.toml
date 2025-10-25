@@ -17,20 +17,11 @@ dependencies = [
     "platformdirs (>=4.3.6)",
     "attrs (>=24.2,<26.0)",
     "importlib_resources (>=6.4.0)",
-    # Need to pin a version otherwise 'poetry update' goes crazy
     "aws-sam-translator (>=1.96.0)",
     "botocore (>=1.35.81)",
 ]
+version = "0.1"
 dynamic = ["version"]
-
-[tool.poetry]
-version = "0.0.0"
-
-[tool.poetry.requires-plugins]
-poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
-
-[tool.poetry-dynamic-versioning]
-enable = true
 
 [project.urls]
 Homepage = "https://github.com/laurencewarne/cfn-lsp-extra"
@@ -39,29 +30,31 @@ Repository = "https://github.com/laurencewarne/cfn-lsp-extra"
 Issues = "https://github.com/laurencewarne/cfn-lsp-extra/issues"
 Changelog = "https://github.com/laurencewarne/cfn-lsp-extra/blob/master/CHANGELOG.md"
 
-[tool.poetry.group.dev.dependencies]
-coverage = {extras = ["toml"], version = ">=6.2"}
-ruff = "^0.13.3"
-mypy = "^1.18.1"
-pytest = "^8.4.2"
-pytest-asyncio = "^1.2.0"
-pytest-mock = "^3.15"
-# https://github.com/swyddfa/lsp-devtools
-pytest-lsp = "^0.4.3" #pytest-lsp = { path = "../lsp-devtools/lib/pytest-lsp/"}
-python-lsp-server = "^1.13.1"
-pylsp-mypy = "^0.7.0"
-python-lsp-ruff = "^2.3.0"
-nox = "^2025.5.1"
-
-# Optional: https://python-poetry.org/docs/pyproject/#optional-dependencies
-[project.optional-dependencies]
-parse = [
-  "lxml (>=5.2.1,<6.0.0)",
-  "markdownify (>=0.12.1,<0.15.0)",
-  "beautifulsoup4 (>=4.12.3,<5.0.0)",
-  "types-beautifulsoup4 (>=4.12.0,<5.0.0)",
-  "requests (>=2.32.3,<3.0.0)",
-  "types-requests (>2,<3.0.0)"
+[dependency-groups]
+dev = [
+  {include-group = "lint"},
+  {include-group = "test"}
+]
+lint = [
+    "ruff (>=0.13.3)",
+    "mypy (>=1.18.1)",
+]
+test = [
+    "coverage[toml] (>=6.2)",
+    "pytest (>=8.4.2)",
+    "pytest-asyncio (>=1.2.0)",
+    "pytest-mock (>=3.15)",
+    # https://github.com/swyddfa/lsp-devtools
+    "pytest-lsp (>=0.4.3)",
+    "python-lsp-server (>=1.13.1)",
+    "pylsp-mypy (>=0.7.0)",
+    "python-lsp-ruff (>=2.3.0)",
+    "lxml (>=5.2.1,<6.0.0)",
+    "markdownify (>=0.12.1,<0.15.0)",
+    "beautifulsoup4 (>=4.12.3,<5.0.0)",
+    "types-beautifulsoup4 (>=4.12.0,<5.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "types-requests (>2,<3.0.0)"
 ]
 
 [project.scripts]

@@ -31,6 +31,13 @@ Or get the bleeding edge from source:
 pipx install git+https://github.com/laurencewarne/cfn-lsp-extra.git@$(git ls-remote git@github.com:laurencewarne/cfn-lsp-extra.git | head -1 | cut -f1)
 ```
 
+Or from a local repository:
+
+```bash
+cd cfn-lsp-extra/
+pipx install . --force
+```
+
 Updating:
 
 ```bash
@@ -125,20 +132,15 @@ Patches documenting integration for other editors are very welcome!
 
 ## Development
 
-`cfn-lsp-extra` uses [nox](https://github.com/wntrblm/nox) for virtualenv management and [poetry](https://github.com/python-poetry/poetry) for dependency management.  You can install both of them using:
+`cfn-lsp-extra` uses [uv](https://github.com/astral-sh/uv) for virtualenv and general project management.
+
+Common commands (switching `3.9` for whichever Python version):
 
 ```bash
-pipx install nox
-pipx install poetry
-```
-
-And then run tests, linting, etc (switching `3.9` for whichever Python version):
-
-```bash
-nox --session tests-3.9              # unit tests
-nox --session integration-tests-3.9  # integration tests
-nox --session lint-3.9               # flake8 lints
-nox --session mypy-3.9               # mypy checks
+uv run pytest                    # unit tests
+uv run pytest --run-integration  # integration tests
+uv run ruff check                # flake8 lints
+uv run mypy cfn_lsp_extra/       # mypy checks
 ```
 
 ## Alternatives
