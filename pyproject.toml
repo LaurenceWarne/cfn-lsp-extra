@@ -32,6 +32,16 @@ Repository = "https://github.com/laurencewarne/cfn-lsp-extra"
 Issues = "https://github.com/laurencewarne/cfn-lsp-extra/issues"
 Changelog = "https://github.com/laurencewarne/cfn-lsp-extra/blob/master/CHANGELOG.md"
 
+[project.optional-dependencies]
+parse = [
+    "lxml (>=6.0.0)",
+    "markdownify (>=0.12.1,<0.15.0)",
+    "beautifulsoup4 (>=4.12.3,<5.0.0)",
+    "types-beautifulsoup4 (>=4.12.0,<5.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "types-requests (>2,<3.0.0)"
+]
+
 # https://docs.astral.sh/uv/concepts/projects/dependencies/
 [dependency-groups]
 dev = [
@@ -51,13 +61,7 @@ test = [
     "pytest-lsp (>=0.4.3)",
     "python-lsp-server (>=1.13.1)",
     "pylsp-mypy (>=0.7.0)",
-    "python-lsp-ruff (>=2.3.0)",
-    "lxml (>=6.0.0)",
-    "markdownify (>=0.12.1,<0.15.0)",
-    "beautifulsoup4 (>=4.12.3,<5.0.0)",
-    "types-beautifulsoup4 (>=4.12.0,<5.0.0)",
-    "requests (>=2.32.3,<3.0.0)",
-    "types-requests (>2,<3.0.0)"
+    "python-lsp-ruff (>=2.3.0)"
 ]
 
 [project.scripts]
