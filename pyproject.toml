@@ -32,6 +32,7 @@ Repository = "https://github.com/laurencewarne/cfn-lsp-extra"
 Issues = "https://github.com/laurencewarne/cfn-lsp-extra/issues"
 Changelog = "https://github.com/laurencewarne/cfn-lsp-extra/blob/master/CHANGELOG.md"
 
+# https://docs.astral.sh/uv/concepts/projects/dependencies/
 [dependency-groups]
 dev = [
   {include-group = "lint"},
