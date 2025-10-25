@@ -35,7 +35,7 @@ Or from a local repository:
 
 ```bash
 cd cfn-lsp-extra/
-pipx install . --force
+pipx install . --force  # Or pipx install '.[parse]' --force
 ```
 
 Updating:

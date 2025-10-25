@@ -20,8 +20,10 @@ dependencies = [
     "aws-sam-translator (>=1.96.0)",
     "botocore (>=1.35.81)",
 ]
-version = "0.1"
 dynamic = ["version"]
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
 
 [project.urls]
 Homepage = "https://github.com/laurencewarne/cfn-lsp-extra"
@@ -124,5 +126,5 @@ exclude = [
 ]
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
