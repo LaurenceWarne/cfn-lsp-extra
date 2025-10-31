@@ -141,6 +141,10 @@ exclude = [
     "tests"
 ]
 
+# https://github.com/dependabot/dependabot-core/issues/12340#issuecomment-3000630760
+[tool.hatch.version.raw-options]
+fallback_version = "0.0.0"
+
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
-build-backend = "hatchling.build"
+build-backend = "hatchling.build" 
