@@ -22,7 +22,7 @@ jobs:
         run: uv build
     
       - name: Upload Build
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: package-build
           if-no-files-found: error
