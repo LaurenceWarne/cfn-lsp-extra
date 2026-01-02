@@ -3,7 +3,7 @@
 ![Python Version](https://img.shields.io/badge/dynamic/json?query=info.requires_python&label=python&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fcfn-lsp-extra%2Fjson) [![PyPI](https://img.shields.io/pypi/v/cfn-lsp-extra)](CHANGELOG.md) [![codecov](https://codecov.io/gh/LaurenceWarne/cfn-lsp-extra/branch/master/graph/badge.svg?token=48ixiDIBpq)](https://codecov.io/gh/LaurenceWarne/cfn-lsp-extra)
 
 > [!NOTE]
-> There is no support for Python 3.14 due to incompatibilities with [SAM](https://github.com/aws/serverless-application-model/issues/3831)
+> There is no support for Python 3.14 yet due to incompatibilities with [SAM](https://github.com/aws/serverless-application-model/issues/3831)
 
 An experimental cloudformation language server (with support for SAM templates) built on top of [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) and the [Cloudformation user guide](https://github.com/awsdocs/aws-cloudformation-user-guide), aiming to provide hovering, completion, etc.  YAML and JSON are supported, though YAML has more features currently implemented (for example snippets) and will give a better experience.  Trust me.
 

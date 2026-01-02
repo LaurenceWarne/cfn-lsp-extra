@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.5
+- [8a844a8](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/8a844a86dfe67a5b60c94b978d709763bc6fecef) Update of the AWS specification used by `cfn-lsp-extra`
+- [fd38f2c](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/fd38f2c3abb34c3e3050c1ef541043113fe4777a) Update pygls to 2.0
+
 ## v0.7.4
 - [965c8cb](https://github.com/LaurenceWarne/cfn-lsp-extra/commit/965c8cbdfe10b8548249e3f37edd8db164aba0eb) Update of the AWS specification used by `cfn-lsp-extra`
 
