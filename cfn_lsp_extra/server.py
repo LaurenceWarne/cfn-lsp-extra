@@ -20,6 +20,7 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_DID_SAVE,
     TEXT_DOCUMENT_HOVER,
     WORKSPACE_DID_CHANGE_CONFIGURATION,
+    PublishDiagnosticsParams,
     CompletionItem,
     CompletionList,
     CompletionOptions,
@@ -34,8 +35,8 @@ from lsprotocol.types import (
     InitializedParams,
     Location,
 )
-from pygls.server import LanguageServer
-from pygls.workspace import Document
+from pygls.lsp.server import LanguageServer
+from pygls.workspace import TextDocument
 
 from .aws_data import AWSContext, AWSPropertyName, AWSResourceName
 from .cfnlint_integration import CFNLINT_VERSION, diagnostics, load_cfnlint_config
@@ -82,7 +83,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
         if workspace_capabilities and workspace_capabilities.configuration:
             logger.info("Obtaining user config")
             try:
-                config_response = ls.get_configuration(
+                config_response = ls.workspace_configuration(
                     params=configuration_params()
                 ).result(timeout=1)
             except TimeoutError:
@@ -97,25 +98,25 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
+        text_doc = ls.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
         logger.debug("Is template SAM: %s", is_document_sam(text_doc))
         file_path = text_doc.path
-        ls.publish_diagnostics(text_doc.uri, diagnostics(text_doc.source, file_path))
+        ls.text_document_publish_diagnostics(PublishDiagnosticsParams(text_doc.uri, diagnostics(text_doc.source, file_path)))
 
     @server.thread()
     @server.feature(TEXT_DOCUMENT_DID_CHANGE)
     def did_change(ls: LanguageServer, params: DidChangeTextDocumentParams) -> None:
         """Text document did change notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
+        text_doc = ls.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
         file_path = text_doc.path
         if (
             config.diagnostic_publishing_method
             == DiagnosticPublishingMethod.ON_DID_CHANGE
         ):
             # Publishing diagnostics removes old ones
-            ls.publish_diagnostics(
-                text_doc.uri, diagnostics(text_doc.source, file_path)
+            ls.text_document_publish_diagnostics(
+                PublishDiagnosticsParams(text_doc.uri, diagnostics(text_doc.source, file_path))
             )
 
     @server.thread()
@@ -123,14 +124,14 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_save(ls: LanguageServer, params: DidSaveTextDocumentParams) -> None:
         """Text document did save notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_document(uri)  # type: ignore[no-untyped-call]
+        text_doc = ls.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
         file_path = text_doc.path
         if (
             config.diagnostic_publishing_method
             == DiagnosticPublishingMethod.ON_DID_SAVE
         ):
-            ls.publish_diagnostics(
-                text_doc.uri, diagnostics(text_doc.source, file_path)
+            ls.text_document_publish_diagnostics(
+                PublishDiagnosticsParams(text_doc.uri, diagnostics(text_doc.source, file_path))
             )
 
     @server.feature(
@@ -142,7 +143,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     ) -> Optional[CompletionList]:
         """Returns completion items."""
         uri = params.text_document.uri
-        document = server.workspace.get_document(uri)  # type: ignore[no-untyped-call]
+        document = server.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
         use_sam = is_document_sam(document)
         aws_context = sam_aws_context if use_sam else cfn_aws_context
         try:
@@ -174,7 +175,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Text document did hover notification."""
         uri = params.text_document.uri
-        document = server.workspace.get_document(uri)  # type: ignore[no-untyped-call]
+        document = server.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode(document.source, document.filename)
@@ -190,7 +191,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def goto_definition(
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:
-        document = server.workspace.get_document(params.text_document.uri)  # type: ignore[no-untyped-call]
+        document = server.workspace.get_text_document(params.text_document.uri)  # type: ignore[no-untyped-call]
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
             template_data = decode(document.source, document.filename)
@@ -211,7 +212,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     return server
 
 
-def is_document_sam(document: Document) -> bool:
+def is_document_sam(document: TextDocument) -> bool:
     for line in document.lines:
         line_stripped = line.strip()
         if not line_stripped.startswith("#") and not line_stripped.startswith("{"):

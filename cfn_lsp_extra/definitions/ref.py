@@ -5,7 +5,7 @@ Definitions for !Refs.
 from typing import Optional
 
 from lsprotocol.types import Location, Position, Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, Tree
 from ..ref import resolve_ref
@@ -13,7 +13,7 @@ from ..ref import resolve_ref
 
 def ref_definition(
     template_data: Tree,
-    document: Document,
+    document: TextDocument,
     position: Position,
     aws_context: AWSContext,
 ) -> Optional[Location]:

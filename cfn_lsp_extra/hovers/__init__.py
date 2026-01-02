@@ -5,7 +5,7 @@ import logging
 from typing import Optional, Union
 
 from lsprotocol.types import Hover, MarkupContent, MarkupKind, Position, Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSPropertyName, AWSResourceName, Tree
 from ..decode.position import PositionLookup
@@ -20,7 +20,7 @@ def hover(
     template_data: Tree,
     position: Position,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position_lookup: PositionLookup[Union[AWSResourceName, AWSPropertyName]],
 ) -> Optional[Hover]:
     line_at, char_at = position.line, position.character

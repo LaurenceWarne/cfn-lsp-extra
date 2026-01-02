@@ -4,7 +4,7 @@ Completions for !GetAtt
 from typing import Optional
 
 from lsprotocol.types import CompletionItem, CompletionList, Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSLogicalId, AWSResourceName, Tree
 from ..cursor import text_edit, word_before_after_position
@@ -17,7 +17,7 @@ GET_ATT_SRC_EXTRACTOR = LogicalIdExtractor()
 def attribute_completions(
     template_data: Tree,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
     get_att_extractor: Extractor[str] = GET_ATT_EXTRACTOR,
     get_att_src_extractor: Extractor[AWSLogicalId] = GET_ATT_SRC_EXTRACTOR,

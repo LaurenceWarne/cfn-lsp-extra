@@ -5,7 +5,7 @@ import pytest
 from lsprotocol.types import Location
 from lsprotocol.types import Position
 from lsprotocol.types import Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from cfn_lsp_extra.decode import decode
 from cfn_lsp_extra.definitions.attributes import attribute_definition
@@ -51,7 +51,7 @@ Resources:
 
 
 def test_attribute_definition_for_resource(full_aws_context, document_string):
-    document = Document(uri="", source=document_string)
+    document = TextDocument(uri="", source=document_string)
     template_data = decode(document_string, "f.yaml")
     position_att = Position(line=25, character=55)
     position_logical_id = Position(line=25, character=50)
@@ -68,7 +68,7 @@ def test_attribute_definition_for_resource(full_aws_context, document_string):
 
 
 def test_attribute_definition_not_valid(full_aws_context, document_string):
-    document = Document(uri="", source=document_string)
+    document = TextDocument(uri="", source=document_string)
     template_data = decode(document_string, "f.yaml")
     position = Position(line=11, character=26)
     result = attribute_definition(template_data, document, position, full_aws_context)

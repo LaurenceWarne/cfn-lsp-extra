@@ -6,14 +6,14 @@ For more information.
 from typing import List, Optional
 
 from lsprotocol.types import Hover, MarkupContent, MarkupKind, Position, Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..cursor import word_before_after_position
 from ..intrinsic_functions import INTRINSIC_FUNCTIONS, IntrinsicFunction
 
 
 def intrinsic_function_hover(
-    document: Document,
+    document: TextDocument,
     position: Position,
     intrinsic_functions: List[IntrinsicFunction] = INTRINSIC_FUNCTIONS,
 ) -> Optional[Hover]:

@@ -6,14 +6,14 @@ For more information.
 from typing import Callable, List
 
 from lsprotocol.types import CompletionItem, CompletionList, Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..cursor import text_edit, word_before_after_position
 from ..intrinsic_functions import INTRINSIC_FUNCTIONS, IntrinsicFunction
 
 
 def intrinsic_function_completions(
-    document: Document,
+    document: TextDocument,
     position: Position,
     intrinsic_functions: List[IntrinsicFunction] = INTRINSIC_FUNCTIONS,
 ) -> CompletionList:

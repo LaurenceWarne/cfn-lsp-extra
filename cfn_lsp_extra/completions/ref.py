@@ -4,7 +4,7 @@ Completions for !Refs
 from typing import Optional
 
 from lsprotocol.types import CompletionItem, CompletionList, Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSRefName, AWSRefSource, Tree
 from ..cursor import text_edit, word_before_after_position
@@ -14,7 +14,7 @@ from ..ref import REF_EXTRACTOR, REF_SRC_EXTRACTOR
 
 def ref_completions(
     template_data: Tree,
-    document: Document,
+    document: TextDocument,
     position: Position,
     aws_context: AWSContext,
     ref_extractor: Extractor[AWSRefName] = REF_EXTRACTOR,

@@ -5,7 +5,7 @@ etc.
 from typing import Optional
 
 from lsprotocol.types import CompletionItem, CompletionList, Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, Tree
 from ..cursor import text_edit, word_before_after_position
@@ -89,7 +89,7 @@ SAM_EXTRACTOR = StaticExtractor(paths=set(SAM_STATIC_LOOKUP.keys()))
 def static_completions(
     template_data: Tree,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
     use_sam: bool
 ) -> Optional[CompletionList]:

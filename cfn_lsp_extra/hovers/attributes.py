@@ -5,7 +5,7 @@ import re
 from typing import Optional
 
 from lsprotocol.types import Hover, MarkupContent, MarkupKind, Position, Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSLogicalId, AWSResourceName, Tree
 from ..cursor import word_at_position_char_bounds
@@ -20,7 +20,7 @@ RE_START_ATTRIBUTE = re.compile(r"[A-Za-z_0-9\.]*$")
 def attribute_hover(
     template_data: Tree,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
     get_att_extractor: Extractor[str] = GET_ATT_EXTRACTOR,
     get_att_src_extractor: Extractor[AWSLogicalId] = GET_ATT_SRC_EXTRACTOR,

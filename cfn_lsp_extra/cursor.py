@@ -2,7 +2,7 @@ import re
 from typing import Pattern, Tuple
 
 from lsprotocol.types import Position, Range, TextEdit
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 RE_END_WORD = re.compile("^[A-Za-z_0-9!:]*")
 RE_START_WORD = re.compile("[A-Za-z_0-9!:]*$")
@@ -15,7 +15,7 @@ def text_edit(position: Position, before: str, after: str, text: str) -> TextEdi
 
 
 def word_before_after_position(
-    document: Document,
+    document: TextDocument,
     position: Position,
     re_start_word: Pattern[str] = RE_START_WORD,
     re_end_word: Pattern[str] = RE_END_WORD,
@@ -41,7 +41,7 @@ def word_before_after_position(
 
 
 def word_at_position_char_bounds(
-    document: Document,
+    document: TextDocument,
     position: Position,
     re_start_word: Pattern[str] = RE_START_WORD,
     re_end_word: Pattern[str] = RE_END_WORD,

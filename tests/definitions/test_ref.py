@@ -5,7 +5,7 @@ Test definitions for !Refs.
 from lsprotocol.types import Location
 from lsprotocol.types import Position
 from lsprotocol.types import Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from cfn_lsp_extra.decode import decode
 from cfn_lsp_extra.definitions.ref import ref_definition
@@ -28,7 +28,7 @@ Resources:
     Properties:
       CidrBlock: 172.31.48.0/20
       VpcId: !Ref MyVpc"""
-    document = Document(uri="", source=document_string)
+    document = TextDocument(uri="", source=document_string)
     template_data = decode(document_string, "f.yaml")
     position = Position(line=13, character=22)
     result = ref_definition(template_data, document, position, full_aws_context)
@@ -49,7 +49,7 @@ Resources:
     Properties:
       CidrBlock: 172.31.48.0/20
       VpcId: !Ref DefaultVpcId"""
-    document = Document(uri="", source=document_string)
+    document = TextDocument(uri="", source=document_string)
     template_data = decode(document_string, "f.yaml")
     position = Position(line=12, character=26)
     result = ref_definition(template_data, document, position, full_aws_context)
@@ -70,7 +70,7 @@ Resources:
     Properties:
       CidrBlock: 172.31.48.0/20
       VpcId: !Ref DefaultVpcId"""
-    document = Document(uri="", source=document_string)
+    document = TextDocument(uri="", source=document_string)
     template_data = decode(document_string, "f.yaml")
     position = Position(line=11, character=26)
     result = ref_definition(template_data, document, position, full_aws_context)

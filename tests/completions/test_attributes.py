@@ -3,7 +3,7 @@ Tests for attribute completions.
 """
 import pytest
 from lsprotocol.types import Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from cfn_lsp_extra.aws_data import AWSResourceName
 from cfn_lsp_extra.completions.attributes import attribute_completions
@@ -51,7 +51,7 @@ Resources:
 
 @pytest.fixture
 def document(document_string):
-    return Document(uri="", source=document_string)
+    return TextDocument(uri="", source=document_string)
 
 
 def test_attribute_completions(

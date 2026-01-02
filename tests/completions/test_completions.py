@@ -3,7 +3,7 @@ from cfn_lsp_extra.aws_data import AWSPropertyName, AWSResourceName
 from cfn_lsp_extra.completions import completions_for
 from cfn_lsp_extra.decode import decode
 from lsprotocol.types import Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..decode.test_decode import extractor
 from ..test_aws_data import (
@@ -16,7 +16,7 @@ from ..test_aws_data import (
 
 @pytest.fixture
 def document():
-    return Document(uri="", source="\n" * 50)
+    return TextDocument(uri="", source="\n" * 50)
 
 
 @pytest.fixture
@@ -160,7 +160,7 @@ def test_property_completions_with_colon(
     property_position,
     extractor,
 ):
-    document = Document(
+    document = TextDocument(
         uri="",
         source="\n".join(
             (":" if i == property_position.line else "") for i in range(60)
@@ -215,7 +215,7 @@ def test_ref_completion(
 
 
 def test_intrinsic_function_completions(aws_context, extractor):
-    document = Document(
+    document = TextDocument(
         uri="",
         source="""AWSTemplateFormatVersion: 2010-09-09
 Description: My template
@@ -235,7 +235,7 @@ Resources:
 
 
 def test_static_completions(aws_context, extractor):
-    document = Document(
+    document = TextDocument(
         uri="",
         source="""AWSTemplateFormatVersion: 2010-09-09
 Description: My template

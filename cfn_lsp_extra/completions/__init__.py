@@ -3,7 +3,7 @@ Completion logic.
 """
 
 from lsprotocol.types import CompletionItem, CompletionList, Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSPropertyName, Tree
 from ..cursor import text_edit, word_before_after_position
@@ -37,7 +37,7 @@ TRIGGER_CHARACTERS = [
 def completions_for(
     template_data: Tree,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
     allowed_values_extractor: AllowedValuesExtractor,
     use_sam: bool,
@@ -84,7 +84,7 @@ def completions_for(
 def property_completions(
     name: AWSPropertyName,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
 ) -> CompletionList:
     if name.parent in aws_context:

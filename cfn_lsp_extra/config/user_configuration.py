@@ -13,7 +13,6 @@ from lsprotocol.types import (
     ConfigurationItem,
     ConfigurationParams,
     DidChangeConfigurationParams,
-    WorkspaceConfigurationParams,
 )
 
 SECTION = "cfn"
@@ -41,14 +40,6 @@ def diagnostic_publishing_method_from_string(string: str) -> DiagnosticPublishin
     if string.upper() == "ON_DID_SAVE":
         return DiagnosticPublishingMethod.ON_DID_SAVE
     return DIAGNOSTIC_PUBLISHING_METHOD_DEFAULT
-
-
-def workspace_configuration_params(uri: str) -> WorkspaceConfigurationParams:
-    return WorkspaceConfigurationParams(
-        items=[
-            ConfigurationItem(scope_uri=uri, section=DIAGNOSTIC_PUBLISHING_METHOD_KEY)
-        ]
-    )
 
 
 def configuration_params() -> ConfigurationParams:

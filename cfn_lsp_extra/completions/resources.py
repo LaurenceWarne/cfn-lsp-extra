@@ -13,7 +13,7 @@ from lsprotocol.types import (
     MarkupKind,
     Position,
 )
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSResourceName, AWSSpecification
 from ..cursor import text_edit, word_before_after_position
@@ -22,7 +22,7 @@ from ..cursor import text_edit, word_before_after_position
 def resource_completions(
     name: AWSResourceName,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
 ) -> CompletionList:
     """Return a list of all resources, without documentation."""

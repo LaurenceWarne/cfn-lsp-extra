@@ -6,7 +6,7 @@ from cfn_lsp_extra.completions.allowed_values import allowed_values_completions
 from cfn_lsp_extra.decode import decode, decode_unfinished
 from cfn_lsp_extra.decode.extractors import AllowedValuesExtractor
 from lsprotocol.types import Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..test_aws_data import full_aws_context
 
@@ -29,7 +29,7 @@ Resources:
 
 @pytest.fixture
 def document(document_string):
-    return Document(uri="", source=document_string)
+    return TextDocument(uri="", source=document_string)
 
 
 @pytest.fixture
@@ -87,7 +87,7 @@ Resources:
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED"""
-    document = Document(uri="", source=document_string)
+    document = TextDocument(uri="", source=document_string)
     position = Position(line=line, character=char)
     tree = decode_unfinished(document_string, "file.yaml", position)
 

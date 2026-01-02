@@ -5,7 +5,7 @@ Definitions for !GettAtts.
 from typing import Optional
 
 from lsprotocol.types import Location, Position, Range
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, AWSRefName, Tree
 from ..decode.extractors import KeyExtractor, LogicalIdExtractor
@@ -19,7 +19,7 @@ ATTRIBUTE_SRC_EXTRACTOR = LogicalIdExtractor()
 
 def attribute_definition(
     template_data: Tree,
-    document: Document,
+    document: TextDocument,
     position: Position,
     aws_context: AWSContext,
 ) -> Optional[Location]:

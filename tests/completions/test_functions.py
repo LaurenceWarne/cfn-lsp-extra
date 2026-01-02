@@ -1,12 +1,12 @@
 import pytest
 from lsprotocol.types import Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from cfn_lsp_extra.completions import intrinsic_function_completions
 
 
 def test_intrinsic_function_completion_short_form():
-    document = Document(
+    document = TextDocument(
         uri="",
         source="""AWSTemplateFormatVersion: 2010-09-09
   Description: My template
@@ -24,7 +24,7 @@ def test_intrinsic_function_completion_short_form():
 
 
 def test_intrinsic_function_completion_full_name():
-    document = Document(
+    document = TextDocument(
         uri="",
         source="""AWSTemplateFormatVersion: 2010-09-09
   Description: My template

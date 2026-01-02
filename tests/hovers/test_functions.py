@@ -2,7 +2,7 @@
 Tests for intrinsic function hovers.
 """
 from lsprotocol.types import Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from cfn_lsp_extra.hovers.functions import intrinsic_function_hover
 

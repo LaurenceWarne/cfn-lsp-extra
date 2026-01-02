@@ -4,7 +4,7 @@ Completions for property values.
 from typing import Optional
 
 from lsprotocol.types import CompletionItem, CompletionList, Position
-from pygls.workspace import Document
+from pygls.workspace import TextDocument
 
 from ..aws_data import AWSContext, Tree
 from ..cursor import text_edit, word_before_after_position
@@ -14,7 +14,7 @@ from ..decode.extractors import AllowedValuesExtractor
 def allowed_values_completions(
     template_data: Tree,
     aws_context: AWSContext,
-    document: Document,
+    document: TextDocument,
     position: Position,
     allowed_values_extractor: AllowedValuesExtractor,
 ) -> Optional[CompletionList]:
