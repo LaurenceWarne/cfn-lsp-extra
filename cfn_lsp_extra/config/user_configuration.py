@@ -6,7 +6,7 @@ https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/spe
 https://pygls.readthedocs.io/en/latest/pages/advanced_usage.html#configuration
 """
 from enum import Enum, auto, unique
-from typing import Any, List
+from typing import Any, Sequence
 
 from attrs import define
 from lsprotocol.types import (
@@ -47,13 +47,13 @@ def configuration_params() -> ConfigurationParams:
     return ConfigurationParams(items=items)
 
 
-def from_get_configuration_response(config: List[Any]) -> UserConfiguration:
+def from_get_configuration_response(config: Sequence[Any]) -> UserConfiguration:
     """Obtain config from the response of a workspace/configuration response.
 
     https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_configuration
     """
     user_config = UserConfiguration()
-    if config and isinstance(config, list) and len(config) > 0:
+    if config and isinstance(config, Sequence) and len(config) > 0:
         diagnostic_publishing_method, *_ = config
         if diagnostic_publishing_method and isinstance(
             diagnostic_publishing_method, str

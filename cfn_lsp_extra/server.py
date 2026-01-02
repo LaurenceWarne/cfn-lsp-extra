@@ -20,7 +20,6 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_DID_SAVE,
     TEXT_DOCUMENT_HOVER,
     WORKSPACE_DID_CHANGE_CONFIGURATION,
-    PublishDiagnosticsParams,
     CompletionItem,
     CompletionList,
     CompletionOptions,
@@ -34,6 +33,7 @@ from lsprotocol.types import (
     HoverParams,
     InitializedParams,
     Location,
+    PublishDiagnosticsParams,
 )
 from pygls.lsp.server import LanguageServer
 from pygls.workspace import TextDocument
@@ -98,7 +98,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_open(ls: LanguageServer, params: DidOpenTextDocumentParams) -> None:
         """Text document did open notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
+        text_doc = ls.workspace.get_text_document(uri)
         logger.debug("Is template SAM: %s", is_document_sam(text_doc))
         file_path = text_doc.path
         ls.text_document_publish_diagnostics(PublishDiagnosticsParams(text_doc.uri, diagnostics(text_doc.source, file_path)))
@@ -108,7 +108,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_change(ls: LanguageServer, params: DidChangeTextDocumentParams) -> None:
         """Text document did change notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
+        text_doc = ls.workspace.get_text_document(uri)
         file_path = text_doc.path
         if (
             config.diagnostic_publishing_method
@@ -124,7 +124,7 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_save(ls: LanguageServer, params: DidSaveTextDocumentParams) -> None:
         """Text document did save notification."""
         uri = params.text_document.uri
-        text_doc = ls.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
+        text_doc = ls.workspace.get_text_document(uri)
         file_path = text_doc.path
         if (
             config.diagnostic_publishing_method
@@ -143,12 +143,12 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     ) -> Optional[CompletionList]:
         """Returns completion items."""
         uri = params.text_document.uri
-        document = server.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
+        document = server.workspace.get_text_document(uri)
         use_sam = is_document_sam(document)
         aws_context = sam_aws_context if use_sam else cfn_aws_context
         try:
             template_data = decode_unfinished(
-                document.source, document.filename, params.position
+                document.source, document.filename or "unknown-file", params.position
             )
         except CfnDecodingError as e:
             logger.debug("Failed to decode document: %s", e)
@@ -175,10 +175,10 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def did_hover(ls: LanguageServer, params: HoverParams) -> Optional[Hover]:
         """Text document did hover notification."""
         uri = params.text_document.uri
-        document = server.workspace.get_text_document(uri)  # type: ignore[no-untyped-call]
+        document = server.workspace.get_text_document(uri)
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
-            template_data = decode(document.source, document.filename)
+            template_data = decode(document.source, document.filename or "unknown-file")
         except CfnDecodingError as e:
             logger.debug("Failed to decode document: %s", e)
             return None
@@ -191,10 +191,10 @@ def server(cfn_aws_context: AWSContext, sam_aws_context: AWSContext) -> Language
     def goto_definition(
         ls: LanguageServer, params: DefinitionParams
     ) -> Optional[Location]:
-        document = server.workspace.get_text_document(params.text_document.uri)  # type: ignore[no-untyped-call]
+        document = server.workspace.get_text_document(params.text_document.uri)
         aws_context = sam_aws_context if is_document_sam(document) else cfn_aws_context
         try:
-            template_data = decode(document.source, document.filename)
+            template_data = decode(document.source, document.filename or "unknown-file")
         except CfnDecodingError as e:
             logger.debug("Failed to decode document: %s", e)
             return None
