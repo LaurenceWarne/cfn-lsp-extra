@@ -61,9 +61,6 @@ test = [
     "pytest-mock (>=3.15)",
     # https://github.com/swyddfa/lsp-devtools
     "pytest-lsp (>=1.0.0)",
-    "python-lsp-server (>=1.13.1)",
-    "pylsp-mypy (>=0.7.0)",
-    "python-lsp-ruff (>=2.3.0)"
 ]
 # TODO: find out how to reference these from optional-dependencies above
 duplicated = [
