@@ -114,7 +114,7 @@ wheels = [
 
 [[package]]
 name = "cfn-lint"
-version = "1.45.0"
+version = "1.46.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aws-sam-translator" },
@@ -126,9 +126,9 @@ dependencies = [
     { name = "sympy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/86/579ae0ec32d687c81264e0ef7ab311f4d660743ba56b3fcdaaf7880e10ed/cfn_lint-1.45.0.tar.gz", hash = "sha256:0a05b34eff63f45d7b9b0465e01dca6c2035b730bd88910dca8c4bcf00913939", size = 3512104, upload-time = "2026-02-23T20:55:14.085Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/d0/d127aa4566fb334dfde26233564b331ad992df22bc536a818c48596a284b/cfn_lint-1.46.0.tar.gz", hash = "sha256:fa7cb76db683109133241baf1e1734b1d61b46d3900ba2a309db8f3d0e5d3994", size = 3625615, upload-time = "2026-03-02T20:32:43.506Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/13/d23b69acb1a0c56f021f26b6a08ba43cff3934181bf37022f3391b6118d0/cfn_lint-1.45.0-py3-none-any.whl", hash = "sha256:39aed0cdb3be4d09fad4ca4e410790313c1b6a4e4a9f0362dac1b1980dd48978", size = 5086629, upload-time = "2026-02-23T20:55:11.801Z" },
+    { url = "https://files.pythonhosted.org/packages/db/c9/3b99057d815c5f60e3eebfce89340686795ba5dc0fb7a9dafdabe79c74a7/cfn_lint-1.46.0-py3-none-any.whl", hash = "sha256:1dfca1993af3159411e4a4f79466617ccdca48eddaf424e216297167c500aa3b", size = 5218128, upload-time = "2026-03-02T20:32:41.354Z" },
 ]
 
 [[package]]
