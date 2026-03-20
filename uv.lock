@@ -26,7 +26,7 @@ wheels = [
 
 [[package]]
 name = "aws-sam-translator"
-version = "1.107.0"
+version = "1.108.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
@@ -34,9 +34,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a0/4a/26918bfd8002764042904558429da8d7bc9a17519c3611038c05a3f9f2ef/aws_sam_translator-1.107.0.tar.gz", hash = "sha256:e6462c85309a4cabcc9559edf12f164c67a74a1208feb6350ab8aa1b620c9365", size = 356951, upload-time = "2026-01-29T22:49:06.192Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/51/2f/9283feaa243e18f1e28490ae053c1bd1d7c8855d412cb84b37ea4926681e/aws_sam_translator-1.108.0.tar.gz", hash = "sha256:8a21be119caaa64cf85e01b5e0fde804abe117b36fcce934bc1b74f3ccdc2488", size = 362147, upload-time = "2026-03-17T23:58:12.645Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/01/dc57ec8a481b6f2b20cf25ff383803b7f4e5e78655e8b64b4b8328541b71/aws_sam_translator-1.107.0-py3-none-any.whl", hash = "sha256:95b2a03a87fb61d9a9e9e431a18e6221c4780b32792eed4b239e72ef7366d63b", size = 416963, upload-time = "2026-01-29T22:49:03.661Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/f9/536c46d176dea4e4dd04daa3f44cb9fed15074ee0917ecf2dc1d6154da80/aws_sam_translator-1.108.0-py3-none-any.whl", hash = "sha256:03130421e641bb57ba7978e7db9e49acb32ecb09a87777dca3c28e44b3ea49db", size = 422108, upload-time = "2026-03-17T23:58:10.92Z" },
 ]
 
 [[package]]
